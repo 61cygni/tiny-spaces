@@ -4,9 +4,26 @@
   "description": "A place to go",
   "main": "index.js",
   "scripts": {
+    "dev": "vite src/",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "MIT"
+  "author": "61cygni",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/61cygni/tiny-spaces.git"
+  },
+  "bugs": {
+    "url": "https://github.com/61cygni/tiny-spaces/issues"
+  },
+  "homepage": "https://github.com/61cygni/tiny-spaces#readme",
+  "dependencies": {
+    "@types/node": "^20.14.10",
+    "@vitejs/plugin-react": "^4.3.1",
+    "pixi.js": "^8.2.2",
+    "vite": "^5.3.3"
+  }
 }

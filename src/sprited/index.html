@@ -1,0 +1,91 @@
+<html>
+<head>
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+ </style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <script src="sprited.js" type="module"></script>
+
+    <div class="tab">
+        <button class="tablinks" onclick="onTab(event, 'edit')">edit</button>
+        <button class="tablinks" onclick="onTab(event, 'spritesheet')">spritesheet</button>
+        <button class="tablinks" onclick="onTab(event, 'config')">config</button>
+      </div>
+
+<div id="edit" class="tabcontent">
+    <TABLE WIDTH="80%"><TR>
+        <TD ALIGN="center"> <!-- first layer of map tiles -->
+          <div ID="layer0pane" style="max-height: 240;max-width:640px;overflow: scroll;">
+          <canvas ID="level0" height="480" width="1600px" ></canvas> </div>   
+        </TD>
+        <TD ALIGN="center"> <!-- tile set-->
+            <div ID="tilesetpane" style="max-height: 300;max-width:800;overflow: scroll;">
+            <CANVAS ID="tileset" width="5632px" height="8672px" STYLE="border: 1px dotted white;"></CANVAS> </div>   
+         </TD>
+         </TR>
+
+        <tr>
+        <TD ALIGN="center"> <!-- second layer of map tiles -->
+        <div ID="layer1pane" style="max-height: 240;max-width:640px;overflow: scroll;">
+            <canvas ID="level1" height="480" width="1600px" ></canvas>
+        </div></TD>
+        <TD ALIGN="center"> <!-- aggregate map view -->
+        <div ID="compositepane" style="max-height: 240;max-width:640px;overflow: scroll;">
+            <canvas ID="composite" height="480" width="1600px" ></canvas>
+        </div></TD>
+        </tr>
+
+        <tr>
+        <TD ALIGN="center"> <!-- object layer of map -->
+        <div ID="layer2pane" style="max-height: 240;max-width:640px;overflow: scroll;">
+            <canvas ID="level3" height="480" width="1600px" ></canvas>
+        </div></TD>
+        <TD ALIGN="center"> <!-- object layer of map -->
+        <div ID="layer3pane" style="max-height: 480px;max-width:640px;overflow: scroll;">
+            <canvas ID="level4" height="1600px" width="1600px" ></canvas>
+        </div></TD>
+        </tr>
+    </TABLE>
+</div>
+
+<div id="spritesheet" class="tabcontent">
+        <canvas id="spritecanvas" height="1600px" width="1600px" ></canvas>
+</div>
+
+<div id="config" class="tabcontent">
+            <table>
+            <tr>
+                <td>Spritesheet</td>
+                <td>Load Sprite Image</td>
+                <td>Padding</td>
+            </tr>
+            <tr>
+            <td>
+            <button onclick = "saveSpriteContainerAsImage()" > Save</button>
+            </td>
+                <td> <input type="file" multiple id="tilesetfile"> </td>
+            <td> <input type="text" id="gettilepadding" value="0" > </td>
+            </tr>
+            <tr>
+                <td>Tile Width</td>
+                <td>Tile Height</td>
+                <td>Place Width</td>
+                <td>Place Height</td>
+            </tr>
+            <tr>
+                <td> <input type="text" id="gettiledimx" value="16" > </td>
+                <td> <input type="text" id="gettiledimy" value="32" > </td>
+                <td> <input type="text" id="getleveldimx" value="16" > </td>
+                <td> <input type="text" id="getleveldimy" value="32" > </td>
+            </tr>
+            </table>
+</div>
+
+
+</body>
+</html>
