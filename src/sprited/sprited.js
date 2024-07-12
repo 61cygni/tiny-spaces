@@ -408,81 +408,27 @@ function fillSpriteContainer() {
         g_ctx.spritesheet.container.removeChild(g_ctx.spritesheet.container.children[0]);
     }
 
-    var last_max = 0;
-    var row_count = 0;
-    for (var j = 0; j < g_ctx.g_layers[0].container.children.length; j++) {
-        var child = g_ctx.g_layers[0].container.children[j];
-        if (child.label != "Sprite") {
-            continue;
+    var total_rows = 0;
+    for (var i = 0; i <  g_ctx.g_layers.length; i++) {
+        var curlayer = g_ctx.g_layers[i];
+        for (let row = 0; row < CONFIG.leveltileheight; row++) {
+            if (!curlayer.tilearray[row].hasOwnProperty('as')) {
+                continue;
+            }
+            console.log(curlayer.tilearray[row].as);
+            for (let col = 0; col < curlayer.tilearray[row].as.textures.length; col++) {
+                let texture = curlayer.tilearray[row].as.textures[col];
+                var spr = new PIXI.Sprite(texture);
+                spr.x = col * g_ctx.leveldimx;
+                spr.y = total_rows * g_ctx.leveldimy;
+                g_ctx.spritesheet.container.addChild(spr);
+            }
+            total_rows++;
         }
-
-        if (child.y > last_max) {
-            last_max = child.y;
-            row_count++;
-        }
-
-        var spr = new PIXI.Sprite(child.texture);
-        spr.x = child.x;
-        spr.y = row_count * g_ctx.leveldimy; // snap always to level rows. 
-        g_ctx.spritesheet.container.addChild(spr);
-    }
-    last_max = 0;
-    row_count++;
-    for (var j = 0; j < g_ctx.g_layers[1].container.children.length; j++) {
-        var child = g_ctx.g_layers[1].container.children[j];
-        if (child.label != "Sprite") {
-            continue;
-        }
-
-        if (child.y > last_max) {
-            last_max = child.y;
-            row_count++;
-        }
-
-        var spr = new PIXI.Sprite(child.texture);
-        spr.y = row_count * g_ctx.leveldimy;
-        spr.x = child.x;
-        g_ctx.spritesheet.container.addChild(spr);
-    }
-    last_max = 0;
-    row_count++;
-    for (var j = 0; j < g_ctx.g_layers[2].container.children.length; j++) {
-        var child = g_ctx.g_layers[2].container.children[j];
-        if (child.label != "Sprite") {
-            continue;
-        }
-
-        console.log("Y2 " + child.y);
-        if (child.y > last_max) {
-            last_max = child.y;
-            row_count++;
-        }
-
-        var spr = new PIXI.Sprite(child.texture);
-        spr.y = row_count * g_ctx.leveldimy;
-        spr.x = child.x;
-        g_ctx.spritesheet.container.addChild(spr);
-    }
-    last_max = 0;
-    row_count++;
-    for (var j = 0; j < g_ctx.g_layers[3].container.children.length; j++) {
-        var child = g_ctx.g_layers[3].container.children[j];
-        if (child.label != "Sprite") {
-            continue;
-        }
-
-        if (child.y > last_max) {
-            last_max = child.y;
-            row_count++;
-        }
-
-        var spr = new PIXI.Sprite(child.texture);
-        spr.y = row_count * g_ctx.leveldimy;
-        spr.x = child.x;
-        g_ctx.spritesheet.container.addChild(spr);
     }
 
     g_ctx.spritesheet_app.stage.addChild(g_ctx.spritesheet.container);
+
 
 }
 
