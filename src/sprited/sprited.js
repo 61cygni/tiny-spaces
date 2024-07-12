@@ -353,6 +353,7 @@ function doimport (str) {
 
 
 function resetLayers() {
+    // TODO, turn this into a loop
     g_ctx.composite.container.removeChildren();
     g_ctx.composite = new CompositeContext(g_ctx.composite_app);
     g_ctx.g_layer_apps[0].stage.removeChildren()

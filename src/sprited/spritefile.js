@@ -32,10 +32,13 @@ function download(data, filename, type) {
 export function generate_sprite_file() {
 
     let layer0 = g_ctx.g_layers[0];
-    console.log("generate_sprite_file");
+    if (g_ctx.debug_flag) {
+        console.log("generate_sprite_file");
+    }
 
     let text = generate_preamble();
 
+    // FIXME : Should dynamically size this. 
     let animations = Array.from(Array(CONFIG.leveltileheight), () => new Array().fill(null)); 
 
     for (let row = 0; row < CONFIG.leveltileheight; row++) {
@@ -47,28 +50,19 @@ export function generate_sprite_file() {
 
         for (let x = 0; x < layer0.tilearray[row].length; x++) {
 
-        //"pixels_large1.png":
-        // {
-        // 	"frame": {"x":0,"y":192,"w":32,"h":64},
-        // 	"rotated": false,
-        // 	"trimmed": true,
-        // 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":64},
-        // 	"sourceSize": {"w":32,"h":64}
-        // },
-
             let framename = '"tile' + row + "_" + x + '"';
 
             animations[row].push(framename);
             let frame = layer0.tilearray[row][x];
             text += framename + ": { \n";
             text += '\t"frame": {';
-            text += '"x": '+ frame.tspx[0]+ ', "y": '+ frame.tspx[1]+ ', "w": '+ g_ctx.tiledimx+ ', "h": '+ g_ctx.tiledimy+ ' },\n';
+            text += '"x": '+ frame.tspx[0]+ ', "y": '+ frame.tspx[1]+ ', "w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' },\n';
             text += '\t"rotated": false,\n';
             text += '\t"trimmed": true,\n';
             text += '\t"spriteSourceSize": {';
-            text += '"x":0, "y":0, "w": '+ g_ctx.tiledimx+ ', "h": '+ g_ctx.tiledimy+ ' },\n';
+            text += '"x":0, "y":0, "w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' },\n';
             text += '\t"sourceSize": {';
-            text += '"w": '+ g_ctx.tiledimx+ ', "h": '+ g_ctx.tiledimy+ ' }\n';
+            text += '"w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' }\n';
             text += '\t}';
 
             text += (x === layer0.tilearray[row].length - 1)?  '\n':',\n'
