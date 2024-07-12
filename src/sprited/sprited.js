@@ -352,13 +352,9 @@ function doimport (str) {
   }
 
 
-function resetPanes() {
-    // TODO : not tested since port
-
+function resetLayers() {
     g_ctx.composite.container.removeChildren();
     g_ctx.composite = new CompositeContext(g_ctx.composite_app);
-    g_ctx.tileset_app.stage.removeChildren()
-    g_ctx.tileset = new TilesetContext(g_ctx.tileset_app);
     g_ctx.g_layer_apps[0].stage.removeChildren()
     g_ctx.g_layers[0] = new LayerContext(g_ctx.g_layer_apps[0], document.getElementById("layer0pane"), 0);
     g_ctx.g_layer_apps[1].stage.removeChildren()
@@ -369,6 +365,10 @@ function resetPanes() {
     g_ctx.g_layers[3] = new LayerContext(g_ctx.g_layer_apps[3], document.getElementById("layer3pane"), 3);
 
     redrawGrid();
+}
+
+window.resetLayers = () => {
+    resetLayers();
 }
 
 // Save Spritesheet container as a Png file
@@ -1182,9 +1182,14 @@ async function initTiles() {
     const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
 }
 
-function newTilesetFromFile(){
-    initTilesConfig(g_ctx.tilesetpath)
-    resetPanes();
+async function newTilesetFromFile(){
+    await initTilesConfig(g_ctx.tilesetpath)
+
+    g_ctx.tileset_app.stage.removeChildren()
+    g_ctx.tileset = new TilesetContext(g_ctx.tileset_app);
+    g_ctx.g_layer_apps[0].stage.removeChildren()
+
+    resetLayers();
 }
 
 async function init() {

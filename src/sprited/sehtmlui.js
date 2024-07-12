@@ -58,9 +58,6 @@ export function initTilesetLoader(callme) {
         }
         g_ctx.tilesetpath =  "./spritesheets/"+fileInput.files[0].name;
 
-        g_ctx.tiledimx = 16;
-        g_ctx.tiledimy = 16;
-
         callme();
     }
 }
