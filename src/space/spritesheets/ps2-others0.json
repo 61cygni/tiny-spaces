@@ -1,0 +1,77 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile0_1": { 
+	"frame": {"x": 16, "y": 0, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile0_2": { 
+	"frame": {"x": 32, "y": 0, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile1_0": { 
+	"frame": {"x": 0, "y": 32, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile1_1": { 
+	"frame": {"x": 16, "y": 32, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile1_2": { 
+	"frame": {"x": 32, "y": 32, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile2_0": { 
+	"frame": {"x": 0, "y": 64, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile2_1": { 
+	"frame": {"x": 16, "y": 64, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile2_2": { 
+	"frame": {"x": 32, "y": 64, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2"],
+"row1" : ["tile1_0","tile1_1","tile1_2"],
+"row2" : ["tile2_0","tile2_1","tile2_2"]
+},
+"meta": {
+	"image": "ps2-others.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

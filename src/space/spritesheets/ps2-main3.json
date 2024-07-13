@@ -1,0 +1,77 @@
+{"frames": {
+
+"tile9_0": { 
+	"frame": {"x": 0, "y": 288, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile9_1": { 
+	"frame": {"x": 16, "y": 288, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile9_2": { 
+	"frame": {"x": 32, "y": 288, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile10_0": { 
+	"frame": {"x": 0, "y": 320, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile10_1": { 
+	"frame": {"x": 16, "y": 320, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile10_2": { 
+	"frame": {"x": 32, "y": 320, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile11_0": { 
+	"frame": {"x": 0, "y": 352, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile11_1": { 
+	"frame": {"x": 16, "y": 352, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	},
+"tile11_2": { 
+	"frame": {"x": 32, "y": 352, "w": 16, "h": 32 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 16, "h": 32 },
+	"sourceSize": {"w": 16, "h": 32 }
+	}
+},
+"animations": {
+"row0" : ["tile9_0","tile9_1","tile9_2"],
+"row1" : ["tile10_0","tile10_1","tile10_2"],
+"row2" : ["tile11_0","tile11_1","tile11_2"]
+},
+"meta": {
+	"image": "ps2-main.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

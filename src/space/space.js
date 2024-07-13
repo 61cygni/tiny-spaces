@@ -91,21 +91,21 @@ class Being {
 }
 
 const spritesheets = [
-    'sprited0.json',
-    'sprited1.json',
-    'sprited2.json',
-    'sprited3.json',
-    'spritedX0.json',
-    'spritedX1.json',
-    'spritedX2.json',
-    'spritedX3.json',
-    'ps2-small0.json',   
-    'ps2-small1.json',
-    'ps2-small2.json',
-    'ps1-others0.json',
-    'ps1-others1.json',
-    'ps1-others2.json',
-    'ps1-alice0.json'
+    'spritesheets/ps2-main0.json',
+    'spritesheets/ps2-main1.json',
+    'spritesheets/ps2-main2.json',
+    'spritesheets/ps2-main3.json',
+    'spritesheets/ps2-others0.json',
+    'spritesheets/ps2-others1.json',
+    'spritesheets/ps2-others2.json',
+    'spritesheets/ps2-others3.json',
+    'spritesheets/ps2-small0.json',   
+    'spritesheets/ps2-small1.json',
+    'spritesheets/ps2-small2.json',
+    'spritesheets/ps1-others0.json',
+    'spritesheets/ps1-others1.json',
+    'spritesheets/ps1-others2.json',
+    'spritesheets/ps1-alice0.json'
 ]
 
 let beings = []
@@ -115,7 +115,7 @@ app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas
 
 for(let i = 0; i < spritesheets.length; i++){
     const sheet = await Assets.load(spritesheets[i]);
-    let being = new Being(app, sheet, (i*32)%256, i/256);
+    let being = new Being(app, sheet, (i%6)*32, Math.floor(i/6) * 64);
     beings.push(being);
 }
 
