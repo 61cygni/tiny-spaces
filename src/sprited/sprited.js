@@ -8,6 +8,10 @@
 // <ctl>-z - undo
 // d - hold while clicking a tile to delete
 // 
+// shft + arrows = move grid around
+// option + arrows = change dim
+// '=' = increase padding
+// '-' = decrease padding
 // --
 
 import * as PIXI from 'pixi.js'
@@ -61,6 +65,12 @@ function tileset_px_from_index(index) {
         return [ret[0] * (g_ctx.tiledimx+g_ctx.tilepadding), ret[1] * (g_ctx.tiledimy+g_ctx.tilepadding)] ;
 }
 
+// Remove arrow events on browser. Otherwise very difficult to navigate
+window.addEventListener("keydown", function(e) {
+    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);
 
 // --
 // From the loaded tileset, return a sprite starting at locations (x,y)
@@ -500,6 +510,14 @@ window.addEventListener(
         else if (event.code == 'KeyM'){
             g_ctx.g_layers.map((l) => l.drawFilter () );
         }
+        else if (event.code == 'Equal'){
+            g_ctx.tilepadding += 1;
+            redrawGrid();
+        }
+        else if (event.code == 'Minus'){
+            g_ctx.tilepadding -= 1;
+            redrawGrid();
+        }
         else if (event.ctrlKey && event.code === 'KeyZ'){
             let undome = UNDO.undo_pop();
             if (!undome) {
@@ -529,6 +547,26 @@ window.addEventListener(
         else if (event.shiftKey && event.code == 'ArrowRight') {
             g_ctx.tileset.fudgex += 1;
             redrawGridTileset(g_ctx.tileset);
+        }
+        else if (event.altKey && event.code == 'ArrowUp') {
+            g_ctx.tiledimy += 1;
+            g_ctx.leveldimy += 1;
+            redrawGrid();
+        }
+        else if (event.altKey && event.code == 'ArrowDown') {
+            g_ctx.tiledimy -= 1;
+            g_ctx.leveldimy -= 1;
+            redrawGrid();
+        }
+        else if (event.altKey && event.code == 'ArrowLeft') {
+            g_ctx.tiledimx -= 1;
+            g_ctx.leveldimx -= 1;
+            redrawGrid();
+        }
+        else if (event.altKey && event.code == 'ArrowRight') {
+            g_ctx.tiledimx += 1;
+            g_ctx.leveldimx += 1;
+            redrawGrid();
         }
      }
   );
