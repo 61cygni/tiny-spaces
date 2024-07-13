@@ -400,7 +400,25 @@ function downloadpng(filename) {
 
 window.saveSpriteContainerAsImage = () => {
     fillSpriteContainer();
-    downloadpng("g_ctx.sprite.png");
+
+    var suffix = "sprited";
+    var  pngfilename = suffix+".png";
+    downloadpng(pngfilename);
+
+    // FIXME : total_rows is a hack which should be in generate_sprite_file.
+    // This entire for loop should be moved to generate_sprite_file so we don't hvae
+    // to keep the cumulative rows here. Or some other fix should be put in place. 
+    var total_rows = 0;
+    for (var i = 0; i <  g_ctx.g_layers.length; i++) {
+            var curlayer = g_ctx.g_layers[i];
+            if (!curlayer.tilearray[0].hasOwnProperty('as')) {
+                // assume if there is no animation in the first row
+                // there is non and skip
+                continue;
+            }
+        var jsonfilename = suffix+i+".json";
+        total_rows = SPRITEFILE.generate_sprite_file(g_ctx.g_layers[i], pngfilename, jsonfilename, total_rows);
+    }
 }
 
 function fillSpriteContainer() {
@@ -475,7 +493,8 @@ window.addEventListener(
         }
 
         if (event.code == 'KeyS'){
-            SPRITEFILE.generate_sprite_file();
+            SPRITEFILE.generate_sprite_file2();
+            //SPRITEFILE.generate_sprite_file();
         }
         else if (event.code == 'Escape'){
             g_ctx.selected_tiles = [];

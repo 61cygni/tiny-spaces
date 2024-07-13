@@ -29,34 +29,30 @@ function download(data, filename, type) {
     }
 }
 
-export function generate_sprite_file() {
+export function generate_sprite_file(curlayer, pngfilename, jsonfilename, total_rows = 0) {
 
-    let layer0 = g_ctx.g_layers[0];
     if (g_ctx.debug_flag) {
         console.log("generate_sprite_file");
     }
 
-    let text = generate_preamble();
-
-    // FIXME : Should dynamically size this. 
     let animations = Array.from(Array(CONFIG.leveltileheight), () => new Array().fill(null)); 
 
+    let text = generate_preamble();
+
     for (let row = 0; row < CONFIG.leveltileheight; row++) {
-        if (!layer0.tilearray[row][0]) {
-            // FIXME
-            // Assume row is empty if first tile is. 
+        if (!curlayer.tilearray[row].hasOwnProperty('as')) {
             continue;
         }
+        for (let col = 0; col < curlayer.tilearray[row].as.textures.length; col++) {
+            let x = col * g_ctx.leveldimx;
+            let y = total_rows * g_ctx.leveldimy;
 
-        for (let x = 0; x < layer0.tilearray[row].length; x++) {
-
-            let framename = '"tile' + row + "_" + x + '"';
-
+            let framename = '"tile' + total_rows + "_" + col + '"';
             animations[row].push(framename);
-            let frame = layer0.tilearray[row][x];
+            let frame = curlayer.tilearray[row].as.textures[col];
             text += framename + ": { \n";
             text += '\t"frame": {';
-            text += '"x": '+ frame.tspx[0]+ ', "y": '+ frame.tspx[1]+ ', "w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' },\n';
+            text += '"x": '+ x + ', "y": '+ y+ ', "w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' },\n';
             text += '\t"rotated": false,\n';
             text += '\t"trimmed": true,\n';
             text += '\t"spriteSourceSize": {';
@@ -64,10 +60,14 @@ export function generate_sprite_file() {
             text += '\t"sourceSize": {';
             text += '"w": '+ g_ctx.leveldimx+ ', "h": '+ g_ctx.leveldimy+ ' }\n';
             text += '\t}';
-
-            text += (x === layer0.tilearray[row].length - 1)?  '\n':',\n'
+            text += ',\n'
         }
+        total_rows++;
     }
+    // remove the trailing comma
+    text = text.slice(0,-2);
+    text += '\n';
+
     text += '},\n';
     text += '"animations": {\n';
 
@@ -92,15 +92,13 @@ export function generate_sprite_file() {
 
     text += '},\n';
     text += '"meta": {\n';
-    text += '\t"image": "'+ g_ctx.tilesetpath+'",\n'
+    text += '\t"image": "'+ pngfilename+'",\n'
     text += '\t"format": "RGBA8888",\n';
     text += '\t"scale": "1"\n';
     text += '}\n';
     text += '}\n';
 
-    //console.log(text);
-    let filename = g_ctx.tilesetpath.split('/').slice(-1)[0];
-    filename = filename.split('.')[0];
-    console.log("spritefile: saving to file ",filename);
-    UTIL.download(text, filename+".json", "text/plain");
+    console.log("spritefile: saving to file ",jsonfilename);
+    UTIL.download(text, jsonfilename, "text/plain");
+    return total_rows;
 }
