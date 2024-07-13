@@ -86,7 +86,9 @@ function sprite_from_px(x, y) {
     let texture = new PIXI.Texture({source : bt,
         frame: crop,
 });
-    return new PIXI.Sprite(texture);
+
+    let spr =  new PIXI.Sprite(texture);
+    return spr;
 }
 
 // struct to store positions when using a mouse to click and drag a rectangle 
@@ -401,7 +403,7 @@ function downloadpng(filename) {
 window.saveSpriteContainerAsImage = () => {
     fillSpriteContainer();
 
-    var suffix = "sprited";
+    var suffix       = document.getElementById("spritesuffix").value;
     var  pngfilename = suffix+".png";
     downloadpng(pngfilename);
 
@@ -490,11 +492,6 @@ window.addEventListener(
         if (event.code == "KeyD"){
             g_ctx.dkey = true;
             g_ctx.g_layers.map((l) => l.container.removeChild(l.mouseshadow) );
-        }
-
-        if (event.code == 'KeyS'){
-            SPRITEFILE.generate_sprite_file2();
-            //SPRITEFILE.generate_sprite_file();
         }
         else if (event.code == 'Escape'){
             g_ctx.selected_tiles = [];
@@ -738,7 +735,6 @@ function onLevelMouseover(e) {
             shadowsprite2.alpha = .5;
             this.mouseshadow.addChild(shadowsprite);
         } else {
-            // TODO! adjust for fudge
             for (let i = 0; i < g_ctx.selected_tiles.length; i++) {
                 let tile = g_ctx.selected_tiles[i];
                 console.log("TILE", tile);
@@ -1121,9 +1117,9 @@ function resetTileGridParams() {
      // size of g_ctx.tileset in tiles
      let tileandpad = g_ctx.tiledimx + g_ctx.tilepadding;
      let numtilesandpadw = Math.floor(g_ctx.tilesetpxw / tileandpad);
-     g_ctx.tilesettilew = numtilesandpadw + Math.floor((g_ctx.tilesetpxw - (numtilesandpadw * tileandpad))/g_ctx.tiledimx);
+     g_ctx.tilesettilew = numtilesandpadw + Math.ceil((g_ctx.tilesetpxw - (numtilesandpadw * tileandpad))/g_ctx.tiledimx);
      let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
-     g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad))/g_ctx.tiledimy);
+     g_ctx.tilesettileh = numtilesandpadh + Math.ceil((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad))/g_ctx.tiledimy);
      console.log("Number of x tiles ",g_ctx.tilesettilew," y tiles ",g_ctx.tilesettileh);
 
 }
