@@ -1,0 +1,77 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile0_1": { 
+	"frame": {"x": 17, "y": 0, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile0_2": { 
+	"frame": {"x": 34, "y": 0, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile1_0": { 
+	"frame": {"x": 0, "y": 24, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile1_1": { 
+	"frame": {"x": 17, "y": 24, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile1_2": { 
+	"frame": {"x": 34, "y": 24, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile2_0": { 
+	"frame": {"x": 0, "y": 48, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile2_1": { 
+	"frame": {"x": 17, "y": 48, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	},
+"tile2_2": { 
+	"frame": {"x": 34, "y": 48, "w": 17, "h": 24 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 17, "h": 24 },
+	"sourceSize": {"w": 17, "h": 24 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2"],
+"row1" : ["tile1_0","tile1_1","tile1_2"],
+"row2" : ["tile2_0","tile2_1","tile2_2"]
+},
+"meta": {
+	"image": "ff6-cyan.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

@@ -33,6 +33,8 @@ class Being {
         this.x = x; 
         this.y = y; 
         this.steps = 100;
+        this.pausetime = Math.floor(Math.random() * 5);;
+        this.pausecountdown = this.pausetime;
 
         this.direction = 'DOWN'; 
         this.curanim = this.sprites['DOWN'];
@@ -43,19 +45,36 @@ class Being {
         app.stage.addChild(this.curanim);
     }
 
+    timeToMove(){
+        let ret = this.pausecountdown--;
+        if(ret <= 0){
+            this.pausecountdown = this.pausetime;
+            return true;
+        }
+        return false;
+    }
+
     tick(){
         if (this.steps && this.curanim.x < 624 && this.curanim.x > -1 && this.curanim.y < 448 && this.curanim.y > -1) {
             if (this.direction == 'RIGHT') {
-                this.curanim.x = this.curanim.x + 1;
+                if (this.timeToMove()) {
+                    this.curanim.x = this.curanim.x + 1;
+                }
             }
             else if (this.direction == 'LEFT') {
-                this.curanim.x = this.curanim.x - 1;
+                if (this.timeToMove()) {
+                    this.curanim.x = this.curanim.x - 1;
+                }
             }
             else if (this.direction == 'UP') {
-                this.curanim.y = this.curanim.y - 1;
+                if (this.timeToMove()) {
+                    this.curanim.y = this.curanim.y - 1;
+                }
             }
             else if (this.direction == 'DOWN') {
-                this.curanim.y = this.curanim.y + 1;
+                if (this.timeToMove()) {
+                    this.curanim.y = this.curanim.y + 1;
+                }
             }
             this.steps -= 1;
         }else{
@@ -108,7 +127,8 @@ const spritesheets = [
     'spritesheets/ps1-alice0.json',
     'spritesheets/ys0.json',
     'spritesheets/ys1.json',
-    'spritesheets/ff6-celes0.json'
+    'spritesheets/ff6-celes0.json',
+    'spritesheets/ff6-cyan0.json'
 ]
 
 let beings = []
@@ -134,4 +154,5 @@ ticker.add((deltaTime) => {
   }
 });
 
+ticker.speed = .2;
 ticker.start();
