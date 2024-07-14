@@ -105,7 +105,10 @@ const spritesheets = [
     'spritesheets/ps1-others0.json',
     'spritesheets/ps1-others1.json',
     'spritesheets/ps1-others2.json',
-    'spritesheets/ps1-alice0.json'
+    'spritesheets/ps1-alice0.json',
+    'spritesheets/ys0.json',
+    'spritesheets/ys1.json',
+    'spritesheets/ff6-celes0.json'
 ]
 
 let beings = []
