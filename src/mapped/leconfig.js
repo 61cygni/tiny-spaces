@@ -9,8 +9,8 @@ export const DEFAULTTILESETPATH = "./tilesets/gentle.png";
 export const tilesetpadding = 0; 
 
 
-export const DEFAULTILEDIMX = 32; // px
-export const DEFAULTILEDIMY = 32; // px
+export const DEFAULTILEDIMX = 16; // px
+export const DEFAULTILEDIMY = 16; // px
 
 export const levelwidth  = 2048; // px
 export const levelheight = 1536; // px

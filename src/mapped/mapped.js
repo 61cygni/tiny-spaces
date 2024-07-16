@@ -43,10 +43,9 @@ import * as CONFIG from './leconfig.js'
 import * as UNDO from './undo.js'
 import * as MAPFILE from './mapfile.js'
 import * as UI from './lehtmlui.js'
-// import { EventSystem } from '@pixi/events';
 
 g_ctx.debug_flag  = true;
-g_ctx.debug_flag2 = false; // really verbose output
+g_ctx.debug_flag2 = true; // really verbose output
 
 function tileset_index_from_coords(x, y) {
     let retme = x + (y*g_ctx.tilesettilew);
@@ -69,7 +68,7 @@ function tileset_index_from_px(x, y) {
 }
 function level_index_from_px(x, y) {
     let coord_x = Math.floor(x / g_ctx.tiledimx);
-    let coord_y = Math.floor(y / g_ctx.tiledimx);
+    let coord_y = Math.floor(y / g_ctx.tiledimy);
     return level_index_from_coords(coord_x, coord_y); 
 }
 
@@ -212,7 +211,7 @@ class LayerContext {
                 let spr = this.sprites[i];
                 this.filtergraphics.rect(spr.x, spr.y, g_ctx.tiledimx, g_ctx.tiledimx);
             }
-            this.filtergraphics.fill(0xff0000, 0.3);
+            this.filtergraphics.fill({color: 0xff0000, alpha: 0.3});
             this.container.addChild(this.filtergraphics);
         }else{
             this.filtergraphics.clear();
@@ -530,9 +529,12 @@ window.onTab = (evt, tabName) => {
 
 // fill base level with currentIndex tile 
 window.fill0 = () => {
+    if(g_ctx.debug_flag){
+        console.log("Filling layer 0 with index: "+g_ctx.tile_index);
+    }
     UNDO.undo_mark_task_start(g_ctx.g_layers[0]);
     for(let i = 0; i < CONFIG.levelwidth / g_ctx.tiledimx; i++){
-        for(let j = 0; j < CONFIG.levelheight / g_ctx.tiledimx; j++){
+        for(let j = 0; j < CONFIG.levelheight / g_ctx.tiledimy; j++){
             let ti = g_ctx.g_layers[0].addTileLevelCoords(i,j,g_ctx.tiledimx, g_ctx.tile_index);
             UNDO.undo_add_index_to_task(ti);
         }
@@ -570,8 +572,6 @@ window.addEventListener(
         }
         else if (event.code == 'KeyM'){
             g_ctx.g_layers.map((l) => l.drawFilter () );
-        }else if (event.code == 'KeyP'){
-            setGridSize((g_ctx.tiledimx == 16)?32:16);
         }
         else if (event.code == 'KeyG'){
             g_ctx.g_layers.map((l) => redrawGrid (l, false) );
