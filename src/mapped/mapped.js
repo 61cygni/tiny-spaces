@@ -13,7 +13,7 @@
 // Done:
 //  -- fix level load bug where texture doesn't fit (load, mage, serene and then gentle)
 //  -- write maps with sprites
-//  - <esc> clear selected_tiles
+//  - <esc> clear selected_tile
 //  - Delete tiles
 //  - move magic numbers to context / initialization (zIndex, pane size etc.)
 //  - todo fudge factor on g_ctx.tileset 
@@ -53,9 +53,7 @@ function tileset_index_from_coords(x, y) {
     return retme; 
 }
 function level_index_from_coords(x, y) {
-    // place 16px tiles in separate index space
-    let offset = (g_ctx.tiledimx == 16)? CONFIG.MAXTILEINDEX : 0;
-    let retme = x + (y*CONFIG.leveltilewidth) + offset; 
+    let retme = x + (y*CONFIG.leveltilewidth);
     return retme;
 }
 function tileset_index_from_px(x, y) {
@@ -466,7 +464,6 @@ function loadMapFromModuleFinish(mod) {
 function loadMapFromModule(mod) {
     g_ctx.tilesetpath = mod.tilesetpath;
     initTilesSync(loadMapFromModuleFinish.bind(null, mod));
-    initTiles();
 }
 
 function downloadpng(filename) {
@@ -574,9 +571,7 @@ window.addEventListener(
             g_ctx.g_layers.map((l) => l.drawFilter () );
         }
         else if (event.code == 'KeyG'){
-            g_ctx.g_layers.map((l) => redrawGrid (l, false) );
-            redrawGrid(g_ctx.tileset, false); 
-            redrawGrid(g_ctx.composite, false); 
+            redrawGridAll(false);
         }
         else if (event.ctrlKey && event.code === 'KeyZ'){
             let undome = UNDO.undo_pop();
@@ -657,9 +652,9 @@ function onTilesetDragEnd(e)
     }
 
     let starttilex = Math.floor(g_ctx.tileset.dragctx.startx / g_ctx.tiledimx);
-    let starttiley = Math.floor(g_ctx.tileset.dragctx.starty / g_ctx.tiledimx);
+    let starttiley = Math.floor(g_ctx.tileset.dragctx.starty / g_ctx.tiledimy);
     let endtilex = Math.floor(g_ctx.tileset.dragctx.endx / g_ctx.tiledimx);
-    let endtiley = Math.floor(g_ctx.tileset.dragctx.endy / g_ctx.tiledimx);
+    let endtiley = Math.floor(g_ctx.tileset.dragctx.endy / g_ctx.tiledimy);
 
     if (g_ctx.debug_flag) {
         console.log("sx sy ex ey ", starttilex, ",", starttiley, ",", endtilex, ",", endtiley);
@@ -763,6 +758,13 @@ function redrawGrid(pane, redraw = false) {
 }
 
 
+function redrawGridAll(redraw = false) {
+    g_ctx.g_layers.map((l) => redrawGrid(l, redraw));
+    redrawGrid(g_ctx.tileset, redraw);
+    redrawGrid(g_ctx.composite, redraw);
+}
+
+
 // --
 // Variable placement logic Level1
 // --
@@ -836,9 +838,9 @@ function onLevelMouseover(e) {
                 const shadowsprite  = sprite_from_px(pxloc[0] + g_ctx.tileset.fudgex, pxloc[1] + g_ctx.tileset.fudgey);
                 const shadowsprite2 = sprite_from_px(pxloc[0] + g_ctx.tileset.fudgex, pxloc[1] + g_ctx.tileset.fudgey);
                 shadowsprite.x = tile[0] * g_ctx.tiledimx;
-                shadowsprite.y = tile[1] * g_ctx.tiledimx;
+                shadowsprite.y = tile[1] * g_ctx.tiledimy;
                 shadowsprite2.x = tile[0] * g_ctx.tiledimx;
-                shadowsprite2.y = tile[1] * g_ctx.tiledimx;
+                shadowsprite2.y = tile[1] * g_ctx.tiledimy;
                 shadowsprite.alpha = .5;
                 shadowsprite2.alpha = .5;
                 this.mouseshadow.addChild(shadowsprite);
@@ -924,7 +926,7 @@ function levelPlaceNoVariable(layer, e) {
         let undolist = [];
         UNDO.undo_mark_task_start(layer);
         for (let index of g_ctx.selected_tiles) {
-            let ti = layer.addTileLevelPx(xorig + index[0] * g_ctx.tiledimx, yorig + index[1] * g_ctx.tiledimx, index[2]);
+            let ti = layer.addTileLevelPx(xorig + index[0] * g_ctx.tiledimx, yorig + index[1] * g_ctx.tiledimy, index[2]);
             UNDO.undo_add_index_to_task(ti);
         }
         UNDO.undo_mark_task_end();
@@ -977,11 +979,11 @@ function onLevelDrag(layer, e)
     layer.dragctx.square.endFill();
 
     const vwidth  = Math.floor((layer.dragctx.endx - layer.dragctx.startx)/g_ctx.tiledimx);
-    const vheight = Math.floor((layer.dragctx.endy - layer.dragctx.starty)/g_ctx.tiledimx);
+    const vheight = Math.floor((layer.dragctx.endy - layer.dragctx.starty)/g_ctx.tiledimy);
     layer.dragctx.tooltip.x = e.global.x + 16;
     layer.dragctx.tooltip.y = e.global.y - 4;
     layer.dragctx.tooltip.text = "["+vwidth+","+vheight+"]\n"+
-                                 "("+Math.floor(e.global.x/g_ctx.tiledimx)+","+Math.floor(e.global.y/g_ctx.tiledimx)+")";
+                                 "("+Math.floor(e.global.x/g_ctx.tiledimx)+","+Math.floor(e.global.y/g_ctx.tiledimy)+")";
     //layer.dragctx.tooltip.text = "("+e.global.x+","+e.global.y+")";
 }
 
@@ -1019,9 +1021,9 @@ function onLevelDragEnd(layer, e)
     layer.app.stage.removeChild(layer.dragctx.tooltip);
 
     let starttilex = Math.floor(layer.dragctx.startx / g_ctx.tiledimx);
-    let starttiley = Math.floor(layer.dragctx.starty / g_ctx.tiledimx);
+    let starttiley = Math.floor(layer.dragctx.starty / g_ctx.tiledimy);
     let endtilex = Math.floor(layer.dragctx.endx / g_ctx.tiledimx);
-    let endtiley = Math.floor(layer.dragctx.endy / g_ctx.tiledimx);
+    let endtiley = Math.floor(layer.dragctx.endy / g_ctx.tiledimy);
 
     if (g_ctx.debug_flag) {
         console.log("sx ", starttilex, " ex ", endtilex);
@@ -1043,7 +1045,7 @@ function onLevelDragEnd(layer, e)
         for (let i = starttilex; i <= endtilex; i++) {
             for (let j = starttiley; j <= endtiley; j++) {
                 let squareindex = (j * g_ctx.tilesettilew) + i;
-                let ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, g_ctx.tile_index);
+                let ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, g_ctx.tile_index);
                 UNDO.undo_add_index_to_task(ti);
             }
         }
@@ -1075,30 +1077,30 @@ function onLevelDragEnd(layer, e)
                 let squareindex = (j * g_ctx.tilesettilew) + i;
                 if (j === starttiley) { // first row 
                     if (i === starttilex) { // top left corner
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[0][0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[0][0][2]);
                     }
                     else if (i == endtilex) { // top right corner
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[column - 1][0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[column - 1][0][2]);
                     } else { // top middle
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[1][0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[1][0][2]);
                     }
                 } else if (j === endtiley) { // last row
                     if (i === starttilex) { // bottom left corner
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[0][row][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[0][row][2]);
                     }
                     else if (i == endtilex) { // bottom right corner
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[column - 1][row][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[column - 1][row][2]);
                     } else { // bottom middle
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[1][row][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[1][row][2]);
                     }
                 } else { // middle row
                     if (i === starttilex) { // middle left 
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[0][(row > 0)? 1 : 0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[0][(row > 0)? 1 : 0][2]);
                     }
                     else if (i === endtilex) { // middle end 
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[column - 1][(row > 0)? 1 : 0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[column - 1][(row > 0)? 1 : 0][2]);
                     } else { // middle middle
-                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimx, selected_grid[1][(row > 0)? 1 : 0][2]);
+                        ti = layer.addTileLevelPx(i * g_ctx.tiledimx, j * g_ctx.tiledimy, selected_grid[1][(row > 0)? 1 : 0][2]);
                     }
                 }
                 UNDO.undo_add_index_to_task(ti);
@@ -1181,36 +1183,19 @@ function setGridSize(size) {
         g_ctx.tilesettileh = (g_ctx.tilesettileh / (size / g_ctx.tiledimy));
         g_ctx.tiledimx = 16;
         g_ctx.tiledimy = 16;
-        g_ctx.curtiles = g_ctx.tiles16;
-        console.log("set to curTiles16");
     } else if (size == 32) {
         if (g_ctx.tiledimx == 32) { return; }
         g_ctx.tilesettilew = (g_ctx.tilesettilew/ (size / g_ctx.tiledimx));
         g_ctx.tilesettileh = (g_ctx.tilesettileh / (size / g_ctx.tiledimy));
         g_ctx.tiledimx = 32;
         g_ctx.tiledimy = 32;
-        g_ctx.curtiles = g_ctx.tiles32;
-        console.log("set to curTiles32");
     } else {
         console.debug("Invalid TileDim!");
         return;
     }
-    g_ctx.g_layers.map((l) => redrawGrid (l, true) );
-    redrawGrid(g_ctx.tileset, true);
-    redrawGrid(g_ctx.composite, true);
-}
-
-function initRadios() {
-    var rad = document.myForm.radioTiledim;
-    var prev = null;
-    for (var i = 0; i < rad.length; i++) {
-        rad[i].addEventListener('change', function () {
-            if (this !== prev) {
-                prev = this;
-            }
-            setGridSize(this.value);
-        });
-    }
+    g_ctx.g_layers.map((l) => redrawgrid (l, true) );
+    redrawgrid(g_ctx.tileset, true);
+    redrawgrid(g_ctx.composite, true);
 }
 
 // --
@@ -1240,7 +1225,6 @@ async function initTilesSync(callme) {
     let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
     g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
     console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
-    g_ctx.MAXTILEINDEX = g_ctx.tilesettilew * g_ctx.tilesettileh;
 
     callme();
 }
@@ -1248,6 +1232,20 @@ async function initTilesSync(callme) {
 // --
 // Load default Tileset
 // --
+
+function resetTileGridParams() {
+    // when grid dimensions change, recalculate width / height by tiles 
+
+    // size of g_ctx.tileset in tiles
+    let tileandpad = g_ctx.tiledimx + g_ctx.tilepadding;
+    let numtilesandpadw = Math.floor(g_ctx.tilesetpxw / tileandpad);
+    g_ctx.tilesettilew = numtilesandpadw + Math.ceil((g_ctx.tilesetpxw - (numtilesandpadw * tileandpad)) / g_ctx.tiledimx);
+    let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
+    g_ctx.tilesettileh = numtilesandpadh + Math.ceil((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimy);
+    if (g_ctx.debug_flag) {
+        console.log("\tnum tiles x ", g_ctx.tilesettilew, " y ", g_ctx.tilesettileh);
+    }
+}
 
 const initTilesConfig = async (path = CONFIG.DEFAULTTILESETPATH) => {
 
@@ -1271,47 +1269,43 @@ const initTilesConfig = async (path = CONFIG.DEFAULTTILESETPATH) => {
     let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
     g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
 
-    if (g_ctx.debug_flag) {
-        console.log("\tnum tiles x ", g_ctx.tilesettilew, " y ", g_ctx.tilesettileh);
-    }
+    resetTileGridParams();
 
-    g_ctx.MAXTILEINDEX = g_ctx.tilesettilew * g_ctx.tilesettileh;
 }
 
-async function initTiles() {
-    // load g_ctx.tileset into a global array of textures for blitting onto levels
-    const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
+function initDimXY() {
+    var tiledimx = document.getElementById("gettiledimx");
+    var tiledimy = document.getElementById("gettiledimy");
 
-    for (let x = 0; x < CONFIG.tilesettilewidth; x++) {
-        for (let y = 0; y < CONFIG.tilesettileheight; y++) {
-            g_ctx.tiles32[x + y * CONFIG.tilesettilewidth] = new PIXI.Texture(
-                texture,
-                new PIXI.Rectangle(x * 32, y * 32, 32, 32),
-            );
-        }
-    }
-    for (let x = 0; x < CONFIG.tilesettilewidth * 2; x++) {
-        for (let y = 0; y < CONFIG.tilesettileheight * 2; y++) {
-            g_ctx.tiles16[x + y * CONFIG.tilesettilewidth * 2] = new PIXI.Texture(
-                texture,
-                new PIXI.Rectangle(x * 16, y * 16, 16, 16),
-            );
-        }
-    }
+    console.log("initDIMXY "+tiledimx.value+" : "+tiledimy.value);
 
-    g_ctx.curtiles = g_ctx.tiles32;
+    g_ctx.tiledimx    = Number(tiledimx.value);
+    g_ctx.tiledimy    = Number(tiledimy.value);
+
+    tiledimx.addEventListener('change', function () {
+        console.log("dimx change "+this.value);
+        g_ctx.tiledimx = Number(this.value);
+        resetTileGridParams();
+        redrawGridAll(true);
+    });
+    tiledimy.addEventListener('change', function () {
+        console.log("dimy change "+ this.value);
+        g_ctx.tiledimy = Number(this.value);
+        resetTileGridParams();
+        redrawGridAll(true);
+    });
 }
 
 async function init() {
 
     UI.initMainHTMLWindow();
 
+    initDimXY(); // must be called before loading tileset
+
     // We need to load the Tileset to know how to size things. So we block until done. 
     await initTilesConfig(); 
 
     initPixiApps();
-    initRadios();
-    initTiles();
 
     UI.initLevelLoader(loadMapFromModule);
     UI.initCompositePNGLoader();
