@@ -17,3 +17,16 @@ export function download(data, filename, type) {
         }, 0); 
     }
 }
+
+export function doimport (str) {
+    if (globalThis.URL.createObjectURL) {
+      const blob = new Blob([str], { type: 'text/javascript' })
+      const url = URL.createObjectURL(blob)
+      const module = import(url)
+      URL.revokeObjectURL(url) // GC objectURLs
+      return module
+    }
+    
+    const url = "data:text/javascript;base64," + btoa(moduleData)
+    return import(url)
+  }

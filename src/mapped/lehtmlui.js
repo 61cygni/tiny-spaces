@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
-import { g_ctx }  from './lecontext.js' // global context
-import * as CONFIG from './leconfig.js' 
+import { g_ctx }  from '../shared/lecontext.js' // global context
+import * as CONFIG from '../shared/leconfig.js' 
+import * as UTIL from   '../shared/eutils.js' 
 
 // --
 //  Set sizes and limits for HTML in main UI
@@ -96,18 +97,6 @@ export function initTilesetLoader(callme) {
 // initailized handler to load a level from a file 
 // --
 
-function doimport (str) {
-    if (globalThis.URL.createObjectURL) {
-      const blob = new Blob([str], { type: 'text/javascript' })
-      const url = URL.createObjectURL(blob)
-      const module = import(url)
-      URL.revokeObjectURL(url) // GC objectURLs
-      return module
-    }
-    
-    const url = "data:text/javascript;base64," + btoa(moduleData)
-    return import(url)
-  }
 
 export function initLevelLoader(callme) {
     let filecontent = "";
@@ -126,7 +115,7 @@ export function initLevelLoader(callme) {
             }
 
             filecontent = evt.target.result;
-            doimport(filecontent).then(mod => callme(mod));
+            UTIL.doimport(filecontent).then(mod => callme(mod));
         };
 
         reader.readAsText(evt.target.files[0]);

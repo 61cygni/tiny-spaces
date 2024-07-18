@@ -38,8 +38,8 @@
 // --
 
 import * as PIXI from 'pixi.js'
-import { g_ctx }  from './lecontext.js' // global context
-import * as CONFIG from './leconfig.js' 
+import { g_ctx }  from '../shared/lecontext.js' // global context
+import * as CONFIG from '../shared/leconfig.js' 
 import * as UNDO from './undo.js'
 import * as MAPFILE from './mapfile.js'
 import * as UI from './lehtmlui.js'
@@ -187,7 +187,7 @@ class LayerContext {
         for (let x = 0; x < tiles.length; x++) {
             for (let y = 0; y < tiles[0].length; y++) {
                 if (tiles[x][y] != -1) {
-                    this.addTileLevelCoords(x, y, mod.tiledim, tiles[x][y]);
+                    this.addTileLevelCoords(x, y, mod.tiledimx, tiles[x][y]);
                 }
             }
         }
@@ -219,6 +219,7 @@ class LayerContext {
         this.filtertoggle = ! this.filtertoggle;
     }
 
+    // XXX FIXME should be dimx, dimy
     // add tile of "index" to Level at location x,y
     addTileLevelCoords(x, y, dim, index) {
         return this.addTileLevelPx(x * dim, y * dim, index);
@@ -227,6 +228,7 @@ class LayerContext {
     // add tile of tileset "index" to Level at location x,y
     addTileLevelPx(x, y, index) {
 
+        console.log("atlp "+x);
         if (x > CONFIG.levelwidth || y > CONFIG.levelheight){
             console.log("tile placed outside of level boundary, ignoring",x,y)
             return -1;
@@ -262,6 +264,8 @@ class LayerContext {
         // snap to grid
         const dx = g_ctx.tiledimx;
         const dy = g_ctx.tiledimy;
+
+
         ctile.x  = Math.floor(xPx / dx) * dx; 
         ctile2.x = Math.floor(xPx / dx) * dx; 
         ctile.y  = Math.floor(yPx / dy) * dy;
@@ -463,6 +467,9 @@ function loadMapFromModuleFinish(mod) {
 
 function loadMapFromModule(mod) {
     g_ctx.tilesetpath = mod.tilesetpath;
+    g_ctx.tiledimx = mod.tiledimx;
+    g_ctx.tiledimy = mod.tiledimy;
+
     initTilesSync(loadMapFromModuleFinish.bind(null, mod));
 }
 
@@ -1176,27 +1183,6 @@ function initPixiApps() {
     g_ctx.tileset = new TilesetContext(g_ctx.tileset_app);
 }
 
-function setGridSize(size) {
-    if (size == 16) {
-        if (g_ctx.tiledimx == 16) { return; }
-        g_ctx.tilesettilew = (g_ctx.tilesettilew/ (size / g_ctx.tiledimx));
-        g_ctx.tilesettileh = (g_ctx.tilesettileh / (size / g_ctx.tiledimy));
-        g_ctx.tiledimx = 16;
-        g_ctx.tiledimy = 16;
-    } else if (size == 32) {
-        if (g_ctx.tiledimx == 32) { return; }
-        g_ctx.tilesettilew = (g_ctx.tilesettilew/ (size / g_ctx.tiledimx));
-        g_ctx.tilesettileh = (g_ctx.tilesettileh / (size / g_ctx.tiledimy));
-        g_ctx.tiledimx = 32;
-        g_ctx.tiledimy = 32;
-    } else {
-        console.debug("Invalid TileDim!");
-        return;
-    }
-    g_ctx.g_layers.map((l) => redrawgrid (l, true) );
-    redrawgrid(g_ctx.tileset, true);
-    redrawgrid(g_ctx.composite, true);
-}
 
 // --
 // Load in default tileset and use to set properties
@@ -1208,7 +1194,7 @@ async function initTilesSync(callme) {
     const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
 
     if (texture.valid) {
-        console.log("BaseTexture already valid");
+        console.log("Texture already valid");
         callme();
         return;
     }

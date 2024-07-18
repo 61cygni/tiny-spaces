@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/61cygni/tiny-spaces#readme",
   "dependencies": {
+    "@pixi/sound": "^6.0.0",
     "@pixi/ticker": "^7.4.2",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-react": "^4.3.1",
