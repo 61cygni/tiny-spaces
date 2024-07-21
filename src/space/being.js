@@ -52,7 +52,6 @@ export class Being {
     goDir(dir) {
         if(this.direction != dir){
             this.direction = dir;
-            this.moving |= Dir[dir];
             this.app.stage.removeChild(this.curanim)
             this.curanim.stop()
             this.x = this.curanim.x
@@ -64,11 +63,11 @@ export class Being {
             this.curanim.play();
             this.app.stage.addChild(this.curanim);
         } 
-
         else if(!this.curanim.playing){
             this.curanim.play();
         }
 
+        this.moving |= Dir[dir];
 
     }
 
@@ -104,7 +103,7 @@ export class Being {
         return ret;
     }
 
-    tick(){
+    tick(delta){
         if (this.moving && this.curanim.x < 624 && this.curanim.x > -1 && this.curanim.y < 448 && this.curanim.y > -1) {
             if (this.direction == 'RIGHT') {
                 if (this.timeToMove()) {

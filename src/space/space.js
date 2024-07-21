@@ -2,17 +2,19 @@ import { Ticker } from '@pixi/ticker';
 import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
 
-import * as LEVEL from './level.js'
-import * as BEING from './being.js'
+import * as LEVEL  from './level.js'
+import * as BEING  from './being.js'
+import * as DIALOG from './dialog.js'
 
 
 import { g_ctx }  from  '../shared/lecontext.js' // global context
 import * as CONFIG from '../shared/leconfig.js' 
-import * as UTIL from   '../shared/eutils.js' 
 
 let mtoggle = false;
 
 let level = null;
+
+let dstack = [];
 
 window.addEventListener(
     "keydown", (event) => {
@@ -39,7 +41,13 @@ window.addEventListener(
             }else{
                 level.sound.stop('ps1-town');
             }
-        } 
+        } else if (event.code == 'Space'){
+            if(dstack[0].finished){
+                dstack[0].leave();
+            } else {
+                dstack[0].nextpage();
+            }
+        }
     }
 );
 
@@ -106,10 +114,24 @@ for(let i = 0; i < spritesheets.length; i++){
 function init(inlevel) {
     level = inlevel;
 
+
     for (let i = 0; i < beings.length; i++) {
         beings[i].level = level;
         beings[i].arrive();
     }
+
+    let str = "Let's see how this works. I'm going to write"+
+               "a bunch of stuff. And see how wordwraaps work."+
+               "Here is one \n\n\n whopeee!"+
+               "And more and more and more"+
+               "And yet even more, hopefully we'll"+
+               "get some pagination :) whoooo"+
+               "Man this actually takes a long time to get right"+
+               "Maybe my bounds check isn't working. Yikes!!!";
+
+    let d = new DIALOG.Dialog(level, 42, 4, str);
+    dstack.push(d);
+    d.arrive();
 
     // Add a ticker callback to move the sprite back and forth
     let elapsed = 0.0;
@@ -119,9 +141,12 @@ function init(inlevel) {
     ticker.add((deltaTime) => {
         elapsed += ticker.deltaTime;
         for (let i = 0; i < beings.length; i++) {
-            beings[i].tick();
+            beings[i].tick(ticker.deltaTime);
         }
+        d.tick(ticker.deltaTime);
+
     });
+
 
     ticker.speed = .2;
     ticker.start();

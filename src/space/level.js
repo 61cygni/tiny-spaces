@@ -117,15 +117,7 @@ export class LevelContext {
 } // class LevelContext
 
 function loadMapFromModuleFinish(mod, app, callme) {
-
     let level = new LevelContext(app, mod);
-
-    let rrect = new PIXI.Graphics();
-    rrect.roundRect(16, 8, 128, 64, 10);
-    rrect.setStrokeStyle(2, 0xffd900, 1);
-    rrect.fill(0x0) 
-        .stroke({width:2, color:'white'});
-    app.stage.addChild(rrect);
     callme(level);
 }
 
