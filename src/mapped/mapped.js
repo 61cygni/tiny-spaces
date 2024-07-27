@@ -58,6 +58,7 @@ function level_index_from_coords(x, y) {
 }
 function tileset_index_from_px(x, y) {
     let coord_x = Math.floor(x / (g_ctx.tiledimx + CONFIG.tilesetpadding));
+
     let coord_y = Math.floor(y / (g_ctx.tiledimx+ CONFIG.tilesetpadding));
 
     console.log("tileset_index_from_px ",x, y);
@@ -396,6 +397,8 @@ class CompositeContext {
         this.fudgex = 0; // offset from 0,0
         this.fudgey = 0;
 
+        this.dragctx = new DragState();
+
         this.mouseshadow    = new PIXI.Container(); 
         this.mouseshadow.zIndex = CONFIG.zIndexMouseShadow; 
         this.lasttileindex  = -1; 
@@ -407,6 +410,10 @@ class CompositeContext {
         this.container.addChild(this.square);
 
         this.square.on('mousedown', onCompositeMousedown.bind(null, this));
+
+        this.square.on('pointerdown', onCompositeDragStart)
+                .on('pointerup', onCompositeDragEnd)
+                .on('pointerupoutside', onCompositeDragEnd);
     }
 
 } // class CompositeContext
@@ -553,6 +560,9 @@ window.addEventListener(
             g_ctx.g_layers.map( (l) => l.container.addChild(l.mouseshadow));
             g_ctx.composite.container.addChild(g_ctx.composite.mouseshadow);
         }
+        else if (event.code == "KeyL"){
+            g_ctx.lkey = false;
+        }
     });
 window.addEventListener(
     "keydown", (event) => {
@@ -561,9 +571,9 @@ window.addEventListener(
             g_ctx.dkey = true;
             g_ctx.g_layers.map((l) => l.container.removeChild(l.mouseshadow) );
             g_ctx.composite.container.removeChild(g_ctx.composite.mouseshadow);
-        }
-
-        if (event.code == 'KeyF'){
+        } else if (event.code == 'KeyL'){
+            g_ctx.lkey = true;
+        }else if (event.code == 'KeyF'){
             window.fill0();
         }
         else if (event.code == 'KeyS'){
@@ -612,6 +622,125 @@ window.addEventListener(
         }
      }
   );
+
+// Composite Layer mouse handlers
+
+function onCompositeDragStart(e)
+{
+    if (g_ctx.debug_flag) {
+        console.log("onCompositeDragStart()");
+    }
+    g_ctx.composite.app.stage.eventMode = 'static';
+    g_ctx.composite.app.stage.addEventListener('pointermove', onCompositeDrag);
+    
+    g_ctx.composite.dragctx.startx = e.data.global.x;
+    g_ctx.composite.dragctx.starty = e.data.global.y;
+    g_ctx.composite.dragctx.endx = e.data.global.x;
+    g_ctx.composite.dragctx.endy = e.data.global.y;
+
+    g_ctx.composite.app.stage.addChild(g_ctx.composite.dragctx.square);
+    // g_ctx.tileset.app.stage.addChild(g_ctx.tileset.dragctx.tooltip);
+
+}
+
+function onCompositeDragEnd(e)
+{
+    if (g_ctx.debug_flag) {
+        console.log("onCompositeDragEnd()");
+    }
+
+    g_ctx.composite.app.stage.eventMode = 'auto';
+    g_ctx.composite.app.stage.removeEventListener('pointermove', onCompositeDrag);
+    g_ctx.composite.app.stage.removeChild(g_ctx.tileset.dragctx.square);
+    g_ctx.composite.app.stage.removeChild(g_ctx.tileset.dragctx.tooltip);
+
+
+    if(g_ctx.composite.dragctx.endx < g_ctx.composite.dragctx.startx){
+        let tmp = g_ctx.composite.dragctx.endx;
+        g_ctx.composite.dragctx.endx = g_ctx.composite.dragctx.startx;
+        g_ctx.composite.dragctx.startx = tmp;
+    }
+    if(g_ctx.composite.dragctx.endy < g_ctx.composite.dragctx.starty){
+        let tmp = g_ctx.composite.dragctx.endy;
+        g_ctx.composite.dragctx.endy = g_ctx.composite.dragctx.starty;
+        g_ctx.composite.dragctx.starty = tmp;
+    }
+
+    let starttilex = Math.floor(g_ctx.composite.dragctx.startx / g_ctx.tiledimx);
+    let starttiley = Math.floor(g_ctx.composite.dragctx.starty / g_ctx.tiledimy);
+    let endtilex = Math.floor(g_ctx.composite.dragctx.endx / g_ctx.tiledimx);
+    let endtiley = Math.floor(g_ctx.composite.dragctx.endy / g_ctx.tiledimy);
+
+    if (g_ctx.debug_flag) {
+        console.log("sx sy ex ey ", starttilex, ",", starttiley, ",", endtilex, ",", endtiley);
+    }
+    // let mouse clicked handle if there isn't a multiple tile square
+    // if(starttilex === endtilex && starttiley === endtiley ){
+    //     return;
+    // }
+
+    let label = prompt("Label: ");
+    console.log("Received label " + label)
+
+    let newsq = new PIXI.Graphics(); 
+
+    newsq.setStrokeStyle(2, 0xffd900, 1);
+    newsq.moveTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.starty);
+    newsq.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.starty);
+    newsq.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.endy);
+    newsq.lineTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.endy);
+    newsq.closePath();
+    newsq.fill({color: 0xFF3300, alpha: 0.3,});
+
+    let pixilabel = new PIXI.Text({
+        text: label, 
+        fontFamily: 'Courier',
+        fontSize: 6,
+        fill: 0xffffff,
+        align: 'center',
+    });
+
+    newsq.label = pixilabel;
+    pixilabel.x = g_ctx.composite.dragctx.startx;
+    pixilabel.y = g_ctx.composite.dragctx.starty;
+
+    g_ctx.composite.app.stage.addChild(newsq);
+    g_ctx.composite.app.stage.addChild(pixilabel);
+
+
+    g_ctx.composite.dragctx.square.clear();
+    // g_ctx.tileset.dragctx.tooltip.clear();
+}
+
+function onCompositeDrag(e)
+{
+    if (g_ctx.debug_flag) {
+        console.log("onCompositeDrag()");
+    }
+    g_ctx.composite.dragctx.endx = e.global.x;
+    g_ctx.composite.dragctx.endy = e.global.y;
+    
+    g_ctx.composite.dragctx.square.clear();
+    g_ctx.composite.dragctx.square.setStrokeStyle(2, 0xffd900, 1);
+    g_ctx.composite.dragctx.square.moveTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.starty);
+    g_ctx.composite.dragctx.square.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.starty);
+    g_ctx.composite.dragctx.square.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.endy);
+    g_ctx.composite.dragctx.square.lineTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.endy);
+    g_ctx.composite.dragctx.square.closePath();
+    g_ctx.composite.dragctx.square.fill({color: 0xFF3300, alpha: 0.3,});
+
+    // g_ctx.tileset.dragctx.tooltip.clear();
+    // g_ctx.tileset.dragctx.tooltip.beginFill(0xFF3300, 0.3);
+    // g_ctx.tileset.dragctx.tooltip.lineStyle(2, 0xffd900, 1);
+    // g_ctx.tileset.dragctx.tooltip.drawRect(e.global.x, e.global.y, 20,8);
+    // g_ctx.tileset.dragctx.tooltip.endFill();
+}
+
+
+
+// --
+// Tileset mouse handlers
+// --
 
 // Listen to pointermove on stage once handle is pressed.
 

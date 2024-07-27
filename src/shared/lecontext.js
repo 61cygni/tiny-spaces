@@ -16,9 +16,10 @@ var ContextCreate = (function(){
         this.tiledimy = CONFIG.DEFAULTILEDIMY; // px
         this.dimlog = Math.log2(this.tileDim);  //log2(TileDim)
         this.dkey = false;   // is 'd' key depressed? (for delete)
-        this.tiles32  = [];  // all tiles from tilemap (32x32)
-        this.tiles16  = []; 
-        this.fudgetiles = [];
+        this.lkey = false;   // is 'l' key depressed? (for labels)
+        // this.tiles32  = [];  // all tiles from tilemap (32x32)
+        // this.tiles16  = []; 
+        // this.fudgetiles = [];
         this.g_layers = []; // level layers
         this.tilepadding = 0;
 

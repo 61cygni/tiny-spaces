@@ -1,6 +1,7 @@
 import { Ticker } from '@pixi/ticker';
 import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
+import { Input } from '@pixi/ui';
 
 import * as LEVEL  from './level.js'
 import * as BEING  from './being.js'
@@ -15,6 +16,19 @@ let mtoggle = false;
 let level = null;
 
 let dstack = [];
+
+let input = new Input({
+    bg: new PIXI.Graphics()
+    .roundRect(0, 0, 64, 32, 4)
+    .fill(0xffffff),
+    placeholder: 'Enter text',
+    padding: {
+     top: 11,
+     right: 11,
+     bottom: 11,
+     left: 11
+    } // alternatively you can use [11, 11, 11, 11] or [11, 11] or just 11
+});
 
 window.addEventListener(
     "keydown", (event) => {
@@ -149,6 +163,7 @@ function init(inlevel) {
 
 
     ticker.speed = .2;
+    app.stage.addChild(input);
     ticker.start();
 }
 
