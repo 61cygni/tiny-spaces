@@ -81,6 +81,7 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
     text += '],];\n';
 
 
+    // animated sprites list
     text += ''+
     'export const animatedsprites = [\n';
 
@@ -92,6 +93,21 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
     }
 
     text += '];\n\n';
+
+
+    // Map labels 
+    text += ''+
+    'export const maplabels = [\n';
+
+    let map_labels = g_ctx.composite.labels;
+    for(let x = 0 ; x < map_labels.length; x++){
+        let alabel = map_labels[x];
+        text += '{ x: '+alabel.sx+", y: "+ alabel.sy+ ", w: "+ alabel.ex+ ", h: "+ alabel.ey ; 
+        text += ', label: "'+alabel.label+'" },\n';
+    }
+
+    text += '];\n\n';
+
     text += 'export const mapwidth = bgtiles[0][0].length;\n';
     text += 'export const mapheight = bgtiles[0].length;\n';
 

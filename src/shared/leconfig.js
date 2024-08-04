@@ -35,6 +35,7 @@ export const htmlCompositePaneH = 600;
 // --  zIndex
 
 // 1-10 taken by layers
+export const zIndexLabel            =  15;
 export const zIndexFilter           =  20;
 export const zIndexMouseShadow      =  30;
 export const zIndexGrid             =  50;

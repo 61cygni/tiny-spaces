@@ -1,17 +1,20 @@
-// --
+
 // Simple level editer. 
 //
 // TODO:
+//  -- support delete for maplabels
+//  -- support for labels on map load
+//  -- keybindings to toggle maplables
 //  -- right now if plaxing a sprite, will place based on selected tiles. So need to clear that when
 //     loading a sprite
 //  -- fix hardcoded animations, hack of putting spritesheet into g_ctx etc
 //  -- create tab that contains all animations for a given json file 
-//  -- add portals to level for character start positions
 //  -- if you load an animated sprite and then load a level, it just puts the sprite everywhere
 // 
 // 
 // Done:
 //  -- fix level load bug where texture doesn't fit (load, mage, serene and then gentle)
+//  -- add portals to level for character start positions
 //  -- write maps with sprites
 //  - <esc> clear selected_tile
 //  - Delete tiles
@@ -137,6 +140,7 @@ class LayerContext {
 
 
         this.container = new PIXI.Container();
+        this.container.sortableChildren = true;
         this.sprites = {};
         this.composite_sprites = {};
         this.dragctx = new DragState();
@@ -317,6 +321,7 @@ class TilesetContext {
     constructor(app, mod = g_ctx) {
         this.app = app;
         this.container = new PIXI.Container();
+        this.container.sortableChildren = true;
 
         this.widthpx  = g_ctx.tilesetpxw;
         this.heightpx = g_ctx.tilesetpxh;
@@ -379,6 +384,15 @@ class TilesetContext {
     }
 } // class TilesetContext
 
+class MapLabel{
+    constructor (label, sx, sy, ex, ey){
+        this.label = label;
+        this.sx = sx;
+        this.sy = sy;
+        this.ex = ex;
+        this.ey = ey;
+    }
+} // class MapLabel
 
 class CompositeContext {
 
@@ -408,6 +422,13 @@ class CompositeContext {
         this.square.fill(0x2980b9);
         this.square.eventMode = 'static';
         this.container.addChild(this.square);
+
+        this.labels = []; // map labels
+        this.label_gc = new PIXI.GraphicsContext();
+        this.label_gc.zIndex = CONFIG.zIndexLabel;
+        this.label_graphics = new PIXI.Graphics(this.label_gc);
+        this.label_graphics.zIndex = CONFIG.zIndexLabel; 
+        this.container.addChild(this.label_graphics);
 
         this.square.on('mousedown', onCompositeMousedown.bind(null, this));
 
@@ -457,7 +478,9 @@ function loadAnimatedSpritesFromModule(mod){
 }
 
 function loadMapFromModuleFinish(mod) {
-    g_ctx.composite.container.removeChildren();
+    g_ctx.composite_app.stage.removeChildren();
+    g_ctx.composite = new CompositeContext(g_ctx.composite_app);
+
     g_ctx.tileset_app.stage.removeChildren()
     g_ctx.tileset = new TilesetContext(g_ctx.tileset_app, mod);
     g_ctx.g_layer_apps[0].stage.removeChildren()
@@ -532,8 +555,18 @@ window.onTab = (evt, tabName) => {
     evt.currentTarget.className += " active";
 
     if (tabName == "map"){
+        // console.log(g_ctx.composite.container.children);
+        g_ctx.map_app.stage.removeChildren();
+        g_ctx.composite.container.sortChildren();
+        // Graphics apparently can't be in two apps at the same time, so clone here
+        let newgc = g_ctx.composite.label_gc.clone();
+        newgc.zIndex = config.zIndexLabel;
+        let newg = new PIXI.Graphics(newgc);
+        newg.zIndex = config.zIndexLabel;
         g_ctx.map_app.stage.addChild(g_ctx.composite.container);
+        g_ctx.map_app.stage.addChild(newg);
     }else {
+        g_ctx.composite.app.stage.removeChildren();
         g_ctx.composite.app.stage.addChild(g_ctx.composite.container);
     }
 }
@@ -682,31 +715,31 @@ function onCompositeDragEnd(e)
     let label = prompt("Label: ");
     console.log("Received label " + label)
 
-    let newsq = new PIXI.Graphics(); 
-
-    newsq.setStrokeStyle(2, 0xffd900, 1);
-    newsq.moveTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.starty);
-    newsq.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.starty);
-    newsq.lineTo(g_ctx.composite.dragctx.endx, g_ctx.composite.dragctx.endy);
-    newsq.lineTo(g_ctx.composite.dragctx.startx, g_ctx.composite.dragctx.endy);
-    newsq.closePath();
-    newsq.fill({color: 0xFF3300, alpha: 0.3,});
+    g_ctx.composite.label_gc.rect(starttilex * g_ctx.tiledimx,
+            starttiley * g_ctx.tiledimy,
+            ((endtilex - starttilex) * g_ctx.tiledimx) + g_ctx.tiledimx,
+            ((endtiley - starttiley) * g_ctx.tiledimy) + g_ctx.tiledimy,
+            g_ctx.composite.dragctx.endy - g_ctx.composite.dragctx.starty)
+          .fill({color: 0xFF3300, alpha: 0.3,});
 
     let pixilabel = new PIXI.Text({
         text: label, 
         fontFamily: 'Courier',
-        fontSize: 6,
+        fontSize: 8,
         fill: 0xffffff,
         align: 'center',
     });
 
-    newsq.label = pixilabel;
-    pixilabel.x = g_ctx.composite.dragctx.startx;
-    pixilabel.y = g_ctx.composite.dragctx.starty;
+    // newsq.maplabel = pixilabel;
+    pixilabel.x = starttilex * g_ctx.tiledimx;  
+    pixilabel.y = starttiley * g_ctx.tiledimy;  
 
-    g_ctx.composite.app.stage.addChild(newsq);
-    g_ctx.composite.app.stage.addChild(pixilabel);
+    pixilabel.zIndex = CONFIG.zIndexLabel;
 
+    g_ctx.composite.labels.push(new MapLabel(label, starttilex, starttiley, endtilex, endtiley));
+    g_ctx.composite.container.addChild(pixilabel);
+
+    console.log(g_ctx.composite.container.children);
 
     g_ctx.composite.dragctx.square.clear();
     // g_ctx.tileset.dragctx.tooltip.clear();
@@ -898,6 +931,8 @@ function redrawGridAll(redraw = false) {
     g_ctx.g_layers.map((l) => redrawGrid(l, redraw));
     redrawGrid(g_ctx.tileset, redraw);
     redrawGrid(g_ctx.composite, redraw);
+    g_ctx.composite.gridgraphics.zIndex = CONFIG.zIndexGrid;
+
 }
 
 
@@ -1300,6 +1335,7 @@ function initPixiApps() {
 
     //  map tab 
     g_ctx.map_app = new PIXI.Application();
+    g_ctx.map_app.stage.sortableChildren = true;
     g_ctx.map_app.init({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, canvas: document.getElementById('mapcanvas') });
 
     // g_ctx.tileset
