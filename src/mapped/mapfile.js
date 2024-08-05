@@ -102,7 +102,7 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
     let map_labels = g_ctx.composite.labels;
     for(let x = 0 ; x < map_labels.length; x++){
         let alabel = map_labels[x];
-        text += '{ x: '+alabel.sx+", y: "+ alabel.sy+ ", w: "+ alabel.ex+ ", h: "+ alabel.ey ; 
+        text += '{ sx: '+alabel.sx+", sy: "+ alabel.sy+ ", ex: "+ alabel.ex+ ", ey: "+ alabel.ey ; 
         text += ', label: "'+alabel.label+'" },\n';
     }
 

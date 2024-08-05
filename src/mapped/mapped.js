@@ -439,6 +439,46 @@ class CompositeContext {
 
 } // class CompositeContext
 
+function addMapLabel(ml){
+
+    g_ctx.composite.label_gc.rect(ml.sx * g_ctx.tiledimx,
+            ml.sy * g_ctx.tiledimy,
+            ((ml.ex - ml.sx) * g_ctx.tiledimx) + g_ctx.tiledimx,
+            ((ml.ey - ml.sy) * g_ctx.tiledimy) + g_ctx.tiledimy,
+            g_ctx.composite.dragctx.endy - g_ctx.composite.dragctx.starty)
+          .fill({color: 0xFF3300, alpha: 0.3,});
+
+    let pixilabel = new PIXI.Text({
+        text: ml.label, 
+        fill: 0xffffff,
+        fontFamily: 'Georgia',
+        fontSize: 6
+    });
+
+    // newsq.maplabel = pixilabel;
+    pixilabel.x = ml.sx * g_ctx.tiledimx;  
+    pixilabel.y = ml.sy * g_ctx.tiledimy;  
+    pixilabel.zIndex = CONFIG.zIndexLabel;
+
+    g_ctx.composite.labels.push(ml);
+    g_ctx.composite.container.addChild(pixilabel);
+}
+
+function loadMapLabelsFromModule(mod){
+
+    if(g_ctx.debug_flag){
+        console.log("loadMapLabesFromModule: "+g_ctx.tile_index);
+    }
+
+    if(!('maplabels' in mod) || mod.maplabels.length <= 0){
+        return;
+    }
+
+    for(let x = 0; x < mod.maplabels.length; x++){
+        addMapLabel(mod.maplabels[x]);
+    }
+}
+
 function loadAnimatedSpritesFromModule(mod){
 
     if(!('animatedsprites' in mod) || mod.animatedsprites.length <= 0){
@@ -493,6 +533,7 @@ function loadMapFromModuleFinish(mod) {
     g_ctx.g_layers[3] = new LayerContext(g_ctx.g_layer_apps[3], document.getElementById("layer3pane"), 3, mod);
 
     loadAnimatedSpritesFromModule(mod);
+    loadMapLabelsFromModule(mod);
 }
 
 function loadMapFromModule(mod) {
@@ -715,31 +756,32 @@ function onCompositeDragEnd(e)
     let label = prompt("Label: ");
     console.log("Received label " + label)
 
-    g_ctx.composite.label_gc.rect(starttilex * g_ctx.tiledimx,
-            starttiley * g_ctx.tiledimy,
-            ((endtilex - starttilex) * g_ctx.tiledimx) + g_ctx.tiledimx,
-            ((endtiley - starttiley) * g_ctx.tiledimy) + g_ctx.tiledimy,
-            g_ctx.composite.dragctx.endy - g_ctx.composite.dragctx.starty)
-          .fill({color: 0xFF3300, alpha: 0.3,});
+    addMapLabel(new MapLabel(label, starttilex, starttiley, endtilex, endtiley));
 
-    let pixilabel = new PIXI.Text({
-        text: label, 
-        fontFamily: 'Courier',
-        fontSize: 8,
-        fill: 0xffffff,
-        align: 'center',
-    });
+    // g_ctx.composite.label_gc.rect(starttilex * g_ctx.tiledimx,
+    //         starttiley * g_ctx.tiledimy,
+    //         ((endtilex - starttilex) * g_ctx.tiledimx) + g_ctx.tiledimx,
+    //         ((endtiley - starttiley) * g_ctx.tiledimy) + g_ctx.tiledimy,
+    //         g_ctx.composite.dragctx.endy - g_ctx.composite.dragctx.starty)
+    //       .fill({color: 0xFF3300, alpha: 0.3,});
 
-    // newsq.maplabel = pixilabel;
-    pixilabel.x = starttilex * g_ctx.tiledimx;  
-    pixilabel.y = starttiley * g_ctx.tiledimy;  
+    // let pixilabel = new PIXI.Text({
+    //     text: label, 
+    //     fill: 0xffffff,
+    //     fontFamily: 'Georgia',
+    //     fontSize: 6
+    // });
 
-    pixilabel.zIndex = CONFIG.zIndexLabel;
+    // // newsq.maplabel = pixilabel;
+    // pixilabel.x = starttilex * g_ctx.tiledimx;  
+    // pixilabel.y = starttiley * g_ctx.tiledimy;  
 
-    g_ctx.composite.labels.push(new MapLabel(label, starttilex, starttiley, endtilex, endtiley));
-    g_ctx.composite.container.addChild(pixilabel);
+    // pixilabel.zIndex = CONFIG.zIndexLabel;
 
-    console.log(g_ctx.composite.container.children);
+    // g_ctx.composite.labels.push(new MapLabel(label, starttilex, starttiley, endtilex, endtiley));
+    // g_ctx.composite.container.addChild(pixilabel);
+
+    // console.log(g_ctx.composite.container.children);
 
     g_ctx.composite.dragctx.square.clear();
     // g_ctx.tileset.dragctx.tooltip.clear();
