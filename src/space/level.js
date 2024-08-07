@@ -17,12 +17,36 @@ export class LevelContext {
         this.tilesetpxh = mod.tilesetpxh;
         this.bgtiles = mod.bgtiles
         this.objmap  = mod.objmap
+        this.maplabels = mod.maplabels;
+
         this.loadFromMapFile();
         this.app.stage.addChild(this.container)
 
         sound.add('ps1-town', '../music/ps1-town.mp3');
         sound.loop = true;
         this.sound = sound;
+
+       this.createLabelDic();
+    }
+
+    createLabelDic(){
+        this.labeldict  = new Map()
+        this.coordsdict = new Map()
+        console.log("Creating label dictionary");
+        for(let l = 0; l < this.maplabels.length; l++){
+            console.log(this.maplabels);
+            let label = this.maplabels[l];
+            for(let x = label.sx; x <= label.ex; x++ ){
+                for(let y = label.sy; y <= label.ey; y++){
+                    console.log("Label "+x+" : "+y+" "+label.label);
+                    this.labeldict.set(""+x+":"+y, label);
+                    this.coordsdict.set(label.label, [x,y]);
+                }
+
+            }
+
+        }
+
     }
 
     loadFromMapFile(mod) {
@@ -160,7 +184,7 @@ function loadMapFromModule(mod, app, callme) {
 
 export function load(app, filename, callme) {
     // level loading
-    let mod = import("../maps/ps1-camineet.js").then((mod) => {
+    let mod = import(filename).then((mod) => {
         loadMapFromModule(mod, app, callme);
     });
 }

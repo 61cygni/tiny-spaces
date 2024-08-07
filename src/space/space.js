@@ -17,36 +17,36 @@ let level = null;
 
 let dstack = [];
 
-let input = new Input({
-    bg: new PIXI.Graphics()
-    .roundRect(0, 0, 64, 32, 4)
-    .fill(0xffffff),
-    placeholder: 'Enter text',
-    padding: {
-     top: 11,
-     right: 11,
-     bottom: 11,
-     left: 11
-    } // alternatively you can use [11, 11, 11, 11] or [11, 11] or just 11
-});
+// let input = new Input({
+//     bg: new PIXI.Graphics()
+//     .roundRect(0, 0, 64, 32, 4)
+//     .fill(0xffffff),
+//     placeholder: 'Enter text',
+//     padding: {
+//      top: 11,
+//      right: 11,
+//      bottom: 11,
+//      left: 11
+//     } // alternatively you can use [11, 11, 11, 11] or [11, 11] or just 11
+// });
 
 window.addEventListener(
     "keydown", (event) => {
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            beings[0].goDir('UP');
+            Alice.goDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
             // DOWN
-            beings[0].goDir('DOWN');
+            Alice.goDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
             // Right 
-            beings[0].goDir('RIGHT');
+            Alice.goDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             // Left 
-            beings[0].goDir('LEFT');
+            Alice.goDir('LEFT');
         }
         else if (event.code == 'KeyM'){
             mtoggle = !mtoggle;
@@ -69,19 +69,19 @@ window.addEventListener(
     "keyup", (event) => {
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            beings[0].stopDir('UP');
+            Alice.stopDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
             // DOWN
-            beings[0].stopDir('DOWN');
+            Alice.stopDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
             // Right 
-            beings[0].stopDir('RIGHT');
+            Alice.stopDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             // Left 
-            beings[0].stopDir('LEFT');
+            Alice.stopDir('LEFT');
         }
     }
 );
@@ -106,33 +106,45 @@ const spritesheets = [
     // 'spritesheets/ps1-others0.json',
     // 'spritesheets/ps1-others1.json',
     // 'spritesheets/ps1-others2.json',
-    'spritesheets/ps1-alice0.json'
     //'spritesheets/ys0.json',
     //'spritesheets/ys1.json',
     //'spritesheets/ff6-celes0.json',
     //'spritesheets/ff6-cyan0.json'
 ]
 
-let beings = []
+const alicespritesheet = 'spritesheets/ps1-alice0.json';
+let Alice = null; 
+
+// let beings = []
 
 const app = new PIXI.Application();
 app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas') });
 
-for(let i = 0; i < spritesheets.length; i++){
-    const sheet = await Assets.load(spritesheets[i]);
-    // let being = new Being(app, sheet, (i%6)*32, Math.floor(i/6) * 64);
-    let being = new BEING.Being(app, sheet, null, 276, 236); 
-    beings.push(being);
-}
+// for(let i = 0; i < spritesheets.length; i++){
+//     const sheet = await Assets.load(spritesheets[i]);
+//     // let being = new Being(app, sheet, (i%6)*32, Math.floor(i/6) * 64);
+//     let being = new BEING.Being(app, sheet, null); 
+//     beings.push(being);
+// }
+
+const sheet = await Assets.load(alicespritesheet);
+Alice = new BEING.Being(app, sheet, null);
 
 function init(inlevel) {
     level = inlevel;
 
 
-    for (let i = 0; i < beings.length; i++) {
-        beings[i].level = level;
-        beings[i].arrive();
-    }
+    Alice.level = level;
+
+    let start = level.coordsdict.get("start");
+
+    console.log("Alice start "+start[0]+" : "+start[1]);
+    Alice.arrive(start[0] * level.tiledimx,start[1] * level.tiledimy);
+
+    // for (let i = 0; i < beings.length; i++) {
+    //     beings[i].level = level;
+    //     beings[i].arrive();
+    // }
 
     let str = "Let's see how this works. I'm going to write"+
                "a bunch of stuff. And see how wordwraaps work."+
@@ -154,17 +166,18 @@ function init(inlevel) {
     ticker.stop();
     ticker.add((deltaTime) => {
         elapsed += ticker.deltaTime;
-        for (let i = 0; i < beings.length; i++) {
-            beings[i].tick(ticker.deltaTime);
-        }
+        // for (let i = 0; i < beings.length; i++) {
+        //     beings[i].tick(ticker.deltaTime);
+        // }
+        Alice.tick(ticker.deltaTime);
         d.tick(ticker.deltaTime);
 
     });
 
 
     ticker.speed = .2;
-    app.stage.addChild(input);
+    // app.stage.addChild(input);
     ticker.start();
 }
 
-LEVEL.load(app, "../maps/ps1-camineet.js", init);
+LEVEL.load(app, "../maps/label.js", init);

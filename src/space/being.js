@@ -9,7 +9,7 @@ Dir[Dir[4] = 'RIGHT'] = 8;
 
 export class Being {
 
-    constructor(app, spritesheet, level, x, y) {
+    constructor(app, spritesheet, level) {
         this.app = app;
         this.sheet = spritesheet;
         this.level = level;
@@ -25,8 +25,6 @@ export class Being {
             this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row3);
         }
 
-        this.x = x; 
-        this.y = y; 
         this.pausetime = Math.floor(Math.random() * 5);;
         this.pausecountdown = this.pausetime;
 
@@ -34,16 +32,16 @@ export class Being {
         this.direction = 'DOWN'; 
         this.curanim = this.sprites['DOWN'];
         this.curanim.animationSpeed = 0.1666;
-        this.curanim.x = this.x
-        this.curanim.y = this.y
-        this.curanim.play();
-        app.stage.addChild(this.curanim);
+        // this.curanim.x = -1 
+        // this.curanim.y = -1 
+        // this.curanim.play();
+        // app.stage.addChild(this.curanim);
     }
 
-    arrive() {
+    arrive(x, y) {
         this.curanim = this.sprites[this.direction];
-        this.curanim.x = this.x
-        this.curanim.y = this.y
+        this.curanim.x = x
+        this.curanim.y = y
         this.curanim.animationSpeed = 0.1666;
         this.curanim.stop();
         this.app.stage.addChild(this.curanim);
@@ -103,6 +101,16 @@ export class Being {
         return ret;
     }
 
+    checkLabel(x, y){
+        if(!this.level){
+            return;
+        }
+        let coordsx = Math.floor(x / 16);
+        let coordsy = Math.floor(y / 16);
+        console.log("Coords "+coordsx+" : "+coordsy);
+        console.log(this.level.labeldict.get(""+coordsx+":"+coordsy));
+    }
+
     tick(delta){
         if (this.moving && this.curanim.x < 624 && this.curanim.x > -1 && this.curanim.y < 448 && this.curanim.y > -1) {
             if (this.direction == 'RIGHT') {
@@ -110,6 +118,7 @@ export class Being {
                     if(this.isBlocked(this.curanim.x + 16, this.curanim.y + 16)){
                     } else {
                         this.curanim.x = this.curanim.x + 1;
+                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -118,6 +127,7 @@ export class Being {
                     if(this.isBlocked(this.curanim.x - 1, this.curanim.y + 16)){
                     } else {
                         this.curanim.x = this.curanim.x - 1;
+                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -126,6 +136,7 @@ export class Being {
                     if(this.isBlocked(this.curanim.x, this.curanim.y +15)){
                     } else {
                         this.curanim.y = this.curanim.y - 1;
+                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -134,6 +145,7 @@ export class Being {
                     if(this.isBlocked(this.curanim.x, this.curanim.y + 32)){
                     } else {
                         this.curanim.y = this.curanim.y + 1;
+                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
