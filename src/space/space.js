@@ -112,7 +112,7 @@ const spritesheets = [
     //'spritesheets/ff6-cyan0.json'
 ]
 
-const alicespritesheet = 'spritesheets/ps1-alice0.json';
+const alicespritesheet = 'spritesheets/alice2.json';
 let Alice = null; 
 
 // let beings = []
@@ -139,21 +139,20 @@ function init(inlevel) {
     let start = level.coordsdict.get("start");
 
     console.log("Alice start "+start[0]+" : "+start[1]);
-    Alice.arrive(start[0] * level.tiledimx,start[1] * level.tiledimy);
+    Alice.arrive(start[0] * level.tiledimx,start[1] * level.tiledimy - 14);
 
     // for (let i = 0; i < beings.length; i++) {
     //     beings[i].level = level;
     //     beings[i].arrive();
     // }
 
-    let str = "Let's see how this works. I'm going to write"+
-               "a bunch of stuff. And see how wordwraaps work."+
-               "Here is one \n\n\n whopeee!"+
-               "And more and more and more"+
-               "And yet even more, hopefully we'll"+
-               "get some pagination :) whoooo"+
-               "Man this actually takes a long time to get right"+
-               "Maybe my bounds check isn't working. Yikes!!!";
+    let str = "This is Camineet. Alice's hometown on planet Palma."+
+               "Alice just witness the death of her brother nero."+
+               "The planet is under seige by Lassic."+
+               "Alice is determined to break Lassic's control"+
+               "on Palma and the rest of the Algol planets."+
+               "And she will exact revenge on Lassic and his"+
+               "men for killing her brother.";
 
     let d = new DIALOG.Dialog(level, 42, 4, str);
     dstack.push(d);
