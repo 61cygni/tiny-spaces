@@ -6,6 +6,7 @@ import { Input } from '@pixi/ui';
 import * as LEVEL  from './level.js'
 import * as BEING  from './being.js'
 import * as DIALOG from './dialog.js'
+import * as GAME   from './gameevents.js'
 
 
 import { g_ctx }  from  '../shared/lecontext.js' // global context
@@ -14,6 +15,7 @@ import * as CONFIG from '../shared/leconfig.js'
 let mtoggle = false;
 
 let level = null;
+let gameevents = null;
 
 let dstack = [];
 
@@ -34,18 +36,19 @@ window.addEventListener(
     "keydown", (event) => {
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
+            event.preventDefault();
             Alice.goDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
-            // DOWN
+            event.preventDefault();
             Alice.goDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
-            // Right 
+            event.preventDefault();
             Alice.goDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
-            // Left 
+            event.preventDefault();
             Alice.goDir('LEFT');
         }
         else if (event.code == 'KeyM'){
@@ -55,12 +58,18 @@ window.addEventListener(
             }else{
                 level.sound.stop('ps1-town');
             }
-        } else if (event.code == 'Space'){
-            if(dstack[0].finished){
-                dstack[0].leave();
-            } else {
-                dstack[0].nextpage();
-            }
+        } 
+        
+        // else if (event.code == 'Space'){
+        //     if(dstack[0].finished){
+        //         dstack[0].leave();
+        //     } else {
+        //         dstack[0].nextpage();
+        //     }
+        // }
+
+        if(gameevents){
+            gameevents.handle_event(event);
         }
     }
 );
@@ -133,7 +142,6 @@ Alice = new BEING.Being(app, sheet, null);
 function init(inlevel) {
     level = inlevel;
 
-
     Alice.level = level;
 
     let start = level.coordsdict.get("start");
@@ -146,6 +154,8 @@ function init(inlevel) {
     //     beings[i].arrive();
     // }
 
+    gameevents = new GAME.GameEvents(level);
+
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+
                "The planet is under seige by Lassic."+
@@ -154,9 +164,10 @@ function init(inlevel) {
                "And she will exact revenge on Lassic and his"+
                "men for killing her brother.";
 
-    let d = new DIALOG.Dialog(level, 42, 4, str);
-    dstack.push(d);
-    d.arrive();
+    gameevents.dialog_now(str);
+    // let d = new DIALOG.Dialog(level, 42, 4, str);
+    // dstack.push(d);
+    // d.arrive();
 
     // Add a ticker callback to move the sprite back and forth
     let elapsed = 0.0;
@@ -169,8 +180,8 @@ function init(inlevel) {
         //     beings[i].tick(ticker.deltaTime);
         // }
         Alice.tick(ticker.deltaTime);
-        d.tick(ticker.deltaTime);
-
+        gameevents.tick(ticker.deltaTime);
+        // d.tick(ticker.deltaTime);
     });
 
 

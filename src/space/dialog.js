@@ -1,5 +1,13 @@
 import * as PIXI from 'pixi.js'
 
+
+const DWIDTH = 256
+const DHEIGHT = 128
+const DPAD = 16
+const TEXTPAUSE = .25
+const MAXTHEIGHT = DHEIGHT - (2*DPAD)
+const MAXTWIDTH  = DWIDTH  - (2*DPAD)
+
 export class Dialog{
 
 
@@ -19,7 +27,7 @@ export class Dialog{
             fill: "#ffffff",
             fontWeight: "bold",
             wordWrap: true,
-            wordWrapWidth: 224 // 256 - 2*padding 
+            wordWrapWidth: MAXTWIDTH
         });
         this.container = new PIXI.Container();
         this.rrect = new PIXI.Graphics();
@@ -27,7 +35,7 @@ export class Dialog{
         
         this.pagepause = false;
         this.elapsed = 0;
-        this.waitperiod = .25;
+        this.waitperiod = TEXTPAUSE;
     }
 
     nextpage() {
@@ -38,14 +46,13 @@ export class Dialog{
         }else{
             //super hacky approach to filling out the page
             while (this.endindex++ < this.msg.length) {
-                if (this.msgHeight() >= 98) { // 128 - 2*16
+                if (this.msgHeight() >= MAXTHEIGHT) { 
                     this.endindex--;// roll back to lasst character
                     this.displayText();
                     this.pagepause = true;
                     break;
                 }
             }
-            console.log("out of while loop "+this.endindex + " : " + this.startindex + " : " +this.msg.length);
             if (this.endindex >= this.msg.length) {
                 this.finished = true;
             }
@@ -57,15 +64,15 @@ export class Dialog{
     // display on map
     arrive(top = true) {
         let topleftx = (640/2) - 120;
-        let toplefty = 480 - (128 + 4);
+        let toplefty = 480 - (DHEIGHT + 4);
         
-        this.rrect.roundRect(topleftx, toplefty, 256, 128, 10);
+        this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);
         this.rrect.setStrokeStyle(2, 0xffd900, 1);
         this.rrect.fill(0x0)
             .stroke({ width: 2, color: 'white' });
         this.text = new PIXI.Text({text: "", style: this.style});
-        this.text.x = topleftx + 16;
-        this.text.y = toplefty + 16;
+        this.text.x = topleftx + DPAD;
+        this.text.y = toplefty + DPAD;
         this.container.addChild(this.text);
         this.level.app.stage.addChild(this.container);
     }
@@ -89,8 +96,8 @@ export class Dialog{
         let topleftx = (640 / 2) - 120;
         let toplefty = 480 - (128 + 4);
         let newtext = new PIXI.Text({ text: this.msg.substring(this.startindex, this.endindex), style: this.style });
-        newtext.x = topleftx + 16;
-        newtext.y = toplefty + 16;
+        newtext.x = topleftx + DPAD;
+        newtext.y = toplefty + DPAD;
         let oldtext = this.text;
         this.text = newtext;
         this.container.removeChild(oldtext);
@@ -114,7 +121,7 @@ export class Dialog{
         
         if ((this.endindex - this.startindex) <= this.msg.length) {
             this.endindex++;
-            if (this.msgHeight() >= 98) { // 128 - 2*16
+            if (this.msgHeight() >= MAXTHEIGHT) {
                 this.endindex--;// roll back to last character
                 this.pagepause = true;
                 this.displayText();
