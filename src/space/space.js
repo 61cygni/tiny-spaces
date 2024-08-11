@@ -154,7 +154,7 @@ function init(inlevel) {
     //     beings[i].arrive();
     // }
 
-    gameevents = new GAME.GameEvents(level);
+    gameevents = new GAME.GameEvents(Alice);
 
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+

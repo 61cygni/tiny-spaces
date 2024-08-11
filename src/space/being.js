@@ -101,15 +101,6 @@ export class Being {
         return ret;
     }
 
-    checkLabel(x, y){
-        if(!this.level){
-            return;
-        }
-        let coordsx = Math.floor(x / 16);
-        let coordsy = Math.floor(y / 16);
-        // console.log(this.level.labeldict.get(""+coordsx+":"+coordsy));
-    }
-
     tick(delta){
         if (this.moving && this.curanim.x < 624 && this.curanim.x > -1 && this.curanim.y < 448 && this.curanim.y > -1) {
             if (this.direction == 'RIGHT') {
@@ -118,7 +109,6 @@ export class Being {
                         this.isBlocked(this.curanim.x + 11, this.curanim.y + 25)){
                     } else {
                         this.curanim.x = this.curanim.x + 1;
-                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -128,7 +118,6 @@ export class Being {
                        this.isBlocked(this.curanim.x + 1, this.curanim.y + 25)){
                     } else {
                         this.curanim.x = this.curanim.x - 1;
-                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -138,7 +127,6 @@ export class Being {
                        this.isBlocked(this.curanim.x + 10, this.curanim.y + 15)){
                     } else {
                         this.curanim.y = this.curanim.y - 1;
-                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
@@ -148,7 +136,6 @@ export class Being {
                        this.isBlocked(this.curanim.x + 10, this.curanim.y + 26)){
                     } else {
                         this.curanim.y = this.curanim.y + 1;
-                        this.checkLabel(this.curanim.x, this.curanim.y);
                     }
                 }
             }
