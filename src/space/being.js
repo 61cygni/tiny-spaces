@@ -47,6 +47,11 @@ export class Being {
         this.app.stage.addChild(this.curanim);
     }
 
+    leave(){
+        this.curanim.stop();
+        this.app.stage.removeChild(this.curanim);
+    }
+
     goDir(dir) {
         if(this.direction != dir){
             this.direction = dir;
