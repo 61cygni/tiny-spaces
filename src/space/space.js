@@ -35,20 +35,32 @@ let dstack = [];
 window.addEventListener(
     "keydown", (event) => {
 
-        if (event.code == "KeyW" || event.code == 'ArrowUp') {
+        if (event.code == 'Space' || 
+            event.code == 'ArrowUp' ||
+            event.code == 'ArrowRight' ||
+            event.code == 'ArrowDown' ||
+            event.code == 'ArrowLeft')
+         {
             event.preventDefault();
+        }
+
+
+        if(gameevents){
+            if(gameevents.handle_event(event)){
+                return; // handled by gameevents
+            }
+        }
+
+        if (event.code == "KeyW" || event.code == 'ArrowUp') {
             Alice.goDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
-            event.preventDefault();
             Alice.goDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
-            event.preventDefault();
             Alice.goDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
-            event.preventDefault();
             Alice.goDir('LEFT');
         }
         else if (event.code == 'KeyM'){
@@ -68,9 +80,6 @@ window.addEventListener(
         //     }
         // }
 
-        if(gameevents){
-            gameevents.handle_event(event);
-        }
     }
 );
 
