@@ -13,7 +13,7 @@ export class Dialog{
 
     // tw = textwidth
     // pw = page width
-    constructor(level,  tw=42, pw = 4, msg ){
+    constructor(level, msg,  tw=42, pw = 4){
         this.level = level
         this.tw = tw;
         this.pw = pw;
@@ -40,11 +40,12 @@ export class Dialog{
 
     nextpage() {
 
+        console.log("next page");
+
         if (this.pagepause == true){
                 this.startindex = this.endindex;
                 this.pagepause = false;
         }else{
-            //super hacky approach to filling out the page
             while (this.endindex++ < this.msg.length) {
                 if (this.msgHeight() >= MAXTHEIGHT) { 
                     this.endindex--;// roll back to lasst character
@@ -53,6 +54,7 @@ export class Dialog{
                     break;
                 }
             }
+            this.displayText();
             if (this.endindex >= this.msg.length) {
                 this.finished = true;
             }

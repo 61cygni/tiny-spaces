@@ -2,15 +2,17 @@ import * as PIXI from 'pixi.js'
 
 import * as DIALOG from './dialog.js'
 
-class StaticBackground{
+export class StaticBackground{
 
     // x,y are coordinates to return Alice too
-    constructor(gevents, label, dialog, x, y) {
+    constructor(gevents, label, bg, villager, dialog, x, y) {
         this.label = label;
         this.gevents = gevents;
         this.finished = false;
         this.state = 0; // 0 fade out. 1 fade in. 
         this.dialog = dialog;
+        this.bg = bg;
+        this.villager = villager;
         this.x = x;
         this.y = y;
     }
@@ -26,7 +28,7 @@ class StaticBackground{
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
                     this.fade.finalize();
-                    this.fade  = new FadeIn(this.gevents, this.label, this.gevents.bg);
+                    this.fade  = new FadeIn(this.gevents, this.label, this.bg);
                     this.fade.init();
                     this.state = 1;
                 }else{
@@ -34,9 +36,9 @@ class StaticBackground{
                 }
             } else if(this.state == 1){ // fade in Alice's house 
                 if(this.fade.finished){
-                    this.gevents.level.app.stage.addChild(this.gevents.bg);
-                    if(this.label == "house1"){
-                        this.gevents.level.app.stage.addChild(this.gevents.vill1);
+                    this.gevents.level.app.stage.addChild(this.bg);
+                    if(this.villager){
+                        this.gevents.level.app.stage.addChild(this.villager);
                     }
                     this.fade.finalize();
                     this.state = 2;
@@ -50,8 +52,8 @@ class StaticBackground{
             } else if(this.state == 3){ // fade out
                 if(this.fade.finished){
                     this.fade.finalize();
-                    this.gevents.level.app.stage.removeChild(this.gevents.bg);
-                    this.gevents.level.app.stage.removeChild(this.gevents.vill1);
+                    this.gevents.level.app.stage.removeChild(this.bg);
+                    this.gevents.level.app.stage.removeChild(this.villager);
                     this.fade  = new FadeIn(this.gevents, this.label, null);
                     this.fade.init();
                     this.state = 4;
@@ -188,6 +190,7 @@ async function initbg(gevents) {
         gevents.vill1.height = 218;
         gevents.vill1.x = 280;
         gevents.vill1.y = 180;
+
 }
 
 export class GameEvents {
@@ -200,13 +203,14 @@ export class GameEvents {
         this.dstack = [];
 
         this.eventqueue = []; // queue of game events
+        this.label_handlers = new Map();
 
         this.bg = null;
         initbg(this);
     }
 
     dialog_now(text) {
-        let d = new DIALOG.Dialog(this.level, 42, 4, text);
+        let d = new DIALOG.Dialog(this.level, text, 42, 4);
         this.dstack.push(d);
         d.arrive();
     }
@@ -233,7 +237,7 @@ export class GameEvents {
 
     checkLabel(x, y){
         if(!this.level){
-            return;
+            return null;
         }
         let coordsx = Math.floor(x / 16);
         let coordsy = Math.floor((y+20) / 16);
@@ -241,7 +245,11 @@ export class GameEvents {
         if (ret) {
             return ret.label;
         }
-        return ret;
+        return null;
+    }
+
+    register_label_handler(label, handler) {
+        this.label_handlers.set(label, handler);
     }
 
     add_to_event_queue(task) {
@@ -272,13 +280,15 @@ export class GameEvents {
                 if (this.beingx = !this.being.curanim.x || this.beingy != this.being.curanim.y) {
                     this.beingx = this.being.curanim.x;
                     this.beingy = this.being.curanim.y;
-                    if (this.checkLabel(this.being.curanim.x, this.being.curanim.y) == 'house2') {
-                        const dialog = "This is Alice's home.";
-                        this.add_to_event_queue(new StaticBackground(this, "house2", dialog, 31*16, (9*16)+1));
-                    }
-                    else if (this.checkLabel(this.being.curanim.x, this.being.curanim.y) == 'house1') {
-                        const dialog = "I wish I could help you more. I pray for your safety.";
-                        this.add_to_event_queue(new StaticBackground(this, "house1", dialog, 11*16, (8*16)+1));
+
+                    // check current x,y to see if there is a label. And if so if we have a handler.
+                    const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
+                    if (label) {
+                        for (let [key, value] of this.label_handlers) {
+                            if (label == key) {
+                                this.add_to_event_queue(value);
+                            }
+                        }
                     }
                 }
             } // if eventqueue

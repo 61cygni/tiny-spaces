@@ -44,6 +44,15 @@ window.addEventListener(
             event.preventDefault();
         }
 
+        if (event.code == 'KeyM'){
+            mtoggle = !mtoggle;
+            if(mtoggle){
+                level.sound.play('ps1-town');
+            }else{
+                level.sound.stop('ps1-town');
+            }
+        } 
+
 
         if(gameevents){
             if(gameevents.handle_event(event)){
@@ -63,14 +72,7 @@ window.addEventListener(
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             Alice.goDir('LEFT');
         }
-        else if (event.code == 'KeyM'){
-            mtoggle = !mtoggle;
-            if(mtoggle){
-                level.sound.play('ps1-town');
-            }else{
-                level.sound.stop('ps1-town');
-            }
-        } 
+
         
         // else if (event.code == 'Space'){
         //     if(dstack[0].finished){
@@ -158,12 +160,16 @@ function init(inlevel) {
     console.log("Alice start "+start[0]+" : "+start[1]);
     Alice.arrive(start[0] * level.tiledimx,start[1] * level.tiledimy - 14);
 
-    // for (let i = 0; i < beings.length; i++) {
-    //     beings[i].level = level;
-    //     beings[i].arrive();
-    // }
-
     gameevents = new GAME.GameEvents(Alice);
+
+    let bg    = level.static_assets.get("bg");
+    let vill1 = level.static_assets.get("vill1");
+
+    // set up static background handlers for houses, NPCs
+    const dialog2 = "This is Alice's home.";
+    gameevents.register_label_handler("house2", new GAME.StaticBackground(gameevents, "house2", bg, null, dialog2, 31*16, (9*16)+1));
+    const dialog1 = "I wish I could help you more. I pray for your safety.";
+    gameevents.register_label_handler("house1", new GAME.StaticBackground(gameevents, "house1", bg, vill1, dialog1, 11*16, (8*16)+1)); 
 
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+
@@ -174,9 +180,6 @@ function init(inlevel) {
                "men for killing her brother.";
 
     gameevents.dialog_now(str);
-    // let d = new DIALOG.Dialog(level, 42, 4, str);
-    // dstack.push(d);
-    // d.arrive();
 
     // Add a ticker callback to move the sprite back and forth
     let elapsed = 0.0;

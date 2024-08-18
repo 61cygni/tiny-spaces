@@ -18,7 +18,9 @@ export class LevelContext {
         this.bgtiles = mod.bgtiles
         this.objmap  = mod.objmap
         this.maplabels = mod.maplabels;
+    }
 
+    finalize_load(){
         this.loadFromMapFile();
         this.app.stage.addChild(this.container)
 
@@ -140,19 +142,48 @@ export class LevelContext {
 
 } // class LevelContext
 
-function loadMapFromModuleFinish(mod, app, callme) {
-    let level = new LevelContext(app, mod);
+function loadMapFromModuleFinish(callme, level) {
+    level.finalize_load();
     callme(level);
 }
 
-async function initTilesSync(callme) {
+// TODO: move these to a separate class called "camineet" or whatever
+async function loadStaticImages(level) {
+    console.log("loadStaticImages: "+g_ctx.tilesetpath);
 
-    console.log("initTileSync: "+g_ctx.tilesetpath);
+    level.static_assets = new Map();
+
+    const txtbg    = await PIXI.Assets.load("./ps1/camineet-house-bg.png");
+    const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
+
+    let bg    =  new PIXI.Sprite(txtbg); 
+    bg.width  = 640;
+    bg.height = 480;
+
+    let vill1 =  new PIXI.Sprite(txtvill1); 
+    vill1.width  = 80;
+    vill1.height = 218;
+    vill1.x = 280;
+    vill1.y = 180;
+
+    level.static_assets.set("bg", bg);
+    level.static_assets.set("vill1", vill1);
+
+    level.label_handlers = new Map();
+}
+
+async function loadAssetsSync(app, mod, callme) {
+
+    let level = new LevelContext(app, mod);
+
+    await loadStaticImages(level);
+
+    console.log("loadAssetsSync: "+g_ctx.tilesetpath);
     const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
 
     if (texture.valid) {
         console.log("Texture already valid");
-        callme();
+        callme(level);
         return;
     }
 
@@ -169,22 +200,22 @@ async function initTilesSync(callme) {
     g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
     console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
 
-    callme();
+    callme(level);
 }
 
 
-function loadMapFromModule(mod, app, callme) {
+function loadMapFromModule(app, mod, callme) {
     console.log(mod);
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
 
-    initTilesSync(loadMapFromModuleFinish.bind(null, mod, app, callme));
+    loadAssetsSync(app, mod, loadMapFromModuleFinish.bind(null, callme));
 }
 
 export function load(app, filename, callme) {
     // level loading
     let mod = import(filename).then((mod) => {
-        loadMapFromModule(mod, app, callme);
+        loadMapFromModule(app, mod, callme);
     });
 }
