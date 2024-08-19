@@ -3,10 +3,12 @@ import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
 import { Input } from '@pixi/ui';
 
-import * as LEVEL  from './level.js'
-import * as BEING  from './being.js'
-import * as DIALOG from './dialog.js'
-import * as GAME   from './gameevents.js'
+import * as LEVEL  from './level.js';
+import * as BEING  from './being.js';
+import * as DIALOG from './dialog.js';
+import * as GAME   from './gameevents.js';
+
+import * as CAM from './camineet.js';
 
 
 import { g_ctx }  from  '../shared/lecontext.js' // global context
@@ -165,11 +167,13 @@ function init(inlevel) {
     let bg    = level.static_assets.get("bg");
     let vill1 = level.static_assets.get("vill1");
 
+    let house2 = new CAM.House2(gameevents, level);
+    let house1 = new CAM.House1(gameevents, level);
     // set up static background handlers for houses, NPCs
     const dialog2 = "This is Alice's home.";
-    gameevents.register_label_handler("house2", new GAME.StaticBackground(gameevents, "house2", bg, null, dialog2, 31*16, (9*16)+1));
+    gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents, "house2", bg, null, dialog2, 31*16, (9*16)+1));
     const dialog1 = "I wish I could help you more. I pray for your safety.";
-    gameevents.register_label_handler("house1", new GAME.StaticBackground(gameevents, "house1", bg, vill1, dialog1, 11*16, (8*16)+1)); 
+    gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents, "house1", bg, vill1, dialog1, 11*16, (8*16)+1)); 
 
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+

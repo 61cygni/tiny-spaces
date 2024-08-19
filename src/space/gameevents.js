@@ -5,7 +5,8 @@ import * as DIALOG from './dialog.js'
 export class StaticBackground{
 
     // x,y are coordinates to return Alice too
-    constructor(gevents, label, bg, villager, dialog, x, y) {
+    constructor(logic, gevents, label, bg, villager, dialog, x, y) {
+        this.logic = logic;
         this.label = label;
         this.gevents = gevents;
         this.finished = false;
@@ -18,6 +19,7 @@ export class StaticBackground{
     }
 
     init() {
+        this.logic.init();
         // fade out main level
         this.fade = new FadeOut(this.gevents, this.label);
         this.gevents.being.leave();
@@ -28,7 +30,7 @@ export class StaticBackground{
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
                     this.fade.finalize();
-                    this.fade  = new FadeIn(this.gevents, this.label, this.bg);
+                    this.fade  = new FadeIn(this.gevents, this.label, this.logic.bg);
                     this.fade.init();
                     this.state = 1;
                 }else{
@@ -36,24 +38,23 @@ export class StaticBackground{
                 }
             } else if(this.state == 1){ // fade in Alice's house 
                 if(this.fade.finished){
-                    this.gevents.level.app.stage.addChild(this.bg);
-                    if(this.villager){
-                        this.gevents.level.app.stage.addChild(this.villager);
-                    }
+                    this.logic.add_start_scene();
                     this.fade.finalize();
                     this.state = 2;
                 }else{
                     this.fade.tick();
                 }
             } else if(this.state == 2){ // dialog in Alice's house
-                this.gevents.dialog_now(this.dialog);
-                this.fade = new FadeOut(this.gevents, this.label);
-                this.state = 3;
+                if (!this.logic.tick()){
+                    this.fade = new FadeOut(this.gevents, this.label);
+                    this.state = 3;
+                }
             } else if(this.state == 3){ // fade out
                 if(this.fade.finished){
                     this.fade.finalize();
-                    this.gevents.level.app.stage.removeChild(this.bg);
-                    this.gevents.level.app.stage.removeChild(this.villager);
+                    this.logic.remove_scene();
+                    // this.gevents.level.app.stage.removeChild(this.bg);
+                    // this.gevents.level.app.stage.removeChild(this.villager);
                     this.fade  = new FadeIn(this.gevents, this.label, null);
                     this.fade.init();
                     this.state = 4;
@@ -73,10 +74,8 @@ export class StaticBackground{
 
     finalize() {
         this.gevents.being.arrive(this.x,this.y);
-    }
-
-    destroy() {
-
+        this.state = 0;
+        this.finished = false;
     }
 
 } // class StaticBackground
