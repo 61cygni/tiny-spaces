@@ -164,16 +164,14 @@ function init(inlevel) {
 
     gameevents = new GAME.GameEvents(Alice);
 
-    let bg    = level.static_assets.get("bg");
-    let vill1 = level.static_assets.get("vill1");
-
     let house2 = new CAM.House2(gameevents, level);
     let house1 = new CAM.House1(gameevents, level);
+    let house3 = new CAM.House3(gameevents, level);
+
     // set up static background handlers for houses, NPCs
-    const dialog2 = "This is Alice's home.";
-    gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents, "house2", bg, null, dialog2, 31*16, (9*16)+1));
-    const dialog1 = "I wish I could help you more. I pray for your safety.";
-    gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents, "house1", bg, vill1, dialog1, 11*16, (8*16)+1)); 
+    gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents,  31*16, (9*16)+1));
+    gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents,  11*16, (8*16)+1)); 
+    gameevents.register_label_handler("house3", new GAME.StaticBackground(house3, gameevents,  28*16, (14*16)+1)); 
 
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+

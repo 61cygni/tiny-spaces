@@ -40,8 +40,6 @@ export class Dialog{
 
     nextpage() {
 
-        console.log("next page");
-
         if (this.pagepause == true){
                 this.startindex = this.endindex;
                 this.pagepause = false;

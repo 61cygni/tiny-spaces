@@ -5,15 +5,11 @@ import * as DIALOG from './dialog.js'
 export class StaticBackground{
 
     // x,y are coordinates to return Alice too
-    constructor(logic, gevents, label, bg, villager, dialog, x, y) {
+    constructor(logic, gevents, x, y) {
         this.logic = logic;
-        this.label = label;
         this.gevents = gevents;
         this.finished = false;
         this.state = 0; // 0 fade out. 1 fade in. 
-        this.dialog = dialog;
-        this.bg = bg;
-        this.villager = villager;
         this.x = x;
         this.y = y;
     }
@@ -21,7 +17,7 @@ export class StaticBackground{
     init() {
         this.logic.init();
         // fade out main level
-        this.fade = new FadeOut(this.gevents, this.label);
+        this.fade = new FadeOut(this.gevents);
         this.gevents.being.leave();
     }
 
@@ -30,7 +26,7 @@ export class StaticBackground{
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
                     this.fade.finalize();
-                    this.fade  = new FadeIn(this.gevents, this.label, this.logic.bg);
+                    this.fade  = new FadeIn(this.gevents, this.logic.bg);
                     this.fade.init();
                     this.state = 1;
                 }else{
@@ -46,16 +42,14 @@ export class StaticBackground{
                 }
             } else if(this.state == 2){ // dialog in Alice's house
                 if (!this.logic.tick()){
-                    this.fade = new FadeOut(this.gevents, this.label);
+                    this.fade = new FadeOut(this.gevents);
                     this.state = 3;
                 }
             } else if(this.state == 3){ // fade out
                 if(this.fade.finished){
                     this.fade.finalize();
                     this.logic.remove_scene();
-                    // this.gevents.level.app.stage.removeChild(this.bg);
-                    // this.gevents.level.app.stage.removeChild(this.villager);
-                    this.fade  = new FadeIn(this.gevents, this.label, null);
+                    this.fade  = new FadeIn(this.gevents, null);
                     this.fade.init();
                     this.state = 4;
                 }else{
@@ -82,8 +76,7 @@ export class StaticBackground{
 
 class FadeOut{
 
-    constructor(gevents, label){
-        this.label = label;
+    constructor(gevents){
         this.gevents = gevents;
         this.startalpha = 0;
         this.endalpha   = 1;
@@ -126,8 +119,7 @@ class FadeOut{
 
 class FadeIn{
 
-    constructor(gevents, label, bg){
-        this.label = label;
+    constructor(gevents, bg){
         this.gevents = gevents;
         this.startalpha = 1;
         this.endalpha   = 0;
@@ -242,6 +234,7 @@ export class GameEvents {
         let coordsy = Math.floor((y+20) / 16);
         let ret = this.level.labeldict.get(""+coordsx+":"+coordsy);
         if (ret) {
+            console.log("Found label "+ ret.label+ " x:"+coordsx+" y:"+coordsy);
             return ret.label;
         }
         return null;

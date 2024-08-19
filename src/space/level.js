@@ -155,6 +155,7 @@ async function loadStaticImages(level) {
 
     const txtbg    = await PIXI.Assets.load("./ps1/camineet-house-bg.png");
     const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
+    const txtvill2 = await PIXI.Assets.load("./ps1/villager-2.png");
 
     let bg    =  new PIXI.Sprite(txtbg); 
     bg.width  = 640;
@@ -166,8 +167,15 @@ async function loadStaticImages(level) {
     vill1.x = 280;
     vill1.y = 180;
 
+    let vill2 =  new PIXI.Sprite(txtvill2); 
+    vill2.width  = 80;
+    vill2.height = 218;
+    vill2.x = 280;
+    vill2.y = 180;
+
     level.static_assets.set("bg", bg);
     level.static_assets.set("vill1", vill1);
+    level.static_assets.set("vill2", vill2);
 
     level.label_handlers = new Map();
 }
