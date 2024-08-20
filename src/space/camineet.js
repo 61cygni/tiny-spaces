@@ -117,3 +117,112 @@ export class House3 {
     }
 
 }; // class House2
+
+// -- 
+// House 4 
+// -- 
+export class House4 {
+
+    constructor(gevents, level){
+        this.gevents = gevents;
+        this.bg       = level.static_assets.get("bg");
+        this.villager = level.static_assets.get("vill1");
+        this.visits  = 0;
+
+        this.dialog = "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS";
+    }
+
+    init () {
+        this.visits = this.visits + 1; 
+    }
+
+    // Scene to load once screen fades in 
+    add_start_scene() {
+        this.gevents.level.app.stage.addChild(this.bg);
+        this.gevents.level.app.stage.addChild(this.villager);
+    }
+
+    // Tick called until finish
+    tick () {
+        this.gevents.dialog_now(this.dialog);
+        return false; // finished
+    }
+
+    // remove scene fram app.stage to get back to level
+    remove_scene() {
+        this.gevents.level.app.stage.removeChild(this.bg);
+        this.gevents.level.app.stage.removeChild(this.villager);
+    }
+
+}; // class House4
+
+
+export class Man1 {
+
+    constructor(gevents, level){
+        this.gevents = gevents;
+        this.bg       = level.static_assets.get("city-bg");
+        this.villager = level.static_assets.get("vill3");
+        this.visits  = 0;
+
+        this.dialog = "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT";
+    }
+
+    init () {
+        this.visits = this.visits + 1; 
+    }
+
+    // Scene to load once screen fades in 
+    add_start_scene() {
+        this.gevents.level.app.stage.addChild(this.bg);
+        this.gevents.level.app.stage.addChild(this.villager);
+    }
+
+    // Tick called until finish
+    tick () {
+        this.gevents.dialog_now(this.dialog);
+        return false; // finished
+    }
+
+    // remove scene fram app.stage to get back to level
+    remove_scene() {
+        this.gevents.level.app.stage.removeChild(this.bg);
+        this.gevents.level.app.stage.removeChild(this.villager);
+    }
+
+}; // class Man1
+
+export class Man2 {
+
+    constructor(gevents, level){
+        this.gevents = gevents;
+        this.bg       = level.static_assets.get("city-bg");
+        this.villager = level.static_assets.get("vill3");
+        this.visits  = 0;
+
+        this.dialog = "THERE IS A SPACEPORT TO THE WEST OF CAMINEET";
+    }
+
+    init () {
+        this.visits = this.visits + 1; 
+    }
+
+    // Scene to load once screen fades in 
+    add_start_scene() {
+        this.gevents.level.app.stage.addChild(this.bg);
+        this.gevents.level.app.stage.addChild(this.villager);
+    }
+
+    // Tick called until finish
+    tick () {
+        this.gevents.dialog_now(this.dialog);
+        return false; // finished
+    }
+
+    // remove scene fram app.stage to get back to level
+    remove_scene() {
+        this.gevents.level.app.stage.removeChild(this.bg);
+        this.gevents.level.app.stage.removeChild(this.villager);
+    }
+
+}; // class Man1

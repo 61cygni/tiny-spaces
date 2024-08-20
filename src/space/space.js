@@ -167,11 +167,17 @@ function init(inlevel) {
     let house2 = new CAM.House2(gameevents, level);
     let house1 = new CAM.House1(gameevents, level);
     let house3 = new CAM.House3(gameevents, level);
+    let house4 = new CAM.House4(gameevents, level);
+    let man1   = new CAM.Man1(gameevents, level);
+    let man2   = new CAM.Man2(gameevents, level);
 
     // set up static background handlers for houses, NPCs
     gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents,  31*16, (9*16)+1));
     gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents,  11*16, (8*16)+1)); 
     gameevents.register_label_handler("house3", new GAME.StaticBackground(house3, gameevents,  28*16, (14*16)+1)); 
+    gameevents.register_label_handler("house4", new GAME.StaticBackground(house4, gameevents,  25*16, (24*16)+1)); 
+    gameevents.register_label_handler("man1",  new GAME.StaticBackground(man1,   gameevents,  (22*16), (6*16))); 
+    gameevents.register_label_handler("man2",  new GAME.StaticBackground(man2,   gameevents,  (19*16)+1, (14*16))); 
 
     let str = "This is Camineet. Alice's hometown on planet Palma."+
                "Alice just witness the death of her brother nero."+
@@ -204,4 +210,4 @@ function init(inlevel) {
     ticker.start();
 }
 
-LEVEL.load(app, "../maps/label.js", init);
+LEVEL.load(app, "../maps/ps1-camineet.js", init);

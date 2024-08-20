@@ -153,13 +153,20 @@ async function loadStaticImages(level) {
 
     level.static_assets = new Map();
 
+    // TODO: move to camineet.js
     const txtbg    = await PIXI.Assets.load("./ps1/camineet-house-bg.png");
+    const txtcity  = await PIXI.Assets.load("./ps1/camineet-city-bg.png");
     const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
     const txtvill2 = await PIXI.Assets.load("./ps1/villager-2.png");
+    const txtvill3 = await PIXI.Assets.load("./ps1/villager-3.png");
 
     let bg    =  new PIXI.Sprite(txtbg); 
     bg.width  = 640;
     bg.height = 480;
+
+    let citybg    =  new PIXI.Sprite(txtcity); 
+    citybg.width  = 640;
+    citybg.height = 480;
 
     let vill1 =  new PIXI.Sprite(txtvill1); 
     vill1.width  = 80;
@@ -173,9 +180,17 @@ async function loadStaticImages(level) {
     vill2.x = 280;
     vill2.y = 180;
 
+    let vill3 =  new PIXI.Sprite(txtvill3); 
+    vill3.width  = 80;
+    vill3.height = 218;
+    vill3.x = 280;
+    vill3.y = 180;
+
     level.static_assets.set("bg", bg);
+    level.static_assets.set("city-bg", citybg);
     level.static_assets.set("vill1", vill1);
     level.static_assets.set("vill2", vill2);
+    level.static_assets.set("vill3", vill3);
 
     level.label_handlers = new Map();
 }

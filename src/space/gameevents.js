@@ -268,10 +268,10 @@ export class GameEvents {
                     event.finalize();
                 }
             } else {
-                // only check labels if we're not currently processing an event
-                if (this.beingx = !this.being.curanim.x || this.beingy != this.being.curanim.y) {
-                    this.beingx = this.being.curanim.x;
-                    this.beingy = this.being.curanim.y;
+                // FIXME!! Only need to check if moved 
+                //if (this.being.x = !this.being.curanim.x || this.being.y != this.being.curanim.y) {
+                //    this.being.x = this.being.curanim.x;
+                //    this.being.y = this.being.curanim.y;
 
                     // check current x,y to see if there is a label. And if so if we have a handler.
                     const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
@@ -282,7 +282,7 @@ export class GameEvents {
                             }
                         }
                     }
-                }
+                //}
             } // if eventqueue
         } // if d_stack_lenght
     }
