@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 
 import * as DIALOG from './dialog.js'
+import * as INPUT from './input.js'
 
 export class StaticBackground{
 
@@ -12,10 +13,12 @@ export class StaticBackground{
         this.state = 0; // 0 fade out. 1 fade in. 
         this.x = x;
         this.y = y;
+        this.doinput = false;
     }
 
+
     init() {
-        this.logic.init();
+        this.logic.init(this);
         // fade out main level
         this.fade = new FadeOut(this.gevents);
         this.gevents.being.leave();
@@ -73,6 +76,7 @@ export class StaticBackground{
     }
 
 } // class StaticBackground
+
 
 class FadeOut{
 
@@ -193,18 +197,37 @@ export class GameEvents {
         this.level = being.level;
         this.dstack = [];
 
+        this.pauseevents = false;
+        this.esc = false; // has the escape key been pressed?
+
         this.eventqueue = []; // queue of game events
         this.label_handlers = new Map();
 
         this.bg = null;
+        this.input = null;
+
         initbg(this);
     }
 
-    dialog_now(text) {
-        let d = new DIALOG.Dialog(this.level, text, 42, 4);
+    dialog_now(text = "", place = 'bottom', callme = null) {
+        console.log("DIALOG NOW "+callme);
+        let d = new DIALOG.Dialog(this.level, text, 42, 4, place, callme);
         this.dstack.push(d);
         d.arrive();
     }
+
+    input_now(text, callme){
+        this.input = new INPUT.TextInput(this, text, callme);
+        this.input.arrive();
+    }
+
+    input_leave(){
+        console.log("INPUT_LEAVE "+this.input);
+        if (this.input) {
+            this.input.leave();
+        }
+    }
+
 
     handle_event(event) {
         if( this.dstack.length == 0 && this.eventqueue.length == 0){
@@ -269,9 +292,9 @@ export class GameEvents {
                 }
             } else {
                 // FIXME!! Only need to check if moved 
-                //if (this.being.x = !this.being.curanim.x || this.being.y != this.being.curanim.y) {
-                //    this.being.x = this.being.curanim.x;
-                //    this.being.y = this.being.curanim.y;
+                if (this.being.x != this.being.curanim.x || this.being.y != this.being.curanim.y) {
+                    this.being.x = this.being.curanim.x;
+                    this.being.y = this.being.curanim.y;
 
                     // check current x,y to see if there is a label. And if so if we have a handler.
                     const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
@@ -282,7 +305,7 @@ export class GameEvents {
                             }
                         }
                     }
-                //}
+                }
             } // if eventqueue
         } // if d_stack_lenght
     }

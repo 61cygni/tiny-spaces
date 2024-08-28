@@ -159,6 +159,8 @@ async function loadStaticImages(level) {
     const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
     const txtvill2 = await PIXI.Assets.load("./ps1/villager-2.png");
     const txtvill3 = await PIXI.Assets.load("./ps1/villager-3.png");
+    const txtvill4 = await PIXI.Assets.load("./ps1/villager-4.png");
+    const txtgrd1 = await PIXI.Assets.load("./ps1/guard-1.png");
 
     let bg    =  new PIXI.Sprite(txtbg); 
     bg.width  = 640;
@@ -186,11 +188,25 @@ async function loadStaticImages(level) {
     vill3.x = 280;
     vill3.y = 180;
 
+    let vill4 =  new PIXI.Sprite(txtvill4); 
+    vill4.width  = 80;
+    vill4.height = 218;
+    vill4.x = 280;
+    vill4.y = 180;
+
+    let grd1 =  new PIXI.Sprite(txtgrd1); 
+    grd1.width  = 80;
+    grd1.height = 218;
+    grd1.x = 280;
+    grd1.y = 180;
+
     level.static_assets.set("bg", bg);
     level.static_assets.set("city-bg", citybg);
     level.static_assets.set("vill1", vill1);
     level.static_assets.set("vill2", vill2);
     level.static_assets.set("vill3", vill3);
+    level.static_assets.set("vill4", vill4);
+    level.static_assets.set("guard1", grd1);
 
     level.label_handlers = new Map();
 }

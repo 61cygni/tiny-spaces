@@ -32,10 +32,8 @@ export class Being {
         this.direction = 'DOWN'; 
         this.curanim = this.sprites['DOWN'];
         this.curanim.animationSpeed = 0.1666;
-        // this.curanim.x = -1 
-        // this.curanim.y = -1 
-        // this.curanim.play();
-        // app.stage.addChild(this.curanim);
+        this.curanim.x = -1 
+        this.curanim.y = -1 
     }
 
     arrive(x, y) {
@@ -67,11 +65,11 @@ export class Being {
             this.app.stage.addChild(this.curanim);
         } 
         else if(!this.curanim.playing){
+            this.x = this.curanim.x
+            this.y = this.curanim.y
             this.curanim.play();
         }
-
         this.moving |= Dir[dir];
-
     }
 
     stopDir(dir) {
@@ -144,33 +142,6 @@ export class Being {
                     }
                 }
             }
-        }else{
-            // const rdir = getRandomInt(4);
-            
-            // this.direction = Dir[rdir];
-
-            // this.app.stage.removeChild(this.curanim)
-            // this.curanim.stop()
-            // if(this.curanim.x < 0){
-            //     this.curanim.x = 0;
-            // }
-            // if(this.curanim.x > 623){
-            //     this.curanim.x = 623;
-            // }
-            // if(this.curanim.y < 0){
-            //     this.curanim.y = 0;
-            // }
-            // if(this.curanim.y > 447){
-            //     this.curanim.y = 447;
-            // }
-            // this.x = this.curanim.x
-            // this.y = this.curanim.y
-            // this.curanim = this.sprites[this.direction];
-            // this.curanim.x = this.x
-            // this.curanim.y = this.y
-            // this.curanim.animationSpeed = 0.1666;
-            // this.curanim.play();
-            // this.app.stage.addChild(this.curanim);
         }
-    }
-}
+    } // tick
+} // class being

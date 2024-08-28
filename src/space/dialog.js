@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 
 
 const DWIDTH = 256
-const DHEIGHT = 128
+const DHEIGHT = 96
 const DPAD = 16
 const TEXTPAUSE = .25
 const MAXTHEIGHT = DHEIGHT - (2*DPAD)
@@ -13,7 +13,7 @@ export class Dialog{
 
     // tw = textwidth
     // pw = page width
-    constructor(level, msg,  tw=42, pw = 4){
+    constructor(level, msg,  tw=42, pw = 4, place = 'bottom', callme = null){
         this.level = level
         this.tw = tw;
         this.pw = pw;
@@ -21,9 +21,11 @@ export class Dialog{
         this.finished = false;
         this.startindex = 0;
         this.endindex   = 0;
+        this.place = place;
+        this.callme = callme;
         this.style = new PIXI.TextStyle({
             fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-            fontSize: 12,
+            fontSize: 10,
             fill: "#ffffff",
             fontWeight: "bold",
             wordWrap: true,
@@ -62,9 +64,14 @@ export class Dialog{
     }
 
     // display on map
-    arrive(top = true) {
+    arrive() {
+
         let topleftx = (640/2) - 120;
         let toplefty = 480 - (DHEIGHT + 4);
+        if(this.place == 'top'){
+            topleftx = 0;
+            toplefty = 0;
+        }
         
         this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);
         this.rrect.setStrokeStyle(2, 0xffd900, 1);
@@ -84,6 +91,10 @@ export class Dialog{
         this.text.destroy();
         this.rrect.destroy();
         this.container.destroy();
+        console.log("LEAVE!! "+this.callme);
+        if(this.callme){
+            this.callme();
+        }
     }
 
     msgHeight(){
@@ -93,11 +104,9 @@ export class Dialog{
         return ret; 
     }
     displayText() {
-        let topleftx = (640 / 2) - 120;
-        let toplefty = 480 - (128 + 4);
         let newtext = new PIXI.Text({ text: this.msg.substring(this.startindex, this.endindex), style: this.style });
-        newtext.x = topleftx + DPAD;
-        newtext.y = toplefty + DPAD;
+        newtext.x = this.text.x; 
+        newtext.y = this.text.y; 
         let oldtext = this.text;
         this.text = newtext;
         this.container.removeChild(oldtext);

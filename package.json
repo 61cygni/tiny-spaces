@@ -26,6 +26,10 @@
     "@pixi/ui": "^2.1.2",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-react": "^4.3.1",
+    "autoevals": "^0.0.85",
+    "braintrust": "^0.0.153",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.4.5",
     "pixi.js": "^8.2.2",
     "vite": "^5.3.3"
   }
