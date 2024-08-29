@@ -91,7 +91,6 @@ export class Dialog{
         this.text.destroy();
         this.rrect.destroy();
         this.container.destroy();
-        console.log("LEAVE!! "+this.callme);
         if(this.callme){
             this.callme();
         }

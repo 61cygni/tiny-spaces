@@ -112,6 +112,7 @@ export class House3 {
         this.bg       = level.static_assets.get("bg");
         this.villager = level.static_assets.get("vill2");
         this.visits  = 0;
+        this.finished = false;
         this.aidialog = "";
 
         this.firstdialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
@@ -126,31 +127,33 @@ export class House3 {
 
     // called on first dialog response
     initdialog(val){
-        this.gevents.dialog_now(val, "top", this.dialogdone.bind(this));
+        if (!this.finished) {
+            this.gevents.dialog_now(val, "top", this.dialogdone.bind(this));
+        }
     }
 
     // after first dialog, create input
     dialogdone(){
-        this.gevents.input_now("", this.inputcallme.bind(this));
+        if (!this.finished) {
+            this.gevents.input_now("", this.inputcallme.bind(this));
+        }
     }
 
     // once user has entered text, call prompt
     inputcallme(val){
-        console.log("CALLING "+val);
-        BT.bt("camineet-house3-6471", val, this.dodialog.bind(this));
+            BT.bt("camineet-house3-6471", val, this.dodialog.bind(this));
     }
-
     // dialog whilechatting
-    dodialog(val){
-        this.gevents.dialog_now(val, "top");
+    dodialog(val) {
+        if (!this.finished) {
+            this.gevents.dialog_now(val, "top");
+        }
     }
 
 
     init() {
+        this.finished = false;
         this.gevents.esc = false; // clean just in case. 
-
-        // kick off initial greating 
-        BT.bt("camineet-house3-6471", "", this.initdialog.bind(this));
     }
 
     // Scene to load once screen fades in 
@@ -158,6 +161,8 @@ export class House3 {
         // this.gevents.dialog_now(this.aidialog, "top", this.doinput.bind(this));
         this.gevents.level.app.stage.addChild(this.bg);
         this.gevents.level.app.stage.addChild(this.villager);
+        // kick off initial greating 
+        BT.bt("camineet-house3-6471", "", this.initdialog.bind(this));
     }
 
     // Tick called until finish
@@ -165,6 +170,7 @@ export class House3 {
         if (this.gevents.esc) {
             // 
             this.gevents.esc = false;
+            this.finished = true;
             return false; // finished
         }
         return true;

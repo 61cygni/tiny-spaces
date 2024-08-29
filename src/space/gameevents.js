@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js'
 import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 
-export class StaticBackground{
+export class StaticBackground {
 
     // x,y are coordinates to return Alice too
     constructor(logic, gevents, x, y) {
@@ -22,6 +22,7 @@ export class StaticBackground{
         // fade out main level
         this.fade = new FadeOut(this.gevents);
         this.gevents.being.leave();
+        this.finished = false;
     }
 
     tick(){
@@ -52,6 +53,7 @@ export class StaticBackground{
                 if(this.fade.finished){
                     this.fade.finalize();
                     this.logic.remove_scene();
+                    this.gevents.clear_dialogs();
                     this.fade  = new FadeIn(this.gevents, null);
                     this.fade.init();
                     this.state = 4;
@@ -72,7 +74,7 @@ export class StaticBackground{
     finalize() {
         this.gevents.being.arrive(this.x,this.y);
         this.state = 0;
-        this.finished = false;
+        this.finished = true;
     }
 
 } // class StaticBackground
@@ -210,10 +212,23 @@ export class GameEvents {
     }
 
     dialog_now(text = "", place = 'bottom', callme = null) {
-        console.log("DIALOG NOW "+callme);
+        // if an existing dialog is up and finished, clean it up
+        if (this.dstack.length > 0 && this.dstack[0].finished) {
+            this.dstack[0].leave();
+            this.dstack.shift();
+        }
         let d = new DIALOG.Dialog(this.level, text, 42, 4, place, callme);
         this.dstack.push(d);
         d.arrive();
+    }
+
+    clear_dialogs(){
+        while(this.dstack.length){
+            let d = dstack.shift();
+            d.leave();
+        }
+
+
     }
 
     input_now(text, callme){
