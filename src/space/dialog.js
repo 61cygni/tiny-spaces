@@ -13,7 +13,7 @@ export class Dialog{
 
     // tw = textwidth
     // pw = page width
-    constructor(level, msg,  tw=42, pw = 4, place = 'bottom', callme = null){
+    constructor(level, msg, pinned=false,  tw=42, pw = 4, place = 'bottom', callme = null){
         this.level = level
         this.tw = tw;
         this.pw = pw;
@@ -21,6 +21,8 @@ export class Dialog{
         this.finished = false;
         this.startindex = 0;
         this.endindex   = 0;
+        this.pinned = pinned; // don't remove on finished (used for chat)
+        console.log("PINNED "+this.pinned);
         this.place = place;
         this.callme = callme;
         this.style = new PIXI.TextStyle({
@@ -38,6 +40,10 @@ export class Dialog{
         this.pagepause = false;
         this.elapsed = 0;
         this.waitperiod = TEXTPAUSE;
+    }
+
+    append(text){
+        this.msg = this.msg + text;
     }
 
     nextpage() {
@@ -71,6 +77,13 @@ export class Dialog{
         if(this.place == 'top'){
             topleftx = 0;
             toplefty = 0;
+        }
+        else if(this.place == 'left'){
+            topleftx = 0;
+            toplefty = (480/2) - (DHEIGHT/2);
+        }
+        else if(this.place == 'inputbottom'){
+            toplefty = (480) - (DHEIGHT+64);// FIXME should get input height from input.js
         }
         
         this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);

@@ -211,20 +211,27 @@ export class GameEvents {
         initbg(this);
     }
 
-    dialog_now(text = "", place = 'bottom', callme = null) {
+    dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {
         // if an existing dialog is up and finished, clean it up
         if (this.dstack.length > 0 && this.dstack[0].finished) {
             this.dstack[0].leave();
             this.dstack.shift();
         }
-        let d = new DIALOG.Dialog(this.level, text, 42, 4, place, callme);
-        this.dstack.push(d);
-        d.arrive();
+
+        // if an existing dialog is up and pinned, append to that dialog
+        if (this.dstack.length > 0 && this.dstack[0].pinned) {
+            this.dstack[0].append(text);
+        } else {
+            console.log("New Dialog!");
+            let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);
+            this.dstack.push(d);
+            d.arrive();
+        }
     }
 
     clear_dialogs(){
         while(this.dstack.length){
-            let d = dstack.shift();
+            let d = this.dstack.shift();
             d.leave();
         }
 
@@ -251,12 +258,16 @@ export class GameEvents {
         if (event.code == 'Space') {
             event.preventDefault();
 
+            console.log("gevent sPACE"); 
+
             if (this.dstack.length == 0){
                 return;
             }
-            if (this.dstack[0].finished) {
-                this.dstack[0].leave();
-                this.dstack.shift();
+            else if (this.dstack[0].finished) {
+                if (!this.dstack[0].pinned) {
+                    this.dstack[0].leave();
+                    this.dstack.shift();
+                }
             } else {
                 this.dstack[0].nextpage();
             }
@@ -294,35 +305,35 @@ export class GameEvents {
         // handle dialog queue first. 
         if(this.dstack.length > 0){
          this.dstack[0].tick(delta);
-        } else {
-            if (this.eventqueue.length > 0) {
-                if (!this.eventqueue[0].finished) {
-                    this.eventqueue[0].tick();
-                } else {
-                    let event = this.eventqueue.shift();;
-                    if (this.eventqueue.length > 0) {
-                        this.eventqueue[0].init();
-                    }
-                    event.finalize();
-                }
-            } else {
-                // FIXME!! Only need to check if moved 
-                if (this.being.x != this.being.curanim.x || this.being.y != this.being.curanim.y) {
-                    this.being.x = this.being.curanim.x;
-                    this.being.y = this.being.curanim.y;
+        } 
 
-                    // check current x,y to see if there is a label. And if so if we have a handler.
-                    const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
-                    if (label) {
-                        for (let [key, value] of this.label_handlers) {
-                            if (label == key) {
-                                this.add_to_event_queue(value);
-                            }
+        if (this.eventqueue.length > 0) {
+            if (!this.eventqueue[0].finished) {
+                this.eventqueue[0].tick();
+            } else {
+                let event = this.eventqueue.shift();;
+                if (this.eventqueue.length > 0) {
+                    this.eventqueue[0].init();
+                }
+                event.finalize();
+            }
+        } else {
+            // FIXME!! Only need to check if moved 
+            if (this.being.x != this.being.curanim.x || this.being.y != this.being.curanim.y) {
+                this.being.x = this.being.curanim.x;
+                this.being.y = this.being.curanim.y;
+
+                // check current x,y to see if there is a label. And if so if we have a handler.
+                const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
+                if (label) {
+                    for (let [key, value] of this.label_handlers) {
+                        if (label == key) {
+                            this.add_to_event_queue(value);
                         }
                     }
                 }
-            } // if eventqueue
-        } // if d_stack_lenght
+            }
+        } // if eventqueue
     }
 
 } // class GameEvents

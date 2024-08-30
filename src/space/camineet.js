@@ -128,25 +128,26 @@ export class House3 {
     // called on first dialog response
     initdialog(val){
         if (!this.finished) {
-            this.gevents.dialog_now(val, "top", this.dialogdone.bind(this));
+            this.gevents.dialog_now(val, "inputbottom", this.dialogdone.bind(this), true);
         }
-    }
-
-    // after first dialog, create input
-    dialogdone(){
         if (!this.finished) {
             this.gevents.input_now("", this.inputcallme.bind(this));
         }
     }
 
+    // after first dialog, create input
+    dialogdone(){
+    }
+
     // once user has entered text, call prompt
     inputcallme(val){
-            BT.bt("camineet-house3-6471", val, this.dodialog.bind(this));
+            BT.bt("camineet-house3-6471", val, this.dodialog.bind(this, val));
     }
     // dialog whilechatting
-    dodialog(val) {
+    dodialog(user, val) {
         if (!this.finished) {
-            this.gevents.dialog_now(val, "top");
+            let str = "\nYou: "+user+"\n Suelo: "+val;
+            this.gevents.dialog_now(str, "inputbottom", null, true);
         }
     }
 

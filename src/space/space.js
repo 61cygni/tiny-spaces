@@ -36,7 +36,7 @@ window.addEventListener(
 
         if(event.code == 'Escape'){
             if(gameevents){
-                console.log("ESC");
+                console.log("ESCAPE!");
                 gameevents.esc = true;
             }
         }
@@ -48,7 +48,7 @@ window.addEventListener(
         if (event.code == 'KeyM'){
             mtoggle = !mtoggle;
             if(mtoggle){
-                level.sound.volume = .1;
+                level.sound.volumeAll = 0.05;
                 level.sound.play('ps1-town');
             }else{
                 level.sound.stop('ps1-town');
