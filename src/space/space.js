@@ -160,13 +160,13 @@ function init(inlevel) {
     let house2 = new CAM.House2(gameevents);
     let house1 = new CAM.House1(gameevents);
     let house3 = new CAM.House3(gameevents);
-    let house4 = new CAM.House4(gameevents, level);
-    let house5 = new CAM.House5(gameevents, level);
-    let man1   = new CAM.Man1(gameevents, level);
-    let man2   = new CAM.Man2(gameevents, level);
-    let man3   = new CAM.Man3(gameevents, level);
-    let man4   = new CAM.Man4(gameevents, level);
-    let guard1 = new CAM.Guard1(gameevents, level);
+    let house4 = new CAM.House4(gameevents);
+    let house5 = new CAM.House5(gameevents);
+    let man1   = new CAM.Man1(gameevents);
+    let man2   = new CAM.Man2(gameevents);
+    let man3   = new CAM.Man3(gameevents);
+    let man4   = new CAM.Man4(gameevents);
+    let guard1 = new CAM.Guard1(gameevents);
 
     // set up static background handlers for houses, NPCs
     gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents,  31*16, (9*16)+1));

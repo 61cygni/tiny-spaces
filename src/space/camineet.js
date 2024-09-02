@@ -14,13 +14,13 @@
 // -----
 import * as BT  from './bt.js';
 
-class CamineetHouse {
+class CamineetScene {
 
     constructor(gevents, bg, slug, character = false, chat = false) {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get(bg); // FIXME (better name)
         this.visits = 0;
-        this.slug = slug; // BT prompt slug
+        this.slug = slug; // BT prompt slug. If this is "" just use orig_dialog
         if(character){
             this.character = gevents.level.static_assets.get(character);
         }else{
@@ -64,7 +64,9 @@ class CamineetHouse {
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 
         this.visits += 1;
-        BT.bt(this.slug, "", this.firstpromptdone.bind(this));
+        if(this.slug != ""){
+            BT.bt(this.slug, "", this.firstpromptdone.bind(this));
+        }
     }
 
     // Scene to load once screen fades in 
@@ -72,6 +74,9 @@ class CamineetHouse {
         this.gevents.level.app.stage.addChild(this.bg);
         if(this.character){
             this.gevents.level.app.stage.addChild(this.character);
+        }
+        if(this.slug == ""){
+            this.gevents.dialog_now(this.orig_dialog);
         }
     }
 
@@ -101,7 +106,7 @@ class CamineetHouse {
 
 }; // class Camineet house 
 
-export class House1 extends CamineetHouse {
+export class House1 extends CamineetScene {
     constructor(gevents) {
         super(gevents, "bg", "camineet-house-1-0da4", "vill1");
         console.log("HOUSE! "+ this.slug);
@@ -110,7 +115,7 @@ export class House1 extends CamineetHouse {
     }
 };
 
-export class House2 extends CamineetHouse {
+export class House2 extends CamineetScene {
     constructor(gevents) {
         super(gevents, "bg", "alice-home-9fee");
         // original dialog from game
@@ -118,279 +123,66 @@ export class House2 extends CamineetHouse {
     }
 };
 
-export class House3 extends CamineetHouse {
+export class House3 extends CamineetScene {
     constructor(gevents) {
         super(gevents, "bg", "camineet-house3-6471", "vill2", true);
         // original dialog from game
-        this.firstdialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
+        this.orig_dialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
     }
 };
 
-// -- 
-// House 4 
-// -- 
-export class House4 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("bg");
-        this.villager = level.static_assets.get("vill1");
-        this.visits  = 0;
-
-        this.dialog = "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS";
+export class House4 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "bg", "", "vill1", false);
+        // original dialog from game
+        this.orig_dialog = "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS";
     }
+};
 
-    init () {
-        this.visits = this.visits + 1; 
+export class House5 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "bg", "camineet-house-5-c9f7", "vill4", true);
+        // original dialog from game
+        this.orig_dialog = "DO YOU KNOW ABOUT THE PLANETS OF THE ALGOL STAR SYSTEM?";
     }
+};
 
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
+export class Man1 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "city-bg", "", "vill3", true);
+        // original dialog from game
+        this.orig_dialog = "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT";
     }
+};
 
-    // Tick called until finish
-    tick () {
-        this.gevents.dialog_now(this.dialog);
-        return false; // finished
+export class Man2 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "city-bg", "", "vill3", true);
+        // original dialog from game
+        this.orig_dialog = "THERE IS A SPACEPORT TO THE WEST OF CAMINEET";
     }
+};
 
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
+export class Man3 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "city-bg", "", "vill3", true);
+        // original dialog from game
+        this.orig_dialog = "IF YOU WANT TO MAKE A DEAL. YOU WANT TO HEAD TO THE PORT TOWN.";
     }
+};
 
-}; // class House4
-
-export class House5 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("bg");
-        this.villager = level.static_assets.get("vill4");
-        this.visits  = 0;
-        this.aidialog = "";
-
-        this.dialog = "LEAVE ME THE FUCK ALONE";
+export class Man4 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "city-bg", "", "vill3", true);
+        // original dialog from game
+        this.orig_dialog = "THE CAMINEET RESIDENTIAL AREA IS UNDER MARTIAL LAW.";
     }
+};
 
-    btcallme(val){
-        this.aidialog = val;
+export class Guard1 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "city-bg", "", "guard1", true);
+        // original dialog from game
+        this.orig_dialog = "YOU MAY NOT PASS.";
     }
-
-    init () {
-        this.visits = this.visits + 1; 
-        BT.bt("camineet-house-5-c9f7", "", this.btcallme.bind(this));
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        if (this.aidialog != "") {
-            this.gevents.dialog_now(this.aidialog);
-            //this.gevents.input_now("");
-            return false; // finished
-        }
-        return true;
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class House5
-
-
-export class Man1 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("city-bg");
-        this.villager = level.static_assets.get("vill3");
-        this.visits  = 0;
-        this.aidialog = "";
-
-        this.dialog = "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT";
-    }
-
-    btcallme(val){
-        this.aidialog = val;
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-        BT.bt("camineet-man-1-d027", "", this.btcallme.bind(this));
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        if (this.aidialog != "") {
-            this.gevents.dialog_now(this.aidialog);
-            //this.gevents.input_now("");
-            return false; // finished
-        }
-        return true;
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class Man1
-
-export class Man2 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("city-bg");
-        this.villager = level.static_assets.get("vill3");
-        this.visits  = 0;
-
-        this.dialog = "THERE IS A SPACEPORT TO THE WEST OF CAMINEET";
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        this.gevents.dialog_now(this.dialog);
-        return false; // finished
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class Man2
-
-export class Man3 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("city-bg");
-        this.villager = level.static_assets.get("vill3");
-        this.visits  = 0;
-
-        this.dialog = "IF YOU WANT TO MAKE A DEAL. YOU WANT TO HEAD TO THE PORT TOWN.";
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        this.gevents.dialog_now(this.dialog);
-        return false; // finished
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class Man3
-
-export class Man4 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("city-bg");
-        this.villager = level.static_assets.get("vill3");
-        this.visits  = 0;
-
-        this.dialog = "MIND YOUR OWN DAMN BUSINESS.";
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        this.gevents.dialog_now(this.dialog);
-        return false; // finished
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class Man4
-
-export class Guard1 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("city-bg");
-        this.villager = level.static_assets.get("guard1");
-        this.visits  = 0;
-
-        this.dialog = "YOU MAY NOT PASS.";
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        this.gevents.dialog_now(this.dialog);
-        return false; // finished
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class Guard1
+};

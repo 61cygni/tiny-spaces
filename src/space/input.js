@@ -62,12 +62,10 @@ export class TextInput {
     }
 
     arrive() {
-        console.log("INPUT ADD");
         this.gevents.level.app.stage.addChild(this.input);
     }
 
     leave() {
-        console.log("INPUT LEAVE");
         this.gevents.level.app.stage.removeChild(this.input);
     }
 

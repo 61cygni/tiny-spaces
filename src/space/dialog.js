@@ -22,7 +22,6 @@ export class Dialog{
         this.startindex = 0;
         this.endindex   = 0;
         this.pinned = pinned; // don't remove on finished (used for chat)
-        console.log("PINNED "+this.pinned);
         this.place = place;
         this.callme = callme;
         this.style = new PIXI.TextStyle({
