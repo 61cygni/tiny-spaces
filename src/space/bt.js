@@ -31,9 +31,11 @@ let logdata = await logger.export();
 //   slug: "alice-home-9fee"
 // };
 
-export function bt(slugin, msgin, callme) {
+export function bt(slugin, msgin, visits, callme) {
+    console.log("VISITS "+visits);
     const data = {
     input: {
+        visits: visits,
         msg: msgin,
     },
     parent: logdata, 
@@ -70,9 +72,10 @@ export function bt(slugin, msgin, callme) {
     .catch(error => console.error('Error:', error));
 }
 
-export async function asyncbt(slugin, msgin) {
+export async function asyncbt(slugin, msgin, visits) {
     const data = {
     input: {
+        visits: visits,
         msg: msgin,
     },
     parent: logdata, 

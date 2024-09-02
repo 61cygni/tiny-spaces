@@ -176,20 +176,6 @@ class FadeIn{
 
 } // class FadeIn
 
-async function initbg(gevents) {
-        const txtbg    = await PIXI.Assets.load("./ps1/camineet-house-bg.png");
-        const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
-        gevents.bg    =  new PIXI.Sprite(txtbg); 
-        gevents.bg.width  = 640;
-        gevents.bg.height = 480;
-        gevents.vill1 =  new PIXI.Sprite(txtvill1); 
-        gevents.vill1.width  = 80;
-        gevents.vill1.height = 218;
-        gevents.vill1.x = 280;
-        gevents.vill1.y = 180;
-
-}
-
 export class GameEvents {
 
     constructor(being) {
@@ -207,8 +193,6 @@ export class GameEvents {
 
         this.bg = null;
         this.input = null;
-
-        initbg(this);
     }
 
     dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {

@@ -13,14 +13,73 @@
 //  
 // -----
 import * as BT  from './bt.js';
+import * as LEVEL  from './level.js';
+import * as GAME   from './gameevents.js';
+
+export const MAPFILE = "../maps/ps1-camineet.js";
+
+export function static_images(){
+    // all static images to load;
+    let static_img = [];
+
+    static_img.push(new LEVEL.StaticImage("bg",      "./ps1/camineet-house-bg.png",   640, 480, 0,0));
+    static_img.push(new LEVEL.StaticImage("city-bg", "./ps1/camineet-city-bg.png", 640, 480, 0,0));
+    static_img.push(new LEVEL.StaticImage("vill1",   "./ps1/villager-1.png", 80, 218, 280,180));
+    static_img.push(new LEVEL.StaticImage("vill2",   "./ps1/villager-2.png", 80, 218, 280,180));
+    static_img.push(new LEVEL.StaticImage("vill3",   "./ps1/villager-3.png", 80, 218, 280,180));
+    static_img.push(new LEVEL.StaticImage("vill4",   "./ps1/villager-4.png", 80, 218, 280,180));
+    static_img.push(new LEVEL.StaticImage("guard1",   "./ps1/guard-1.png", 80, 218, 280,180));
+
+    return static_img;
+}
+
+export function init(gameevents) {
+
+    let house2 = new House2(gameevents);
+    let house1 = new House1(gameevents);
+    let house3 = new House3(gameevents);
+    let house4 = new House4(gameevents);
+    let house5 = new House5(gameevents);
+    let man1 = new Man1(gameevents);
+    let man2 = new Man2(gameevents);
+    let man3 = new Man3(gameevents);
+    let man4 = new Man4(gameevents);
+    let guard1 = new Guard1(gameevents);
+
+    // set up static background handlers for houses, NPCs
+    gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents, 31 * 16, (9 * 16) + 1));
+    gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents, 11 * 16, (8 * 16) + 1));
+    gameevents.register_label_handler("house3", new GAME.StaticBackground(house3, gameevents, 28 * 16, (14 * 16) + 1));
+    gameevents.register_label_handler("house4", new GAME.StaticBackground(house4, gameevents, 25 * 16, (24 * 16) + 1));
+    gameevents.register_label_handler("house5", new GAME.StaticBackground(house5, gameevents, 14 * 16, (17 * 16) + 1));
+    gameevents.register_label_handler("man1", new GAME.StaticBackground(man1, gameevents, (22 * 16), (6 * 16)));
+    gameevents.register_label_handler("man2", new GAME.StaticBackground(man2, gameevents, (19 * 16) + 1, (14 * 16)));
+    gameevents.register_label_handler("man3", new GAME.StaticBackground(man3, gameevents, (12 * 16) + 1, (19 * 16)));
+    gameevents.register_label_handler("man4", new GAME.StaticBackground(man4, gameevents, (20 * 16) + 1, (19 * 16)));
+    gameevents.register_label_handler("guard1", new GAME.StaticBackground(guard1, gameevents, (9 * 16), (16 * 16)));
+
+    let str = "This is Camineet. Alice's hometown on planet Palma." +
+        "Alice just witness the death of her brother nero." +
+        "The planet is under seige by Lassic." +
+        "Alice is determined to break Lassic's control" +
+        "on Palma and the rest of the Algol planets." +
+        "And she will exact revenge on Lassic and his" +
+        "men for killing her brother.";
+
+
+    const astr = BT.asyncbt("intro-blurb-a6a7", "");
+    gameevents.dialog_now(str);
+
+} // init
 
 class CamineetScene {
 
-    constructor(gevents, bg, slug, character = false, chat = false) {
+    constructor(gevents, bg, slug, slug2 = "", character = false, chat = false) {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get(bg); // FIXME (better name)
         this.visits = 0;
         this.slug = slug; // BT prompt slug. If this is "" just use orig_dialog
+        this.slug2 = slug2; // Prompt during chat (doesn't include intro)
         if(character){
             this.character = gevents.level.static_assets.get(character);
         }else{
@@ -40,7 +99,11 @@ class CamineetScene {
 
     // once user has entered text, call prompt
     inputcallme(val){
-            BT.bt(this.slug, val, this.dodialog.bind(this, val));
+        if(this.slug2 != ""){
+            BT.bt(this.slug2, val, this.visits, this.dodialog.bind(this, val));
+        } else {
+            BT.bt(this.slug, val, this.visits, this.dodialog.bind(this, val));
+        }
     }
     // dialog whilechatting
     dodialog(user, val) {
@@ -61,11 +124,11 @@ class CamineetScene {
 
     // Called each time house is entered
     init() {
+        this.visits += 1;
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 
-        this.visits += 1;
         if(this.slug != ""){
-            BT.bt(this.slug, "", this.firstpromptdone.bind(this));
+            BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
         }
     }
 
@@ -108,7 +171,7 @@ class CamineetScene {
 
 export class House1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house-1-0da4", "vill1");
+        super(gevents, "bg", "camineet-house-1-0da4", "", "vill1");
         console.log("HOUSE! "+ this.slug);
         // original dialog from game
         this.orig_dialog = "I'M NEKISE. ONE HEARS LOTS OF STORIES, YOU KNOW, BUT SOME SAY THAT A FIGHTER NAMED ODIN LIVES IN A TOWN CALLED SCION. ALSO, I HAVE A LACONION POT GIVEN BY NERO. THAT WOULD BE HELPFUL IN YOUR TASK.";
@@ -125,7 +188,7 @@ export class House2 extends CamineetScene {
 
 export class House3 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house3-6471", "vill2", true);
+        super(gevents, "bg", "camineet-house-3-intro-4857", "camineet-house3-6471", "vill2", true);
         // original dialog from game
         this.orig_dialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
     }
@@ -133,7 +196,7 @@ export class House3 extends CamineetScene {
 
 export class House4 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "", "vill1", false);
+        super(gevents, "bg", "", "", "vill1", false);
         // original dialog from game
         this.orig_dialog = "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS";
     }
@@ -141,7 +204,7 @@ export class House4 extends CamineetScene {
 
 export class House5 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house-5-c9f7", "vill4", true);
+        super(gevents, "bg", "camineet-house-5-intro-3bd5", "camineet-house-5-c9f7", "vill4", true);
         // original dialog from game
         this.orig_dialog = "DO YOU KNOW ABOUT THE PLANETS OF THE ALGOL STAR SYSTEM?";
     }
@@ -149,7 +212,7 @@ export class House5 extends CamineetScene {
 
 export class Man1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "vill3", true);
+        super(gevents, "city-bg", "", "", "vill3", true);
         // original dialog from game
         this.orig_dialog = "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT";
     }
@@ -157,7 +220,7 @@ export class Man1 extends CamineetScene {
 
 export class Man2 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "vill3", true);
+        super(gevents, "city-bg", "camineet-man-2-dcdf", "", "vill3", false);
         // original dialog from game
         this.orig_dialog = "THERE IS A SPACEPORT TO THE WEST OF CAMINEET";
     }
@@ -165,7 +228,7 @@ export class Man2 extends CamineetScene {
 
 export class Man3 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "vill3", true);
+        super(gevents, "city-bg", "", "", "vill3", true);
         // original dialog from game
         this.orig_dialog = "IF YOU WANT TO MAKE A DEAL. YOU WANT TO HEAD TO THE PORT TOWN.";
     }
@@ -173,7 +236,7 @@ export class Man3 extends CamineetScene {
 
 export class Man4 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "vill3", true);
+        super(gevents, "city-bg", "", "", "vill3", true);
         // original dialog from game
         this.orig_dialog = "THE CAMINEET RESIDENTIAL AREA IS UNDER MARTIAL LAW.";
     }
@@ -181,7 +244,7 @@ export class Man4 extends CamineetScene {
 
 export class Guard1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "guard1", true);
+        super(gevents, "city-bg", "", "", "guard1", true);
         // original dialog from game
         this.orig_dialog = "YOU MAY NOT PASS.";
     }

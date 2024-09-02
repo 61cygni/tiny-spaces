@@ -4,6 +4,19 @@ import { sound } from '@pixi/sound';
 import { g_ctx }  from  '../shared/lecontext.js' // global context
 import * as CONFIG from '../shared/leconfig.js' 
 
+export class StaticImage {
+
+    constructor (name, filename, width, height, x, y) {
+        this.name     = name;
+        this.filename = filename;
+        this.width    = width;
+        this.height   = height;
+        this.x = x;
+        this.y = y;
+    }
+
+}; // class StaticImage
+
 export class LevelContext {
 
     constructor(app, mod) {
@@ -148,74 +161,31 @@ function loadMapFromModuleFinish(callme, level) {
 }
 
 // TODO: move these to a separate class called "camineet" or whatever
-async function loadStaticImages(level) {
+async function loadStaticImages(level, static_images) {
     console.log("loadStaticImages: "+g_ctx.tilesetpath);
 
     level.static_assets = new Map();
 
-    // TODO: move to camineet.js
-    const txtbg    = await PIXI.Assets.load("./ps1/camineet-house-bg.png");
-    const txtcity  = await PIXI.Assets.load("./ps1/camineet-city-bg.png");
-    const txtvill1 = await PIXI.Assets.load("./ps1/villager-1.png");
-    const txtvill2 = await PIXI.Assets.load("./ps1/villager-2.png");
-    const txtvill3 = await PIXI.Assets.load("./ps1/villager-3.png");
-    const txtvill4 = await PIXI.Assets.load("./ps1/villager-4.png");
-    const txtgrd1 = await PIXI.Assets.load("./ps1/guard-1.png");
+    for (let i = 0; i < static_images.length; i++){
+        let assetin = static_images[i];
+        const img = await PIXI.Assets.load(assetin.filename);
+        const spr = new PIXI.Sprite(img);
+        spr.width = assetin.width;
+        spr.height = assetin.height;
+        spr.x = assetin.x;
+        spr.y = assetin.y;
 
-    let bg    =  new PIXI.Sprite(txtbg); 
-    bg.width  = 640;
-    bg.height = 480;
-
-    let citybg    =  new PIXI.Sprite(txtcity); 
-    citybg.width  = 640;
-    citybg.height = 480;
-
-    let vill1 =  new PIXI.Sprite(txtvill1); 
-    vill1.width  = 80;
-    vill1.height = 218;
-    vill1.x = 280;
-    vill1.y = 180;
-
-    let vill2 =  new PIXI.Sprite(txtvill2); 
-    vill2.width  = 80;
-    vill2.height = 218;
-    vill2.x = 280;
-    vill2.y = 180;
-
-    let vill3 =  new PIXI.Sprite(txtvill3); 
-    vill3.width  = 80;
-    vill3.height = 218;
-    vill3.x = 280;
-    vill3.y = 180;
-
-    let vill4 =  new PIXI.Sprite(txtvill4); 
-    vill4.width  = 80;
-    vill4.height = 218;
-    vill4.x = 280;
-    vill4.y = 180;
-
-    let grd1 =  new PIXI.Sprite(txtgrd1); 
-    grd1.width  = 80;
-    grd1.height = 218;
-    grd1.x = 280;
-    grd1.y = 180;
-
-    level.static_assets.set("bg", bg);
-    level.static_assets.set("city-bg", citybg);
-    level.static_assets.set("vill1", vill1);
-    level.static_assets.set("vill2", vill2);
-    level.static_assets.set("vill3", vill3);
-    level.static_assets.set("vill4", vill4);
-    level.static_assets.set("guard1", grd1);
+        level.static_assets.set(assetin.name, spr);
+    }
 
     level.label_handlers = new Map();
 }
 
-async function loadAssetsSync(app, mod, callme) {
+async function loadAssetsSync(app, mod, static_images, callme) {
 
     let level = new LevelContext(app, mod);
 
-    await loadStaticImages(level);
+    await loadStaticImages(level, static_images);
 
     console.log("loadAssetsSync: "+g_ctx.tilesetpath);
     const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
@@ -243,18 +213,18 @@ async function loadAssetsSync(app, mod, callme) {
 }
 
 
-function loadMapFromModule(app, mod, callme) {
+function loadMapFromModule(app, mod, static_images, callme) {
     console.log(mod);
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
 
-    loadAssetsSync(app, mod, loadMapFromModuleFinish.bind(null, callme));
+    loadAssetsSync(app, mod, static_images, loadMapFromModuleFinish.bind(null, callme));
 }
 
-export function load(app, filename, callme) {
+export function load(app, filename, static_images, callme) {
     // level loading
     let mod = import(filename).then((mod) => {
-        loadMapFromModule(app, mod, callme);
+        loadMapFromModule(app, mod, static_images, callme);
     });
 }

@@ -2,9 +2,6 @@ import { Ticker } from '@pixi/ticker';
 import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
 
-import { initLogger} from "braintrust";
-
-
 import * as LEVEL  from './level.js';
 import * as BEING  from './being.js';
 import * as GAME   from './gameevents.js';
@@ -157,40 +154,7 @@ function init(inlevel) {
 
     gameevents = new GAME.GameEvents(Alice);
 
-    let house2 = new CAM.House2(gameevents);
-    let house1 = new CAM.House1(gameevents);
-    let house3 = new CAM.House3(gameevents);
-    let house4 = new CAM.House4(gameevents);
-    let house5 = new CAM.House5(gameevents);
-    let man1   = new CAM.Man1(gameevents);
-    let man2   = new CAM.Man2(gameevents);
-    let man3   = new CAM.Man3(gameevents);
-    let man4   = new CAM.Man4(gameevents);
-    let guard1 = new CAM.Guard1(gameevents);
-
-    // set up static background handlers for houses, NPCs
-    gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents,  31*16, (9*16)+1));
-    gameevents.register_label_handler("house1", new GAME.StaticBackground(house1, gameevents,  11*16, (8*16)+1)); 
-    gameevents.register_label_handler("house3", new GAME.StaticBackground(house3, gameevents,  28*16, (14*16)+1)); 
-    gameevents.register_label_handler("house4", new GAME.StaticBackground(house4, gameevents,  25*16, (24*16)+1)); 
-    gameevents.register_label_handler("house5", new GAME.StaticBackground(house5, gameevents,  14*16, (17*16)+1)); 
-    gameevents.register_label_handler("man1",  new GAME.StaticBackground(man1,   gameevents,  (22*16), (6*16))); 
-    gameevents.register_label_handler("man2",  new GAME.StaticBackground(man2,   gameevents,  (19*16)+1, (14*16))); 
-    gameevents.register_label_handler("man3",  new GAME.StaticBackground(man3,   gameevents,  (12*16)+1, (19*16))); 
-    gameevents.register_label_handler("man4",  new GAME.StaticBackground(man4,   gameevents,  (20*16)+1, (19*16))); 
-    gameevents.register_label_handler("guard1",  new GAME.StaticBackground(guard1,   gameevents,  (9*16), (16*16))); 
-
-    let str = "This is Camineet. Alice's hometown on planet Palma."+
-               "Alice just witness the death of her brother nero."+
-               "The planet is under seige by Lassic."+
-               "Alice is determined to break Lassic's control"+
-               "on Palma and the rest of the Algol planets."+
-               "And she will exact revenge on Lassic and his"+
-               "men for killing her brother.";
-
-
-    const astr = BT.asyncbt("intro-blurb-a6a7", "");
-    gameevents.dialog_now(str);
+    CAM.init(gameevents);
 
     // Add a ticker callback to move the sprite back and forth
     let elapsed = 0.0;
@@ -199,17 +163,12 @@ function init(inlevel) {
     ticker.stop();
     ticker.add((deltaTime) => {
         elapsed += ticker.deltaTime;
-        // for (let i = 0; i < beings.length; i++) {
-        //     beings[i].tick(ticker.deltaTime);
-        // }
         Alice.tick(ticker.deltaTime);
         gameevents.tick(ticker.deltaTime);
-        // d.tick(ticker.deltaTime);
     });
 
 
     ticker.speed = .2;
     ticker.start();
 }
-
-LEVEL.load(app, "../maps/ps1-camineet.js", init);
+LEVEL.load(app, CAM.MAPFILE, CAM.static_images(), init);
