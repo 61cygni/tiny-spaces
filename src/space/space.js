@@ -157,9 +157,9 @@ function init(inlevel) {
 
     gameevents = new GAME.GameEvents(Alice);
 
-    let house2 = new CAM.House2(gameevents, level);
-    let house1 = new CAM.House1(gameevents, level);
-    let house3 = new CAM.House3(gameevents, level);
+    let house2 = new CAM.House2(gameevents);
+    let house1 = new CAM.House1(gameevents);
+    let house3 = new CAM.House3(gameevents);
     let house4 = new CAM.House4(gameevents, level);
     let house5 = new CAM.House5(gameevents, level);
     let man1   = new CAM.Man1(gameevents, level);

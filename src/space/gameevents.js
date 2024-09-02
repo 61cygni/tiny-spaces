@@ -222,7 +222,6 @@ export class GameEvents {
         if (this.dstack.length > 0 && this.dstack[0].pinned) {
             this.dstack[0].append(text);
         } else {
-            console.log("New Dialog!");
             let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);
             this.dstack.push(d);
             d.arrive();
@@ -234,8 +233,6 @@ export class GameEvents {
             let d = this.dstack.shift();
             d.leave();
         }
-
-
     }
 
     input_now(text, callme){
@@ -257,8 +254,6 @@ export class GameEvents {
         }
         if (event.code == 'Space') {
             event.preventDefault();
-
-            console.log("gevent sPACE"); 
 
             if (this.dstack.length == 0){
                 return;

@@ -14,159 +14,70 @@
 // -----
 import * as BT  from './bt.js';
 
-// -- 
-// Alice's house
-// -- 
-export class House2 {
+class CamineetHouse {
 
-    constructor(gevents, level){
+    constructor(gevents, bg, slug, character = false, chat = false) {
         this.gevents = gevents;
-        this.bg      = level.static_assets.get("bg");
-        this.visits  = 0;
-        this.aidialog = "";
-
-        this.dialog = "HERE IS THE HOME OF ALICE.";
-    }
-
-    btcallme(val){
-        this.aidialog = val;
-    }
-
-    init (parent) {
-        this.parent = parent;
-        this.visits += 1;
-        BT.bt("alice-home-9fee", "", this.btcallme.bind(this));
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-    }
-
-    // Tick called until finish
-    tick () {
-        if (this.aidialog != "") {
-            this.gevents.dialog_now(this.aidialog);
-            //this.gevents.input_now("");
-            return false; // finished
-        }
-        return true;
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.parent.input);
-        this.gevents.level.app.stage.removeChild(this.bg);
-    }
-
-}; // class House2
-
-// -- 
-// House 1 
-// -- 
-export class House1 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("bg");
-        this.villager = level.static_assets.get("vill1");
-        this.visits  = 0;
-
-        this.firstdialog = "I'M NEKISE. ONE HEARS LOTS OF STORIES, YOU KNOW, BUT SOME SAY THAT A FIGHTER NAMED ODIN LIVES IN A TOWN CALLED SCION. ALSO, I HAVE A LACONION POT GIVEN BY NERO. THAT WOULD BE HELPFUL IN YOUR TASK.";
-        this.dialog = "I WISH I COULD HELP YOU MORE. I PRAY FOR YOUR SAFETY.";
-    }
-
-    init () {
-        this.visits = this.visits + 1; 
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-    }
-
-    // Tick called until finish
-    tick () {
-        if(this.visits == 1){
-            this.gevents.dialog_now(this.firstdialog + this.dialog);
+        this.bg = gevents.level.static_assets.get(bg); // FIXME (better name)
+        this.visits = 0;
+        this.slug = slug; // BT prompt slug
+        if(character){
+            this.character = gevents.level.static_assets.get(character);
         }else{
-            this.gevents.dialog_now(this.dialog);
+            this.character = null;
         }
-        return false; // finished
-    }
+        this.chat = chat; // whether you can chat with this character
 
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
-    }
-
-}; // class House2
-
-
-export class House3 {
-
-    constructor(gevents, level){
-        this.gevents = gevents;
-        this.bg       = level.static_assets.get("bg");
-        this.villager = level.static_assets.get("vill2");
-        this.visits  = 0;
         this.finished = false;
-        this.aidialog = "";
 
-        this.firstdialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
-        this.dialog = "PLEASE REST YOURSELF. YOU ARE WELCOME HERE ANY TIME";
-    }
-
-
-    // once received response from LLM
-    btcallme(val){
-        this.aidialog = val;
-    }
-
-    // called on first dialog response
-    initdialog(val){
-        if (!this.finished) {
-            this.gevents.dialog_now(val, "inputbottom", this.dialogdone.bind(this), true);
-        }
-        if (!this.finished) {
-            this.gevents.input_now("", this.inputcallme.bind(this));
-        }
-    }
+        // original dialog from game. Should be set by child class
+        this.orig_dialog = "";
+    } // constructor
 
     // after first dialog, create input
-    dialogdone(){
+    dialogdone() {
     }
 
     // once user has entered text, call prompt
     inputcallme(val){
-            BT.bt("camineet-house3-6471", val, this.dodialog.bind(this, val));
+            BT.bt(this.slug, val, this.dodialog.bind(this, val));
     }
     // dialog whilechatting
     dodialog(user, val) {
         if (!this.finished) {
-            let str = "\nYou: "+user+"\n Suelo: "+val;
+            let str = "You: "+user+"\nVillager: "+val;
             this.gevents.dialog_now(str, "inputbottom", null, true);
         }
     }
 
+    firstpromptdone(val) {
+        if (!this.finished) {
+            this.gevents.dialog_now(val, "inputbottom", this.dialogdone.bind(this), true);
+        }
+        if (!this.finished && this.chat) {
+            this.gevents.input_now("", this.inputcallme.bind(this));
+        }
+    }
 
+    // Called each time house is entered
     init() {
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 
+        this.visits += 1;
+        BT.bt(this.slug, "", this.firstpromptdone.bind(this));
     }
 
     // Scene to load once screen fades in 
     add_start_scene() {
-        // this.gevents.dialog_now(this.aidialog, "top", this.doinput.bind(this));
         this.gevents.level.app.stage.addChild(this.bg);
-        this.gevents.level.app.stage.addChild(this.villager);
-        // kick off initial greating 
-        BT.bt("camineet-house3-6471", "", this.initdialog.bind(this));
+        if(this.character){
+            this.gevents.level.app.stage.addChild(this.character);
+        }
     }
 
-    // Tick called until finish
+    // Tick called until scene is done.
+    // Ret false = finished
+    // Exit on ESC keypress
     tick() {
         if (this.gevents.esc) {
             // 
@@ -179,12 +90,41 @@ export class House3 {
 
     // remove scene fram app.stage to get back to level
     remove_scene() {
-        this.gevents.input_leave();
+        if (this.chat) {
+            this.gevents.input_leave();
+        }
         this.gevents.level.app.stage.removeChild(this.bg);
-        this.gevents.level.app.stage.removeChild(this.villager);
+        if(this.character){
+            this.gevents.level.app.stage.removeChild(this.character);
+        }
     }
 
-}; // class House2
+}; // class Camineet house 
+
+export class House1 extends CamineetHouse {
+    constructor(gevents) {
+        super(gevents, "bg", "camineet-house-1-0da4", "vill1");
+        console.log("HOUSE! "+ this.slug);
+        // original dialog from game
+        this.orig_dialog = "I'M NEKISE. ONE HEARS LOTS OF STORIES, YOU KNOW, BUT SOME SAY THAT A FIGHTER NAMED ODIN LIVES IN A TOWN CALLED SCION. ALSO, I HAVE A LACONION POT GIVEN BY NERO. THAT WOULD BE HELPFUL IN YOUR TASK.";
+    }
+};
+
+export class House2 extends CamineetHouse {
+    constructor(gevents) {
+        super(gevents, "bg", "alice-home-9fee");
+        // original dialog from game
+        this.orig_dialog = "HERE IS THE HOME OF ALICE.";
+    }
+};
+
+export class House3 extends CamineetHouse {
+    constructor(gevents) {
+        super(gevents, "bg", "camineet-house3-6471", "vill2", true);
+        // original dialog from game
+        this.firstdialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
+    }
+};
 
 // -- 
 // House 4 
