@@ -38,6 +38,7 @@ export class LevelContext {
         this.app.stage.addChild(this.container)
 
         sound.add('ps1-town', '../music/ps1-town.mp3');
+        sound.add('ps1-camineet-shop', './ps1/ps1-shop.mp3');
         sound.loop = true;
         this.sound = sound;
 

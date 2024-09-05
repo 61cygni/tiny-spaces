@@ -3,14 +3,9 @@
 //  
 // https://www.braintrust.dev/app/casado/p/spaces/prompts
 //
-// Slugs:
-// 
-// Intro: intro-blurb-a6a7
-// Alice House :alice-home-9fee 
-// Villager 1: camineet-man-1-d027
-// House 5: camineet-house-5-c9f7 
-// House 3: camineet-house3-6471 
-//  
+// Music:
+// https://www.zophar.net/music/sega-master-system-vgm/phantasy-star
+//
 // -----
 import * as BT  from './bt.js';
 import * as LEVEL  from './level.js';
@@ -24,9 +19,11 @@ export function static_images(){
 
     static_img.push(new LEVEL.StaticImage("bg",      "./ps1/camineet-house-bg.png",   640, 480, 0,0));
     static_img.push(new LEVEL.StaticImage("city-bg", "./ps1/camineet-city-bg.png", 640, 480, 0,0));
+    static_img.push(new LEVEL.StaticImage("armory-bg", "./ps1/armory-bg.png", 640, 480, 0,0));
     static_img.push(new LEVEL.StaticImage("vill1",   "./ps1/villager-1.png", 80, 218, 280,180));
     static_img.push(new LEVEL.StaticImage("vill2",   "./ps1/villager-2.png", 80, 218, 280,180));
     static_img.push(new LEVEL.StaticImage("vill3",   "./ps1/villager-3.png", 80, 218, 280,180));
+    static_img.push(new LEVEL.StaticImage("vill3-half",   "./ps1/villager-3-half.png", 80, 118, 280,203));
     static_img.push(new LEVEL.StaticImage("vill4",   "./ps1/villager-4.png", 80, 218, 280,180));
     static_img.push(new LEVEL.StaticImage("guard1",   "./ps1/guard-1.png", 80, 218, 280,180));
 
@@ -45,6 +42,7 @@ export function init(gameevents) {
     let man3 = new Man3(gameevents);
     let man4 = new Man4(gameevents);
     let guard1 = new Guard1(gameevents);
+    let shop1  = new Shop1(gameevents);
 
     // set up static background handlers for houses, NPCs
     gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents, 31 * 16, (9 * 16) + 1));
@@ -57,6 +55,7 @@ export function init(gameevents) {
     gameevents.register_label_handler("man3", new GAME.StaticBackground(man3, gameevents, (12 * 16) + 1, (19 * 16)));
     gameevents.register_label_handler("man4", new GAME.StaticBackground(man4, gameevents, (20 * 16) + 1, (19 * 16)));
     gameevents.register_label_handler("guard1", new GAME.StaticBackground(guard1, gameevents, (9 * 16), (16 * 16)));
+    gameevents.register_label_handler("shop1", new GAME.StaticBackground(shop1, gameevents, (20 * 16), (17 * 16)));
 
     let str = "This is Camineet. Alice's hometown on planet Palma." +
         "Alice just witness the death of her brother nero." +
@@ -249,3 +248,23 @@ export class Guard1 extends CamineetScene {
         this.orig_dialog = "YOU MAY NOT PASS.";
     }
 };
+
+export class Shop1 extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, "armory-bg", "", "", "vill3-half", true);
+        // original dialog from game
+        this.orig_dialog = "GUARDS SELL BETTER SHIT.";
+    }
+
+    init(){
+        super.init();
+        this.gevents.level.sound.stop('ps1-town');
+        this.gevents.level.sound.play('ps1-camineet-shop');
+    }
+    remove_scene() {
+        super.remove_scene();
+        this.gevents.level.sound.stop('ps1-camineet-shop');
+        this.gevents.level.sound.play('ps1-town');
+    }
+};
+
