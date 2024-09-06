@@ -5,12 +5,12 @@ import * as PIXI from 'pixi.js'
 import * as LEVEL  from './level.js';
 import * as BEING  from './being.js';
 import * as GAME   from './gameevents.js';
-import * as BT    from './bt.js';
 
+import { sound } from '@pixi/sound';
 
 import * as CAM from './camineet.js';
 
-let mtoggle = false;
+let mtoggle = true;
 
 let level = null;
 let gameevents = null;
@@ -45,10 +45,10 @@ window.addEventListener(
         if (event.code == 'KeyM'){
             mtoggle = !mtoggle;
             if(mtoggle){
-                level.sound.volumeAll = 0.05;
-                level.sound.play('ps1-town');
+                sound.play('ps1-town');
             }else{
-                level.sound.stop('ps1-town');
+                //sound.stop('ps1-town');
+                sound.stopAll();
             }
         } 
 
