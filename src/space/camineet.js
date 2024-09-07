@@ -15,6 +15,11 @@ import { sound } from '@pixi/sound';
 
 export const MAPFILE = "../maps/ps1-camineet.js";
 
+function setbgmusic(newsong){
+        sound.stopAll();
+        sound.play(newsong, {loop: true});
+}
+
 export function static_images(){
     // all static images to load;
     let static_img = [];
@@ -43,10 +48,12 @@ export function init(gameevents) {
     sound.add('ps1-town', '../music/ps1-town.mp3');
     sound.add('ps1-camineet-shop', './ps1/ps1-shop.mp3');
     sound.add('ps1-camineet-church', './ps1/ps1-camineet-church.mp3');
-    sound.loop = true;
-    sound.volumeAll = 0.05;
 
-    sound.play('ps1-town');
+    sound.volumeAll = 0.05;
+    sound.play('ps1-town', {loop: true });
+
+    // gameevents.togglesound(); // start with sound off
+    // gameevents.setbgmusic('ps1-town');
 
     let house2 = new House2(gameevents);
     let house1 = new House1(gameevents);
@@ -148,9 +155,6 @@ class CamineetScene {
         this.visits += 1;
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 
-        if(this.slug != ""){
-            BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
-        }
     }
 
     // Scene to load once screen fades in 
@@ -161,6 +165,9 @@ class CamineetScene {
         }
         if(this.slug == ""){
             this.gevents.dialog_now(this.orig_dialog);
+        }
+        else { 
+            BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
         }
     }
 
@@ -273,20 +280,18 @@ export class Guard1 extends CamineetScene {
 
 export class Shop1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "armory-bg", "", "", "vill3-half", true);
+        super(gevents, "armory-bg", "camineet-shop-1-intro-fbe9", "camineet-shop-1-15e3", "vill3-half", true);
         // original dialog from game
         this.orig_dialog = "GUARDS SELL BETTER SHIT.";
     }
 
     init(){
         super.init();
-        sound.stopAll();
-        sound.play('ps1-camineet-shop');
+        setbgmusic('ps1-camineet-shop');
     }
     remove_scene() {
         super.remove_scene();
-        sound.stopAll();
-        sound.play('ps1-town');
+        setbgmusic('ps1-town');
     }
 };
 
@@ -299,13 +304,11 @@ export class Shop2 extends CamineetScene {
 
     init(){
         super.init();
-        sound.stopAll();
-        sound.play('ps1-camineet-shop');
+        setbgmusic('ps1-camineet-shop');
     }
     remove_scene() {
         super.remove_scene();
-        sound.stopAll();
-        sound.play('ps1-town');
+        setbgmusic('ps1-town');
     }
 };
 
@@ -317,13 +320,11 @@ export class Shop3 extends CamineetScene {
     }
     init(){
         super.init();
-        sound.stopAll();
-        sound.play('ps1-camineet-shop');
+        setbgmusic('ps1-camineet-shop');
     }
     remove_scene() {
         super.remove_scene();
-        sound.stopAll();
-        sound.play('ps1-town');
+        setbgmusic('ps1-town');
     }
 };
 
@@ -335,13 +336,11 @@ export class Church1 extends CamineetScene {
     }
     init(){
         super.init();
-        sound.stopAll();
-        sound.play('ps1-camineet-church');
+        setbgmusic('ps1-camineet-church');
     }
     remove_scene() {
         super.remove_scene();
-        sound.stopAll();
-        sound.play('ps1-town');
+        setbgmusic('ps1-town');
     }
 };
 

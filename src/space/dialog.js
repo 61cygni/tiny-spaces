@@ -115,7 +115,13 @@ export class Dialog{
         return ret; 
     }
     displayText() {
-        let newtext = new PIXI.Text({ text: this.msg.substring(this.startindex, this.endindex), style: this.style });
+        let appendme = "";
+        if(this.pagepause && this.endindex != this.msg.length){
+            appendme = "\n                <cont...>"
+
+        }
+        let newstr = this.msg.substring(this.startindex, this.endindex) + appendme;
+        let newtext = new PIXI.Text({ text: newstr, style: this.style });
         newtext.x = this.text.x; 
         newtext.y = this.text.y; 
         let oldtext = this.text;

@@ -42,14 +42,11 @@ window.addEventListener(
             return;
         }
 
-        if (event.code == 'KeyM'){
-            mtoggle = !mtoggle;
-            if(mtoggle){
-                sound.play('ps1-town');
-            }else{
-                //sound.stop('ps1-town');
-                sound.stopAll();
-            }
+        if (event.code == 'KeyM') {
+            sound.toggleMuteAll()
+            // if (gameevents) {
+            //     gameevents.togglesound();
+            // }
         } 
 
 
@@ -71,15 +68,6 @@ window.addEventListener(
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             Alice.goDir('LEFT');
         }
-
-        
-        // else if (event.code == 'Space'){
-        //     if(dstack[0].finished){
-        //         dstack[0].leave();
-        //     } else {
-        //         dstack[0].nextpage();
-        //     }
-        // }
 
     }
 );

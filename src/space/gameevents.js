@@ -3,6 +3,8 @@ import * as PIXI from 'pixi.js'
 import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 
+import { sound } from '@pixi/sound';
+
 export class StaticBackground {
 
     // x,y are coordinates to return Alice too
@@ -185,6 +187,10 @@ export class GameEvents {
         this.level = being.level;
         this.dstack = [];
 
+        // sound
+        this.stoggle = false; // toggle sound
+        this.bgmusic = null; // background music to play
+
         this.pauseevents = false;
         this.esc = false; // has the escape key been pressed?
 
@@ -193,6 +199,27 @@ export class GameEvents {
 
         this.bg = null;
         this.input = null;
+    }
+
+    togglesound(){
+        this.stoggle = !this.stoggle;
+        if(this.stoggle){
+            if (this.bgmusic) {
+                sound.play(this.bgmusic);
+                sound.loop = true;
+            }
+        }else{
+            sound.stopAll();
+        }
+    }
+
+    setbgmusic(newsong){
+        this.bgmusic = newsong;
+        if(sound.isPlaying()){
+            sound.stopAll();
+            sound.play(this.bgmusic);
+            sound.loop = true;
+        }
     }
 
     dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {
@@ -204,7 +231,7 @@ export class GameEvents {
 
         // if an existing dialog is up and pinned, append to that dialog
         if (this.dstack.length > 0 && this.dstack[0].pinned) {
-            this.dstack[0].append(text);
+            this.dstack[0].append("\n\n"+text);
         } else {
             let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);
             this.dstack.push(d);
