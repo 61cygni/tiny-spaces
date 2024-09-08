@@ -17,6 +17,7 @@ let gameevents = null;
 
 let dstack = [];
 
+// TODO : move to separate file
 window.addEventListener(
     "keydown", (event) => {
 
@@ -44,9 +45,6 @@ window.addEventListener(
 
         if (event.code == 'KeyM') {
             sound.toggleMuteAll()
-            // if (gameevents) {
-            //     gameevents.togglesound();
-            // }
         } 
 
 
@@ -57,16 +55,16 @@ window.addEventListener(
         }
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            Alice.goDir('UP');
+            Alis.goDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
-            Alice.goDir('DOWN');
+            Alis.goDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
-            Alice.goDir('RIGHT');
+            Alis.goDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
-            Alice.goDir('LEFT');
+            Alis.goDir('LEFT');
         }
 
     }
@@ -76,85 +74,59 @@ window.addEventListener(
     "keyup", (event) => {
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            Alice.stopDir('UP');
+            Alis.stopDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
             // DOWN
-            Alice.stopDir('DOWN');
+            Alis.stopDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
             // Right 
-            Alice.stopDir('RIGHT');
+            Alis.stopDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             // Left 
-            Alice.stopDir('LEFT');
+            Alis.stopDir('LEFT');
         }
     }
 );
 
-
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-}
-
-const spritesheets = [
-    // 'spritesheets/ps2-main0.json',
-    // 'spritesheets/ps2-main1.json',
-    // 'spritesheets/ps2-main2.json',
-    // 'spritesheets/ps2-main3.json',
-    // 'spritesheets/ps2-others0.json',
-    // 'spritesheets/ps2-others1.json',
-    // 'spritesheets/ps2-others2.json',
-    // 'spritesheets/ps2-others3.json',
-    // 'spritesheets/ps2-small0.json',   
-    // 'spritesheets/ps2-small1.json',
-    // 'spritesheets/ps2-small2.json',
-    // 'spritesheets/ps1-others0.json',
-    // 'spritesheets/ps1-others1.json',
-    // 'spritesheets/ps1-others2.json',
-    //'spritesheets/ys0.json',
-    //'spritesheets/ys1.json',
-    //'spritesheets/ff6-celes0.json',
-    //'spritesheets/ff6-cyan0.json'
-]
-
-const alicespritesheet = 'spritesheets/alice2.json';
-let Alice = null; 
-
-// let beings = []
-
+// Pixi init
 const app = new PIXI.Application();
 app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas') });
 
+// Creaet Alis 
+const alicespritesheet = 'spritesheets/alice2.json';
 const sheet = await Assets.load(alicespritesheet);
-Alice = new BEING.Being(app, sheet, null);
+let Alis = new BEING.Being(app, sheet, null);
 
-function init(inlevel) {
-    level = inlevel;
-
-    Alice.level = level;
+// "main loop" called after level loads
+// Order of loading is:
+// 1. Level map (includes labels)
+// 2. Alis
+// 3. Game event harness
+// 4. Level specific logic
+function init(level) {
 
     let start = level.coordsdict.get("start");
+    console.log("Alis start " + start[0] + " : " + start[1]);
 
-    console.log("Alice start "+start[0]+" : "+start[1]);
-    Alice.arrive(start[0] * level.tiledimx,start[1] * level.tiledimy - 14);
+    Alis.level = level;
+    Alis.arrive(start[0] * level.tiledimx, start[1] * level.tiledimy - 14);
 
-    gameevents = new GAME.GameEvents(Alice);
+    // game event harness
+    gameevents = new GAME.GameEvents(Alis);
 
+    // Level specific logic 
     CAM.init(gameevents);
 
-    // Add a ticker callback to move the sprite back and forth
-    let elapsed = 0.0;
     const ticker = new Ticker();
 
     ticker.stop();
     ticker.add((deltaTime) => {
-        elapsed += ticker.deltaTime;
-        Alice.tick(ticker.deltaTime);
-        gameevents.tick(ticker.deltaTime);
+        Alis.tick(deltaTime);
+        gameevents.tick(deltaTime);
     });
-
 
     ticker.speed = .2;
     ticker.start();

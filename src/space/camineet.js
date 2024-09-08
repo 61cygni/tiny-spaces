@@ -15,11 +15,13 @@ import { sound } from '@pixi/sound';
 
 export const MAPFILE = "../maps/ps1-camineet.js";
 
+// Helper function to change music
 function setbgmusic(newsong){
         sound.stopAll();
         sound.play(newsong, {loop: true});
 }
 
+// Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 export function static_images(){
     // all static images to load;
     let static_img = [];
@@ -45,15 +47,13 @@ export function static_images(){
 
 export function init(gameevents) {
 
+    // Sound for camineet
     sound.add('ps1-town', '../music/ps1-town.mp3');
     sound.add('ps1-camineet-shop', './ps1/ps1-shop.mp3');
     sound.add('ps1-camineet-church', './ps1/ps1-camineet-church.mp3');
 
     sound.volumeAll = 0.05;
     sound.play('ps1-town', {loop: true });
-
-    // gameevents.togglesound(); // start with sound off
-    // gameevents.setbgmusic('ps1-town');
 
     let house2 = new House2(gameevents);
     let house1 = new House1(gameevents);
@@ -100,25 +100,60 @@ export function init(gameevents) {
 
 } // init
 
+// CamineetSceneOptions
+//
+// {
+// bg   :   "background image",
+// slug :   "intro prompt slug",
+// slug2 : "conversation prompt slug",
+// music : "music to play during scene",
+// character : "name of character for scene,
+// chat : bool, // add a chat input
+// orig_dialog = "original game dialog" 
+// }
+//
+
+
 class CamineetScene {
 
-    constructor(gevents, bg, slug, slug2 = "", character = false, chat = false) {
+    //constructor(gevents, bg, slug, slug2 = "", character = null, chat = false) {
+    constructor(gevents, options) {
         this.gevents = gevents;
-        this.bg = gevents.level.static_assets.get(bg); // FIXME (better name)
-        this.visits = 0;
-        this.slug = slug; // BT prompt slug. If this is "" just use orig_dialog
-        this.slug2 = slug2; // Prompt during chat (doesn't include intro)
-        if(character){
-            this.character = gevents.level.static_assets.get(character);
-        }else{
-            this.character = null;
+        if(!Object.hasOwn(options,'bg')){
+            console.log("ERR: CamineetScene:error options needs to specify bg")
+            return;
         }
-        this.chat = chat; // whether you can chat with this character
+        this.bg = gevents.level.static_assets.get(options.bg); 
+        this.slug = "";
+        if(Object.hasOwn(options,'slug')){
+            this.slug = options.slug;
+        }
+        this.slug2 = ""; // Prompt during chat (doesn't include intro)
+        if(Object.hasOwn(options,'slug2')){
+            this.slug2 = options.slug2;
+        }
+        this.character = null;
+        if(Object.hasOwn(options,'character')){
+            this.character = gevents.level.static_assets.get(options.character);
+        }
+        this.chat = false;
+        if(Object.hasOwn(options,'character')){
+            this.chat = options.chat; // whether you can chat with this character
+        }
 
+        this.orig_dialog = "";
+        if(Object.hasOwn(options,'orig_dialog')){
+            this.orig_dialog = options.orig_dialog; // original game dialog 
+        }
+
+        this.music = null
+        if(Object.hasOwn(options,'music')){
+            this.music = options.music; // original game dialog 
+        }
+
+        this.visits = 0;
         this.finished = false;
 
-        // original dialog from game. Should be set by child class
-        this.orig_dialog = "";
     } // constructor
 
     // after first dialog, create input
@@ -155,6 +190,9 @@ class CamineetScene {
         this.visits += 1;
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 
+        if(this.music){
+            setbgmusic(this.music);
+        }
     }
 
     // Scene to load once screen fades in 
@@ -164,6 +202,7 @@ class CamineetScene {
             this.gevents.level.app.stage.addChild(this.character);
         }
         if(this.slug == ""){
+            console.log("ORIG ORGI" +this.orig_dialog);
             this.gevents.dialog_now(this.orig_dialog);
         }
         else { 
@@ -193,154 +232,180 @@ class CamineetScene {
         if(this.character){
             this.gevents.level.app.stage.removeChild(this.character);
         }
+        if(this.music){
+            setbgmusic('ps1-town');
+        }
     }
 
 }; // class Camineet house 
 
 export class House1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house-1-0da4", "", "vill1");
-        console.log("HOUSE! "+ this.slug);
-        // original dialog from game
-        this.orig_dialog = "I'M NEKISE. ONE HEARS LOTS OF STORIES, YOU KNOW, BUT SOME SAY THAT A FIGHTER NAMED ODIN LIVES IN A TOWN CALLED SCION. ALSO, I HAVE A LACONION POT GIVEN BY NERO. THAT WOULD BE HELPFUL IN YOUR TASK.";
+        super(gevents, 
+            { bg: "bg", 
+              slug: "camineet-house-1-0da4", 
+              character: "vill1",
+               orig_dialog:  "I'M NEKISE. ONE HEARS LOTS OF STORIES, YOU KNOW, BUT SOME SAY THAT A FIGHTER NAMED ODIN LIVES IN A TOWN CALLED SCION. ALSO, I HAVE A LACONION POT GIVEN BY NERO. THAT WOULD BE HELPFUL IN YOUR TASK."
+            });
     }
 };
 
 export class House2 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "alice-home-9fee");
-        // original dialog from game
-        this.orig_dialog = "HERE IS THE HOME OF ALICE.";
+        super(gevents, 
+            { bg: "bg", 
+              slug: "alice-home-9fee",
+              orig_dialog:  "HERE IS THE HOME OF ALICE."
+            });
     }
 };
 
 export class House3 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house-3-intro-4857", "camineet-house3-6471", "vill2", true);
-        // original dialog from game
-        this.orig_dialog = "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."; 
+        super(gevents, 
+            {
+                bg:"bg", 
+                slug: "camineet-house-3-intro-4857", 
+                slug2: "camineet-house3-6471", 
+                character: "vill2", 
+                chat: true,
+                orig_dialog: "I'M SUELO. I KNOW HOW YOU MUST FEEL, DEAR, NO ONE CAN STOP YOU FROM DOING WHAT YOU KNOW YOU MUST DO. BUT IF YOU SHOULD EVER BE WOUNDED IN BATTLE, COME HERE TO REST."
+            });
     }
 };
 
 export class House4 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "", "", "vill1", false);
-        // original dialog from game
-        this.orig_dialog = "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS";
+        super(gevents, 
+            {
+                bg: "bg", 
+                character: "vill1",
+                orig_dialog: "YOU NEED A DUNGEON KEY TO OPEN LOCKED DOORS"
+            });
     }
 };
 
 export class House5 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "bg", "camineet-house-5-intro-3bd5", "camineet-house-5-c9f7", "vill4", true);
-        // original dialog from game
-        this.orig_dialog = "DO YOU KNOW ABOUT THE PLANETS OF THE ALGOL STAR SYSTEM?";
+        super(gevents, 
+            {
+                bg: "bg", 
+                slug: "camineet-house-5-intro-3bd5", 
+                slug2: "camineet-house-5-c9f7", 
+                character: "vill4", 
+                chat: true,
+                orig_dialog:  "DO YOU KNOW ABOUT THE PLANETS OF THE ALGOL STAR SYSTEM?"
+            });
     }
 };
 
 export class Man1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "", "vill3", true);
-        // original dialog from game
-        this.orig_dialog = "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT";
+        super(gevents, 
+            {
+                bg:"city-bg", 
+                character: "vill3", 
+                chat: true,
+                orig_dialog: "IN SOME DUNGEONS YOU WONT GET FAR WITHOUT A LIGHT"
+            });
     }
 };
 
 export class Man2 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "camineet-man-2-dcdf", "", "vill3", false);
-        // original dialog from game
-        this.orig_dialog = "THERE IS A SPACEPORT TO THE WEST OF CAMINEET";
+        super(gevents, 
+            {
+                bg: "city-bg", 
+                slug: "camineet-man-2-dcdf", 
+                character: "vill3",
+                orig_dialog:  "THERE IS A SPACEPORT TO THE WEST OF CAMINEET"
+            });
     }
 };
 
 export class Man3 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "", "vill3", true);
-        // original dialog from game
-        this.orig_dialog = "IF YOU WANT TO MAKE A DEAL. YOU WANT TO HEAD TO THE PORT TOWN.";
+        super(gevents,
+            {
+                bg: "city-bg",
+                character: "vill3",
+                chat: true,
+                orig_dialog: "IF YOU WANT TO MAKE A DEAL. YOU WANT TO HEAD TO THE PORT TOWN."
+            });
     }
 };
 
 export class Man4 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "", "vill3", true);
-        // original dialog from game
-        this.orig_dialog = "THE CAMINEET RESIDENTIAL AREA IS UNDER MARTIAL LAW.";
+        super(gevents,
+            {
+                bg: "city-bg",
+                character: "vill3",
+                chat: true,
+                orig_dialog: "THE CAMINEET RESIDENTIAL AREA IS UNDER MARTIAL LAW."
+            });
     }
 };
 
 export class Guard1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "city-bg", "", "", "guard1", true);
-        // original dialog from game
-        this.orig_dialog = "YOU MAY NOT PASS.";
+        super(gevents,
+            {
+                bg: "city-bg",
+                character: "guard1",
+                orig_dialog:  "YOU MAY NOT PASS."
+            });
     }
 };
 
 export class Shop1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "armory-bg", "camineet-shop-1-intro-fbe9", "camineet-shop-1-15e3", "vill3-half", true);
-        // original dialog from game
-        this.orig_dialog = "GUARDS SELL BETTER SHIT.";
-    }
-
-    init(){
-        super.init();
-        setbgmusic('ps1-camineet-shop');
-    }
-    remove_scene() {
-        super.remove_scene();
-        setbgmusic('ps1-town');
+        super(gevents, 
+            {
+                bg: "armory-bg", 
+                slug: "camineet-shop-1-intro-fbe9", 
+                slug2: "camineet-shop-1-15e3", 
+                character: "vill3-half", 
+                chat: true,
+                orig_dialog: "GUARDS SELL BETTER SHIT.",
+                music: "ps1-camineet-shop"
+            });
     }
 };
 
 export class Shop2 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "food-bg", "", "", "vill5-half", true);
-        // original dialog from game
-        this.orig_dialog = "Buy giblits!.";
-    }
-
-    init(){
-        super.init();
-        setbgmusic('ps1-camineet-shop');
-    }
-    remove_scene() {
-        super.remove_scene();
-        setbgmusic('ps1-town');
+        super(gevents,
+            {
+                bg: "food-bg",
+                character: "vill5-half",
+                orig_dialog: "Buy giblits!.",
+                music: "ps1-camineet-shop"
+            });
     }
 };
 
 export class Shop3 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "second-hand-bg", "", "", "vill1-half", true);
-        // original dialog from game
-        this.orig_dialog = "Buy crap!.";
-    }
-    init(){
-        super.init();
-        setbgmusic('ps1-camineet-shop');
-    }
-    remove_scene() {
-        super.remove_scene();
-        setbgmusic('ps1-town');
+        super(gevents, 
+            {
+                bg: "second-hand-bg",  
+                character: "vill1-half",
+                orig_dialog: "Buy crap!",
+               music: "ps1-camineet-shop"
+            });
     }
 };
 
 export class Church1 extends CamineetScene {
     constructor(gevents) {
-        super(gevents, "church-bg", "", "", "priest-half", true);
-        // original dialog from game
-        this.orig_dialog = "Save your soul!.";
-    }
-    init(){
-        super.init();
-        setbgmusic('ps1-camineet-church');
-    }
-    remove_scene() {
-        super.remove_scene();
-        setbgmusic('ps1-town');
+        super(gevents, 
+            {
+                bg: "church-bg", 
+                character: "priest-half",
+                orig_dialog: "Save your soul!",
+                music: "ps1-camineet-church"
+            });
     }
 };
 
