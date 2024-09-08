@@ -5,6 +5,11 @@ import * as INPUT from './input.js'
 
 import { sound } from '@pixi/sound';
 
+// -- 
+// "Parent" class (doesn't use inheritence uses composition) that
+// is a state machine for displaying a static scene in the level. This
+// is used for hoses, shops, church's battles, etc. 
+// -- 
 export class StaticBackground {
 
     // x,y are coordinates to return Alice too
@@ -178,6 +183,9 @@ class FadeIn{
 
 } // class FadeIn
 
+// --
+// Per scene event haness. Manages dialogs, input, label handler callbacks, etc.
+// --
 export class GameEvents {
 
     constructor(being) {
@@ -185,11 +193,7 @@ export class GameEvents {
         this.beingx = being.curanim.x
         this.beingy = being.curanim.y
         this.level = being.level;
-        this.dstack = [];
-
-        // sound
-        this.stoggle = false; // toggle sound
-        this.bgmusic = null; // background music to play
+        this.dqueue = [];
 
         this.pauseevents = false;
         this.esc = false; // has the escape key been pressed?
@@ -201,92 +205,85 @@ export class GameEvents {
         this.input = null;
     }
 
-    togglesound(){
-        this.stoggle = !this.stoggle;
-        if(this.stoggle){
-            if (this.bgmusic) {
-                sound.play(this.bgmusic);
-                sound.loop = true;
-            }
-        }else{
-            sound.stopAll();
-        }
-    }
-
-    setbgmusic(newsong){
-        this.bgmusic = newsong;
-        if(sound.isPlaying()){
-            sound.stopAll();
-            sound.play(this.bgmusic);
-            sound.loop = true;
-        }
-    }
-
+    // --
+    // Display a dialog on the screen. Uses a stack to manage multiple dialog requests
+    // -- 
     dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {
         // if an existing dialog is up and finished, clean it up
-        if (this.dstack.length > 0 && this.dstack[0].finished) {
-            this.dstack[0].leave();
-            this.dstack.shift();
+        if (this.dqueue.length > 0 && this.dstack[0].finished) {
+            this.dqueue[0].leave();
+            this.dqueue.shift();
         }
 
         // if an existing dialog is up and pinned, append to that dialog
-        if (this.dstack.length > 0 && this.dstack[0].pinned) {
-            this.dstack[0].append("\n\n"+text);
+        if (this.dqueue.length > 0 && this.dstack[0].pinned) {
+            this.dqueue[0].append("\n\n"+text);
         } else {
             let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);
-            this.dstack.push(d);
+            this.dqueue.push(d);
             d.arrive();
         }
     }
 
+    // --
+    // Delete all pending dialogs
+    // -- 
     clear_dialogs(){
-        while(this.dstack.length){
-            let d = this.dstack.shift();
+        while(this.dqueue.length){
+            let d = this.dqueue.shift();
             d.leave();
         }
     }
 
+    // --
+    // Pop up text box for user input 
+    // -- 
     input_now(text, callme){
         this.input = new INPUT.TextInput(this, text, callme);
         this.input.arrive();
     }
 
     input_leave(){
-        console.log("INPUT_LEAVE "+this.input);
         if (this.input) {
             this.input.leave();
         }
     }
 
 
+    // -- 
+    // keyboard handler for managing dialog paging etc.
+    // --
     handle_event(event) {
-        if( this.dstack.length == 0 && this.eventqueue.length == 0){
+        if( this.dqueue.length == 0 && this.eventqueue.length == 0){
             return false; // nothing to handle
         }
         if (event.code == 'Space') {
             event.preventDefault();
 
-            if (this.dstack.length == 0){
+            if (this.dqueue.length == 0){
                 return;
             }
-            else if (this.dstack[0].finished) {
-                if (!this.dstack[0].pinned) {
-                    this.dstack[0].leave();
-                    this.dstack.shift();
+            else if (this.dqueue[0].finished) {
+                if (!this.dqueue[0].pinned) {
+                    this.dqueue[0].leave();
+                    this.dqueue.shift();
                 }
             } else {
-                this.dstack[0].nextpage();
+                this.dqueue[0].nextpage();
             }
         }
         return true;
     }
 
+    // -- 
+    // Determine if Alis is on a label on the map. If so return label
+    // --
     checkLabel(x, y){
         if(!this.level){
             return null;
         }
-        let coordsx = Math.floor(x / 16);
-        let coordsy = Math.floor((y+20) / 16);
+        let coordsx = Math.floor(x / this.level.tiledimx);
+        let coordsy = Math.floor((y+20) / this.level.tiledimy); // FIXME MAGIC #
         let ret = this.level.labeldict.get(""+coordsx+":"+coordsy);
         if (ret) {
             console.log("Found label "+ ret.label+ " x:"+coordsx+" y:"+coordsy);
@@ -295,22 +292,37 @@ export class GameEvents {
         return null;
     }
 
+    // --
+    // To be called when Alis steps on a label
+    // --
     register_label_handler(label, handler) {
         this.label_handlers.set(label, handler);
     }
 
-    add_to_event_queue(task) {
+    // --
+    // Even being called per tick
+    // --
+    add_to_tick_event_queue(task) {
         this.eventqueue.push(task);
         if (this.eventqueue.length == 1) {
             this.eventqueue[0].init();
         }
     }
 
-    tick(delta){
+    // --
+    // Main per-scene game loop
+    // Sequence:
+    // 
+    // 1. Tick dialog first
+    // 2. Tick event queue next 
+    // 3. If event queue is empty check labels and fire handlers
+    //
+    // --
+    tick(delta) {
 
         // handle dialog queue first. 
-        if(this.dstack.length > 0){
-         this.dstack[0].tick(delta);
+        if (this.dqueue.length > 0) {
+            this.dqueue[0].tick(delta);
         } 
 
         if (this.eventqueue.length > 0) {
@@ -324,22 +336,22 @@ export class GameEvents {
                 event.finalize();
             }
         } else {
-            // FIXME!! Only need to check if moved 
-            if (this.being.x != this.being.curanim.x || this.being.y != this.being.curanim.y) {
-                this.being.x = this.being.curanim.x;
-                this.being.y = this.being.curanim.y;
+
+            if (this.beingx != this.being.curanim.x || this.beingy != this.being.curanim.y) {
+                this.beingx = this.being.curanim.x;
+                this.beingy = this.being.curanim.y;
 
                 // check current x,y to see if there is a label. And if so if we have a handler.
                 const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
                 if (label) {
                     for (let [key, value] of this.label_handlers) {
                         if (label == key) {
-                            this.add_to_event_queue(value);
+                            this.add_to_tick_event_queue(value);
                         }
                     }
                 }
             }
         } // if eventqueue
-    }
+    } // Tick (main loop)
 
 } // class GameEvents

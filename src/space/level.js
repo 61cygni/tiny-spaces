@@ -1,3 +1,7 @@
+// --
+// Handles map and labels for a given level.
+// Loads map from file, creates a js Map() of labels
+// --
 import * as PIXI from 'pixi.js'
 
 import { g_ctx }  from  '../shared/lecontext.js' // global context
@@ -18,8 +22,9 @@ export class StaticImage {
 
 export class LevelContext {
 
-    constructor(app, mod) {
+    constructor(app, mod, name) {
         this.app = app
+        this.name = name
         this.container = new PIXI.Container();
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
@@ -176,9 +181,9 @@ async function loadStaticImages(level, static_images) {
     level.label_handlers = new Map();
 }
 
-async function loadAssetsSync(app, mod, static_images, callme) {
+async function loadAssetsSync(app, mod, name, static_images, callme) {
 
-    let level = new LevelContext(app, mod);
+    let level = new LevelContext(app, mod, name);
 
     await loadStaticImages(level, static_images);
 
@@ -208,18 +213,18 @@ async function loadAssetsSync(app, mod, static_images, callme) {
 }
 
 
-function loadMapFromModule(app, mod, static_images, callme) {
+function loadMapFromModule(app, mod, name, static_images, callme) {
     console.log(mod);
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
 
-    loadAssetsSync(app, mod, static_images, loadMapFromModuleFinish.bind(null, callme));
+    loadAssetsSync(app, mod, name, static_images, loadMapFromModuleFinish.bind(null, callme));
 }
 
-export function load(app, filename, static_images, callme) {
+export function load(app, name, filename, static_images, callme) {
     // level loading
     let mod = import(filename).then((mod) => {
-        loadMapFromModule(app, mod, static_images, callme);
+        loadMapFromModule(app, mod, name, static_images, callme);
     });
 }

@@ -15,12 +15,14 @@ let gameevents = null;
 const app = new PIXI.Application();
 app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas') });
 
-// Creaet Alis 
+// Alis  (main character)
 const alicespritesheet = 'spritesheets/alice2.json';
 const sheet = await Assets.load(alicespritesheet);
 let Alis = new BEING.Being(app, sheet, null);
 
-// "main loop" called after level loads
+// 
+// Initialization and main loop
+// 
 // Order of loading is:
 // 1. Level map (includes labels)
 // 2. Alis
@@ -45,7 +47,7 @@ function init(level) {
 
     const ticker = new Ticker();
 
-    ticker.stop();
+    // Main loop
     ticker.add((deltaTime) => {
         Alis.tick(deltaTime);
         gameevents.tick(deltaTime);
@@ -54,4 +56,4 @@ function init(level) {
     ticker.speed = .2;
     ticker.start();
 }
-LEVEL.load(app, CAM.MAPFILE, CAM.static_images(), init);
+LEVEL.load(app, "Camineet", CAM.MAPFILE, CAM.static_images(), init);

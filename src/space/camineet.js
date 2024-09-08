@@ -202,7 +202,6 @@ class CamineetScene {
             this.gevents.level.app.stage.addChild(this.character);
         }
         if(this.slug == ""){
-            console.log("ORIG ORGI" +this.orig_dialog);
             this.gevents.dialog_now(this.orig_dialog);
         }
         else { 
