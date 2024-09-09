@@ -3,7 +3,7 @@ import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
 
 import * as LEVEL  from './level.js';
-import * as BEING  from './being.js';
+import * as ALIS  from './alis.js';
 import * as GAME   from './gameevents.js';
 import * as KEY    from './keyevents.js';
 
@@ -18,7 +18,7 @@ app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas
 // Alis  (main character)
 const alicespritesheet = 'spritesheets/alice2.json';
 const sheet = await Assets.load(alicespritesheet);
-let Alis = new BEING.Being(app, sheet, null);
+let Alis = new ALIS.Alis(app, sheet, null);
 
 // 
 // Initialization and main loop
