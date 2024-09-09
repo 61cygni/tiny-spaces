@@ -192,9 +192,8 @@ class CamineetScene {
 
     firstpromptdone(val) {
         if (!this.finished) {
-            this.gevents.dialog_now(val, "inputbottom", this.dialogdone.bind(this), true);
+            this.gevents.dialog_now(this.name +": "+val, "inputbottom", this.dialogdone.bind(this), true);
         }
-        console.log("FIRST "+this.finished+" : "+this.chat);
         if (!this.finished && this.chat) {
             this.gevents.input_now("", this.inputcallme.bind(this));
         }
