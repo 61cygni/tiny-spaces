@@ -214,13 +214,13 @@ export class GameEvents {
     // -- 
     dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {
         // if an existing dialog is up and finished, clean it up
-        if (this.dqueue.length > 0 && this.dstack[0].finished) {
+        if (this.dqueue.length > 0 && this.dqueue[0].finished) {
             this.dqueue[0].leave();
             this.dqueue.shift();
         }
 
         // if an existing dialog is up and pinned, append to that dialog
-        if (this.dqueue.length > 0 && this.dstack[0].pinned) {
+        if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
             this.dqueue[0].append("\n\n"+text);
         } else {
             let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);

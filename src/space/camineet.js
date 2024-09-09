@@ -132,6 +132,12 @@ class CamineetScene {
             return;
         }
         this.bg = gevents.level.static_assets.get(options.bg); 
+
+        this.name = "Villager";
+        if(Object.hasOwn(options,'name')){
+            this.name = options.name;
+        }
+
         this.slug = "";
         if(Object.hasOwn(options,'slug')){
             this.slug = options.slug;
@@ -145,7 +151,7 @@ class CamineetScene {
             this.character = gevents.level.static_assets.get(options.character);
         }
         this.chat = false;
-        if(Object.hasOwn(options,'character')){
+        if(Object.hasOwn(options,'chat')){
             this.chat = options.chat; // whether you can chat with this character
         }
 
@@ -179,7 +185,7 @@ class CamineetScene {
     // dialog whilechatting
     dodialog(user, val) {
         if (!this.finished) {
-            let str = "You: "+user+"\nVillager: "+val;
+            let str = "You: "+user+"\n"+this.name+": "+val;
             this.gevents.dialog_now(str, "inputbottom", null, true);
         }
     }
@@ -188,6 +194,7 @@ class CamineetScene {
         if (!this.finished) {
             this.gevents.dialog_now(val, "inputbottom", this.dialogdone.bind(this), true);
         }
+        console.log("FIRST "+this.finished+" : "+this.chat);
         if (!this.finished && this.chat) {
             this.gevents.input_now("", this.inputcallme.bind(this));
         }
@@ -272,6 +279,7 @@ export class House3 extends CamineetScene {
         super(gevents, 
             {
                 bg:"bg", 
+                name: "Suelo",
                 slug: "camineet-house-3-intro-4857", 
                 slug2: "camineet-house3-6471", 
                 character: "vill2", 
@@ -421,6 +429,8 @@ export class AlisAI extends CamineetScene {
         super(gevents, 
             {
                 bg:"city-bg", 
+                name: "AI",
+                slug: "alisai-44a9",
                 chat: true,
                 orig_dialog: "CHECK YOUR ITEMS AND SHIT"
             });
