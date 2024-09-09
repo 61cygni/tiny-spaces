@@ -37,9 +37,12 @@ export class Being {
     }
 
     arrive(x, y) {
+        if(x != null){
+            this.curanim.x = x
+            this.curanim.y = y
+        }
+
         this.curanim = this.sprites[this.direction];
-        this.curanim.x = x
-        this.curanim.y = y
         this.curanim.animationSpeed = 0.1666;
         this.curanim.stop();
         this.app.stage.addChild(this.curanim);

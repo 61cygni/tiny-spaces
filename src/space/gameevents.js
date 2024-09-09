@@ -3,8 +3,6 @@ import * as PIXI from 'pixi.js'
 import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 
-import { sound } from '@pixi/sound';
-
 // -- 
 // "Parent" class (doesn't use inheritence uses composition) that
 // is a state machine for displaying a static scene in the level. This
@@ -13,7 +11,7 @@ import { sound } from '@pixi/sound';
 export class StaticBackground {
 
     // x,y are coordinates to return Alice too
-    constructor(logic, gevents, x, y) {
+    constructor(logic, gevents, x = null, y = null) {
         this.logic = logic;
         this.gevents = gevents;
         this.finished = false;
@@ -28,7 +26,7 @@ export class StaticBackground {
         this.logic.init(this);
         // fade out main level
         this.fade = new FadeOut(this.gevents);
-        this.gevents.being.leave();
+        this.gevents.alis.leave();
         this.finished = false;
     }
 
@@ -79,7 +77,11 @@ export class StaticBackground {
     }
 
     finalize() {
-        this.gevents.being.arrive(this.x,this.y);
+        if(this.x != null){
+            this.gevents.alis.arrive(this.x,this.y);
+        }else{
+            this.gevents.alis.arrive(this.x, this.y);
+        }
         this.state = 0;
         this.finished = true;
     }
@@ -188,15 +190,17 @@ class FadeIn{
 // --
 export class GameEvents {
 
-    constructor(being) {
-        this.being = being
-        this.beingx = being.curanim.x
-        this.beingy = being.curanim.y
-        this.level = being.level;
+    constructor(alis) {
+        this.alis = alis
+        this.alisoldx = alis.curanim.x
+        this.alisoldy = alis.curanim.y
+        this.level = alis.level;
         this.dqueue = [];
 
         this.pauseevents = false;
+
         this.esc = false; // has the escape key been pressed?
+        this.esc_handler = null; // fired when escape key is pressed
 
         this.eventqueue = []; // queue of game events
         this.label_handlers = new Map();
@@ -275,6 +279,10 @@ export class GameEvents {
         return true;
     }
 
+    handle_escape(){
+        this.esc = true;
+    }
+
     // -- 
     // Determine if Alis is on a label on the map. If so return label
     // --
@@ -299,8 +307,16 @@ export class GameEvents {
         this.label_handlers.set(label, handler);
     }
 
+    register_esc_handler(handler){
+        this.esc_handler = handler;
+    }
+
+    clear_esc_handler(handler){
+        this.esc_handler = null;
+    }
+
     // --
-    // Even being called per tick
+    // Even alis called per tick
     // --
     add_to_tick_event_queue(task) {
         this.eventqueue.push(task);
@@ -316,6 +332,7 @@ export class GameEvents {
     // 1. Tick dialog first
     // 2. Tick event queue next 
     // 3. If event queue is empty check labels and fire handlers
+    // 4. if no handlers fired, check if esc key was hit, in which case fire escape handler
     //
     // --
     tick(delta) {
@@ -337,18 +354,28 @@ export class GameEvents {
             }
         } else {
 
-            if (this.beingx != this.being.curanim.x || this.beingy != this.being.curanim.y) {
-                this.beingx = this.being.curanim.x;
-                this.beingy = this.being.curanim.y;
+            let firedhandler = false;
+            if (this.alisoldx != this.alis.curanim.x || this.alisoldy != this.alis.curanim.y) {
+                this.alisoldx = this.alis.curanim.x;
+                this.alisoldy = this.alis.curanim.y;
 
                 // check current x,y to see if there is a label. And if so if we have a handler.
-                const label = this.checkLabel(this.being.curanim.x, this.being.curanim.y);
+                const label = this.checkLabel(this.alis.curanim.x, this.alis.curanim.y);
+                // XXX FIXME. Currently linear search through all lable handlers. Should be constant time
+                //            lookup.
                 if (label) {
                     for (let [key, value] of this.label_handlers) {
                         if (label == key) {
+                            firedhandler = true;
                             this.add_to_tick_event_queue(value);
                         }
                     }
+                }
+            }
+            if(!firedhandler && this.esc){
+                if(this.esc_handler){
+                    this.add_to_tick_event_queue(this.esc_handler);
+                    this.esc = false;
                 }
             }
         } // if eventqueue

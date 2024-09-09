@@ -55,6 +55,8 @@ export function init(gameevents) {
     sound.volumeAll = 0.05;
     sound.play('ps1-town', {loop: true });
 
+    sound.toggleMuteAll();
+
     let house2 = new House2(gameevents);
     let house1 = new House1(gameevents);
     let house3 = new House3(gameevents);
@@ -69,6 +71,8 @@ export function init(gameevents) {
     let shop2  = new Shop2(gameevents);
     let shop3  = new Shop3(gameevents);
     let church1  = new Church1(gameevents);
+
+    let alis_ai = new AlisAI(gameevents);
 
     // set up static background handlers for houses, NPCs
     gameevents.register_label_handler("house2", new GAME.StaticBackground(house2, gameevents, 31 * 16, (9 * 16) + 1));
@@ -85,6 +89,10 @@ export function init(gameevents) {
     gameevents.register_label_handler("shop2", new GAME.StaticBackground(shop2, gameevents, (23 * 16), (17 * 16)));
     gameevents.register_label_handler("shop3", new GAME.StaticBackground(shop3, gameevents, (25 * 16), (17 * 16)));
     gameevents.register_label_handler("church1", new GAME.StaticBackground(church1, gameevents, (33 * 16), (22 * 16)));
+
+    gameevents.register_esc_handler(new GAME.StaticBackground(alis_ai, gameevents));
+
+    // Intro blurb
 
     let str = "This is Camineet. Alice's hometown on planet Palma." +
         "Alice just witness the death of her brother nero." +
@@ -404,6 +412,17 @@ export class Church1 extends CamineetScene {
                 character: "priest-half",
                 orig_dialog: "Save your soul!",
                 music: "ps1-camineet-church"
+            });
+    }
+};
+
+export class AlisAI extends CamineetScene {
+    constructor(gevents) {
+        super(gevents, 
+            {
+                bg:"city-bg", 
+                chat: true,
+                orig_dialog: "CHECK YOUR ITEMS AND SHIT"
             });
     }
 };
