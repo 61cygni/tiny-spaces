@@ -22,6 +22,8 @@ var ContextCreate = (function(){
         this.g_layers = []; // level layers
         this.tilepadding = 0;
 
+        this.animatedtilemap = null; // map tile index to animated tile row
+
     }
 
     var instance;

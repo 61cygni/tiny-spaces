@@ -84,7 +84,6 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
     // animated sprites list
     text += ''+
     'export const animatedsprites = [\n';
-
     for(let x = 0 ; x < animated_tiles.length; x++){
         let atile = animated_tiles[x];
         text += '{ x: '+atile.x+", y: "+ atile.y+ ", w: "+ atile.width+ ", h: "+ atile.height ; 
@@ -92,21 +91,29 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
         text += ', speed: '+atile.animationSpeed;
         text += ', sheet: "'+ atile.spritesheetname+ '", animation: "'+ atile.animationname+'" },\n';
     }
-
     text += '];\n\n';
-
 
     // Map labels 
     text += ''+
     'export const maplabels = [\n';
-
     let map_labels = g_ctx.composite.labels;
     for(let x = 0 ; x < map_labels.length; x++){
         let alabel = map_labels[x];
         text += '{ sx: '+alabel.sx+", sy: "+ alabel.sy+ ", ex: "+ alabel.ex+ ", ey: "+ alabel.ey ; 
         text += ', label: "'+alabel.label+'" },\n';
     }
+    text += '];\n\n';
 
+    // Animated tile map 
+    text += ''+
+    'export const animatedtilemap = [\n';
+    if (g_ctx.animatedtilemap) {
+        let animmap = g_ctx.animatedtilemap;
+        for (let x = 0; x < animmap.length; x++) {
+            let indexrow = animmap[x];
+            text += '[' + indexrow[0] + ',  "' + indexrow[1] + '" ],\n'
+        }
+    }
     text += '];\n\n';
 
     text += 'export const mapwidth = bgtiles[0][0].length;\n';

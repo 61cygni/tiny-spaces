@@ -36,13 +36,15 @@
 //
 // 
 // Keybindings:
+// a - go through all registered animated sprites and add to map
+// r - reset all animations to first frame at the same time
+// 0-9 - set animation row from row0-9 for a given spritesheet
 // f - fill level 0 with current tile
-// <ctl>-z - undo
+// <ctl>-z - undo # currently broken
 // g - overlay 32x32 grid
 // s - generate .js file to move over to convex/maps/
 // m - place a semi-transparent red mask over all tiles. This helps find invisible tiles
 // d - hold while clicking a tile to delete
-// p - toggle between 16pixel and 32 pixel. 
 // 
 // Known bugs and annoyances
 //  - if deleting a tile while filter is on, filter isn't refreshed so need to toggle with "m"
@@ -564,6 +566,7 @@ function loadMapFromModule(mod) {
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
+    g_ctx.animatedtilemap = mod.animatedtilemap;
 
     initTilesSync(loadMapFromModuleFinish.bind(null, mod));
 }
@@ -767,8 +770,12 @@ window.addEventListener(
                 console.log("Error: no spritesheet loaded. bailing");
                 return;
             }
+            if(!g_ctx.animatedtilemap){
+                console.log("Error: no animatedtilemap. bailing");
+                return;
+            }
 
-            console.log("Adding all animations to base tiles");
+            console.log("Adding animations to base tiles");
             let layer0 = g_ctx.g_layers[0];
             for (var i = 0; i < layer0.container.children.length; i++) {
                 var child = layer0.container.children[i];
@@ -776,24 +783,10 @@ window.addEventListener(
                 if (child.hasOwnProperty('animationSpeed')) {
                     continue;
                 }
-                check_index_for_animation(layer0, child, 365, "row0");
-                check_index_for_animation(layer0, child, 1093, "row1");
-                check_index_for_animation(layer0, child, 1145, "row2");
-                check_index_for_animation(layer0, child, 1197, "row3");
-                check_index_for_animation(layer0, child, 1198, "row4");
-                check_index_for_animation(layer0, child, 1199, "row5");
-                check_index_for_animation(layer0, child, 1147, "row6");
-                check_index_for_animation(layer0, child, 1095, "row7");
-                check_index_for_animation(layer0, child, 1094, "row8");
-                check_index_for_animation(layer0, child, 1148, "row9");
-                check_index_for_animation(layer0, child, 1200, "row10");
-                check_index_for_animation(layer0, child, 1201, "row11");
-                check_index_for_animation(layer0, child, 1149, "row12");
-                check_index_for_animation(layer0, child, 943, "row13");
-                check_index_for_animation(layer0, child, 995, "row14");
-                check_index_for_animation(layer0, child, 996, "row15");
-                check_index_for_animation(layer0, child, 944, "row16");
-                check_index_for_animation(layer0, child, 997, "row17");
+                for(let ii = 0; ii < g_ctx.animatedtilemap.length; ii++){
+                    let indexrow = g_ctx.animatedtilemap[ii];
+                    check_index_for_animation(layer0, child, indexrow[0], indexrow[1]);
+                }
             }
             console.log("done");
         }

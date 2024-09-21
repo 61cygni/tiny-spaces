@@ -521,5 +521,26 @@ export const animatedsprites = [
 export const maplabels = [
 ];
 
+export const animatedtilemap = [
+   [365,  "row0"],
+   [1093, "row1" ],
+   [1145, "row2" ],
+   [1197, "row3" ],
+   [1198, "row4" ],
+   [1199, "row5" ],
+   [1147, "row6" ],
+   [1095, "row7" ],
+   [1094, "row8" ],
+   [1148, "row9" ],
+   [1200, "row10"],
+   [1201, "row11"],
+   [1149, "row12"],
+   [943,  "row13"],
+   [995,  "row14"],
+   [996,  "row15"],
+   [944,  "row16"],
+   [997,  "row17"],
+];
+
 export const mapwidth = bgtiles[0][0].length;
 export const mapheight = bgtiles[0].length;
