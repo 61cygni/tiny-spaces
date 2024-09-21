@@ -111,7 +111,8 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
     text += 'export const mapwidth = bgtiles[0][0].length;\n';
     text += 'export const mapheight = bgtiles[0].length;\n';
 
-    UTIL.download(text, "map.js", "text/plain");
+
+    UTIL.download(text, CONFIG.SAVEMAPFILENAME, "text/plain");
 }
 
 

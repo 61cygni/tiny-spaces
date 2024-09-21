@@ -33,31 +33,41 @@ export function initMainHTMLWindow() {
 
 
 
-
-
 // --
 // Initialize handlers loading a PNG file into the composite window 
 // --
 
+export async function loadCompositPNG(filename) {
+    let texture = await PIXI.Assets.load(filename);
+    const bg = new PIXI.Sprite(texture);
+    bg.x = 1;
+    bg.y = 5;
+    bg.zIndex = 0;
+    g_ctx.composite.container.addChild(bg);
+}
+
 export function initCompositePNGLoader() {
     const fileInput = document.getElementById('compositepng');
-    fileInput.onchange = (evt) => {
+    fileInput.onchange = async (evt) => {
         if (!window.FileReader) return; // Browser is not compatible
         if (g_ctx.debug_flag) {
             console.log("compositepng ", fileInput.files[0].name);
         }
         let bgname = fileInput.files[0].name;
-
-        const texture = PIXI.Texture.from("./tilesets/"+bgname);
-        const bg      = new PIXI.Sprite(texture);
-        bg.zIndex = 0;
-        g_ctx.composite.container.addChild(bg);
+        await loadCompositPNG("./tilesets/" + bgname);
     }
 }
 
 // -- 
 // initailized handler to load a spriteSheet into current working tile
 // --
+
+export async function loadSpriteSheet(filename) {
+    let sheet = await PIXI.Assets.load("./" + filename);
+    // console.log(sheet);
+    g_ctx.tileset.addTileSheet(filename, sheet);
+    g_ctx.selected_tiles = [];
+}
 
 export function initSpriteSheetLoader() {
     const fileInput = document.getElementById('spritesheet');
@@ -67,11 +77,7 @@ export function initSpriteSheetLoader() {
             console.log("spritesheet ", fileInput.files[0].name);
         }
         let ssname = fileInput.files[0].name;
-
-        let sheet = await PIXI.Assets.load("./"+ssname);
-        console.log(sheet);
-        g_ctx.tileset.addTileSheet(ssname, sheet);
-        g_ctx.selected_tiles = [];
+        await loadSpriteSheet(ssname);
     }
 }
 
@@ -97,6 +103,27 @@ export function initTilesetLoader(callme) {
 // initailized handler to load a level from a file 
 // --
 
+async function readFileSync(fileUrl) {
+    try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contents = await response.text(); // or response.json() for JSON files
+        console.log('File contents:', contents);
+        return contents;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        throw error; // Re-throw the error if you want calling code to handle it
+    }
+}
+
+export function loadLevel(filename, callme) {
+    console.log('Loading level from '+filename);
+    UTIL.readFile(filename, (content) => {
+        UTIL.doimport(content).then(mod => callme(mod));
+    });
+}
 
 export function initLevelLoader(callme) {
     let filecontent = "";

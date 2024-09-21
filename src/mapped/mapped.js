@@ -1,6 +1,14 @@
 
 // Simple level editer. 
 //
+// Animation TODO:
+// - support for variable animation speeds (setting animation speed)
+// Animation DONE:
+//  - support loading app with map and animated tileset preloaded 
+// - support for automatically adding aninated tiles on keypress 
+//   (perhaps go through all tiles, and then use a map to map from base tile to animation sequence. That 
+//    map can be done by hand for now)
+//
 // TODO:
 //  -- support delete for maplabels
 //  -- support for labels on map load
@@ -246,17 +254,17 @@ class LayerContext {
         let ctile2 = null;
 
         if(g_ctx.spritesheet != null){
-            ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations['row0']);
-            ctile2 =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations['row0']);
-            ctile.animationSpeed = .1;
-            ctile2.animationSpeed = .1;
+            ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
+            ctile2 =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
+            ctile.animationSpeed = .05;
+            ctile2.animationSpeed = .05;
             ctile.autoUpdate = true;
             ctile2.autoUpdate = true;
             ctile.play();
             ctile2.play();
 
             // HACK for now just stuff animated sprite details into the sprite
-            ctile.animationname   = 'row0';
+            ctile.animationname   = g_ctx.animrow;
             ctile.spritesheetname = g_ctx.spritesheetname; 
 
         } else {
@@ -375,8 +383,8 @@ class TilesetContext {
         g_ctx.spritesheet = sheet;
         g_ctx.spritesheetname = name;
 
-        let as =  new PIXI.AnimatedSprite(sheet.animations['row0']);
-        as.animationSpeed = .1;
+        let as =  new PIXI.AnimatedSprite(sheet.animations[g_ctx.animrow]);
+        as.animationSpeed = .05;
         as.autoUpdate = true;
         as.play();
         as.alpha = .5;
@@ -534,6 +542,14 @@ function loadMapFromModuleFinish(mod) {
 
     loadAnimatedSpritesFromModule(mod);
     loadMapLabelsFromModule(mod);
+
+    // Add hardwired PNG for composite window 
+    if(CONFIG.DEFAULTCOMPOSITEPNG != ""){
+        UI.loadCompositPNG(CONFIG.DEFAULTCOMPOSITEPNG);
+    }
+    if(CONFIG.DEFAULTSPRITESHEET != ""){
+        UI.loadSpriteSheet(CONFIG.DEFAULTSPRITESHEET);
+    }
 }
 
 function loadMapFromModule(mod) {
@@ -638,6 +654,30 @@ window.addEventListener(
             g_ctx.lkey = false;
         }
     });
+
+
+function check_index_for_animation(layer, child, index, row) {
+    if (child.index == index) {
+        let ctile = new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[row]);
+        let ctile2 = new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[row]);
+        ctile.animationSpeed = .05;
+        ctile2.animationSpeed = .05;
+        ctile.autoUpdate = true;
+        ctile2.autoUpdate = true;
+        ctile.play();
+        ctile2.play();
+        ctile.x = child.x;
+        ctile2.x = child.x;
+        ctile.y = child.y;
+        ctile2.y = child.y;
+        layer.container.addChild(ctile);
+        g_ctx.composite.container.addChild(ctile2);
+        console.log("Added animation for index " + child.index + " x: "+ctile.x+" :"+ctile.y);
+        return true;
+    }
+    return false;
+}
+
 window.addEventListener(
     "keydown", (event) => {
 
@@ -663,6 +703,86 @@ window.addEventListener(
         }
         else if (event.code == 'KeyG'){
             redrawGridAll(false);
+        } else if (event.code == 'Digit0'){
+            g_ctx.animrow = 'row0';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit1'){
+            g_ctx.animrow = 'row1';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit2'){
+            g_ctx.animrow = 'row2';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit3'){
+            g_ctx.animrow = 'row3';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit4'){
+            g_ctx.animrow = 'row4';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit5'){
+            g_ctx.animrow = 'row5';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit6'){
+            g_ctx.animrow = 'row6';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit7'){
+            g_ctx.animrow = 'row7';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit8'){
+            g_ctx.animrow = 'row8';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        }else if (event.code == 'Digit9'){
+            g_ctx.animrow = 'row9';
+            console.log("Setting animation row to "+g_ctx.animrow);
+        } else if (event.code == 'KeyR'){
+            // reset all animated sprites
+            // FIXME : current go through *all* tiles, not just animated tiles. 
+
+            console.log("Resetting all animations");
+            let layer0 = g_ctx.g_layers[0];
+            for (var i = 0; i < layer0.container.children.length; i++) {
+                var child = layer0.container.children[i];
+                // check if it's an animated sprite
+                if (child.hasOwnProperty('animationSpeed')) {
+                    child.gotoAndPlay(0);
+                    continue;
+                }
+            }
+            console.log("done");
+        } else if (event.code == 'KeyA'){
+            // iterate through all children and add animations for all sprites mapped animated sprites
+            if(g_ctx.spritesheet == null){
+                console.log("Error: no spritesheet loaded. bailing");
+                return;
+            }
+
+            console.log("Adding all animations to base tiles");
+            let layer0 = g_ctx.g_layers[0];
+            for (var i = 0; i < layer0.container.children.length; i++) {
+                var child = layer0.container.children[i];
+                // check if it's an animated sprite
+                if (child.hasOwnProperty('animationSpeed')) {
+                    continue;
+                }
+                check_index_for_animation(layer0, child, 365, "row0");
+                check_index_for_animation(layer0, child, 1093, "row1");
+                check_index_for_animation(layer0, child, 1145, "row2");
+                check_index_for_animation(layer0, child, 1197, "row3");
+                check_index_for_animation(layer0, child, 1198, "row4");
+                check_index_for_animation(layer0, child, 1199, "row5");
+                check_index_for_animation(layer0, child, 1147, "row6");
+                check_index_for_animation(layer0, child, 1095, "row7");
+                check_index_for_animation(layer0, child, 1094, "row8");
+                check_index_for_animation(layer0, child, 1148, "row9");
+                check_index_for_animation(layer0, child, 1200, "row10");
+                check_index_for_animation(layer0, child, 1201, "row11");
+                check_index_for_animation(layer0, child, 1149, "row12");
+                check_index_for_animation(layer0, child, 943, "row13");
+                check_index_for_animation(layer0, child, 995, "row14");
+                check_index_for_animation(layer0, child, 996, "row15");
+                check_index_for_animation(layer0, child, 944, "row16");
+                check_index_for_animation(layer0, child, 997, "row17");
+            }
+            console.log("done");
         }
         else if (event.ctrlKey && event.code === 'KeyZ'){
             let undome = UNDO.undo_pop();
@@ -1011,10 +1131,10 @@ function onLevelMouseover(e) {
 
     // FIXME test code
     if ( g_ctx.spritesheet != null){
-        let ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations['row0']);
-        let ctile2 =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations['row0']);
-        ctile.animationSpeed = .1;
-        ctile2.animationSpeed = .1;
+        let ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
+        let ctile2 =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
+        ctile.animationSpeed = .05;
+        ctile2.animationSpeed = .05;
         ctile.autoUpdate = true;
         ctile2.autoUpdate = true;
         ctile.alpha = .5;
@@ -1504,6 +1624,12 @@ async function init() {
     UI.initCompositePNGLoader();
     UI.initSpriteSheetLoader();
     UI.initTilesetLoader( loadMapFromModule.bind(null, g_ctx));
+
+    // load hardwired defaults
+    if(CONFIG.DEFAULTLEVEL != ""){
+        UI.loadLevel(CONFIG.DEFAULTLEVEL, loadMapFromModule);
+    }
+
 }
 
 init();

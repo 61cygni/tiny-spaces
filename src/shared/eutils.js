@@ -18,6 +18,22 @@ export function download(data, filename, type) {
     }
 }
 
+export function readFile(fileUrl, callme) {
+    return fetch(fileUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text(); // or response.json() for JSON files
+        })
+        .then(contents => {
+            callme(contents); // You can process the contents here or return them
+        })
+        .catch(error => {
+            console.error('Error reading file:', error);
+        });
+}
+
 export function doimport (str) {
     if (globalThis.URL.createObjectURL) {
       const blob = new Blob([str], { type: 'text/javascript' })
@@ -30,3 +46,4 @@ export function doimport (str) {
     const url = "data:text/javascript;base64," + btoa(moduleData)
     return import(url)
   }
+

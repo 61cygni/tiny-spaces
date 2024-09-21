@@ -1,4 +1,16 @@
-export const DEFAULTTILESETPATH = "./tilesets/gentle.png";
+
+// Hardwire presets
+export const DEFAULTTILESETPATH  = "../ps1/ps1-1.png";
+export const DEFAULTCOMPOSITEPNG = "";
+//export const DEFAULTCOMPOSITEPNG = "../ps1/overworld_palma.png"
+export const DEFAULTLEVEL        = "../ps1/palma.js"
+//export const DEFAULTSPRITESHEET  = "";
+export const DEFAULTSPRITESHEET  = "../ps1/palma-sprite.json" 
+
+export const SAVEMAPFILENAME     = "palma.js"; // 
+//export const SAVEMAPFILENAME     = "map.js"; // 
+
+
 //export const DEFAULTTILESETPATH = "./tilesets/magecity.png";
 //export const DEFAULTTILESETPATH = "./tilesets/forest.png";
 //export const DEFAULTTILESETPATH = "./tilesets/Serene.png";
@@ -12,8 +24,8 @@ export const tilesetpadding = 0;
 export const DEFAULTILEDIMX = 16; // px
 export const DEFAULTILEDIMY = 16; // px
 
-export const levelwidth  = 2048; // px
-export const levelheight = 1536; // px
+export const levelwidth  = 1984; // px
+export const levelheight = 1488; // px
 
 export let leveltilewidth  = Math.floor(levelwidth / DEFAULTILEDIMX);
 export let leveltileheight = Math.floor(levelheight / DEFAULTILEDIMX);

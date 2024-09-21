@@ -26,7 +26,7 @@ window.addEventListener(
 
         if(event.code == 'Escape'){
             if(gameevents){
-                gameevents.esc = true;
+                gameevents.handle_escape();
             }
         }
 

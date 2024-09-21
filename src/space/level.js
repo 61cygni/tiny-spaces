@@ -1,6 +1,7 @@
 // --
 // Handles map and labels for a given level.
 // Loads map from file, creates a js Map() of labels
+// Also loads all static images associated with a level (e.g. static backgrounds etc.)
 // --
 import * as PIXI from 'pixi.js'
 
