@@ -89,6 +89,7 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
         let atile = animated_tiles[x];
         text += '{ x: '+atile.x+", y: "+ atile.y+ ", w: "+ atile.width+ ", h: "+ atile.height ; 
         text += ', layer: '+atile.layer;
+        text += ', speed: '+atile.animationSpeed;
         text += ', sheet: "'+ atile.spritesheetname+ '", animation: "'+ atile.animationname+'" },\n';
     }
 

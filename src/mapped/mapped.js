@@ -506,7 +506,8 @@ function loadAnimatedSpritesFromModule(mod){
 
     for(let key of m.keys()){
         console.log("loadAnimatedSpritesFromModule: ",key);
-        PIXI.Assets.load("./"+key).then(
+        //PIXI.Assets.load("./"+key).then(
+        PIXI.Assets.load(key).then(
             function(sheet) {
 
                 // setup global state so we can use layer addTileLevelMethod
@@ -516,6 +517,7 @@ function loadAnimatedSpritesFromModule(mod){
                 for (let asprite of asprarray) {
                     // TODO FIXME, pass in animation name
                     console.log("Loading animation", asprite.animation);
+                    g_ctx.animrow =  asprite.animation;
                     g_ctx.g_layers[asprite.layer].addTileLevelPx(asprite.x, asprite.y, -1);
                 }
                 g_ctx.spritesheet     = null;
@@ -548,11 +550,17 @@ function loadMapFromModuleFinish(mod) {
         UI.loadCompositPNG(CONFIG.DEFAULTCOMPOSITEPNG);
     }
     if(CONFIG.DEFAULTSPRITESHEET != ""){
-        UI.loadSpriteSheet(CONFIG.DEFAULTSPRITESHEET);
+        // only load if there are no animated sprites in mod
+        if(!('animatedsprites' in mod) || mod.animatedsprites.length <= 0){
+            UI.loadSpriteSheet(CONFIG.DEFAULTSPRITESHEET);
+        }
     }
 }
 
 function loadMapFromModule(mod) {
+
+    g_ctx.spritesheet = null; // reset
+
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
@@ -673,6 +681,11 @@ function check_index_for_animation(layer, child, index, row) {
         layer.container.addChild(ctile);
         g_ctx.composite.container.addChild(ctile2);
         console.log("Added animation for index " + child.index + " x: "+ctile.x+" :"+ctile.y);
+
+        ctile.animationname   = row;
+        ctile.spritesheetname = g_ctx.spritesheetname; 
+
+
         return true;
     }
     return false;

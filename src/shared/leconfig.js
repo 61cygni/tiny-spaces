@@ -3,11 +3,14 @@
 export const DEFAULTTILESETPATH  = "../ps1/ps1-1.png";
 export const DEFAULTCOMPOSITEPNG = "";
 //export const DEFAULTCOMPOSITEPNG = "../ps1/overworld_palma.png"
-export const DEFAULTLEVEL        = "../ps1/palma.js"
+
+export const DEFAULTLEVEL        = "";
+//export const DEFAULTLEVEL        = "../ps1/palma.js"
+
 //export const DEFAULTSPRITESHEET  = "";
 export const DEFAULTSPRITESHEET  = "../ps1/palma-sprite.json" 
 
-export const SAVEMAPFILENAME     = "palma.js"; // 
+export const SAVEMAPFILENAME     = "palma-out.js"; // 
 //export const SAVEMAPFILENAME     = "map.js"; // 
 
 
