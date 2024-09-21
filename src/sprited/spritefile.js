@@ -1,6 +1,7 @@
 import * as CONFIG from './seconfig.js' 
-import * as UTIL from './eutils.js'
 import { g_ctx }  from './secontext.js' // global context
+
+import * as UTIL from '../shared/eutils.js'
 
 
 function generate_preamble() {
