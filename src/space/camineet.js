@@ -7,9 +7,10 @@
 // https://www.zophar.net/music/sega-master-system-vgm/phantasy-star
 //
 // -----
-import * as BT  from './bt.js';
+import * as BT     from './bt.js';
 import * as LEVEL  from './level.js';
 import * as GAME   from './gameevents.js';
+import * as SCENE  from './scene.js';
 
 import { sound } from '@pixi/sound';
 
@@ -135,151 +136,8 @@ export function init(gameevents) {
 
 } // init
 
-// CamineetSceneOptions
-//
-// {
-// bg   :   "background image",
-// slug :   "intro prompt slug",
-// slug2 : "conversation prompt slug",
-// music : "music to play during scene",
-// character : "name of character for scene,
-// chat : bool, // add a chat input
-// orig_dialog = "original game dialog" 
-// }
-//
 
-
-class CamineetScene {
-
-    //constructor(gevents, bg, slug, slug2 = "", character = null, chat = false) {
-    constructor(gevents, options) {
-        this.gevents = gevents;
-        if(!Object.hasOwn(options,'bg')){
-            console.log("ERR: CamineetScene:error options needs to specify bg")
-            return;
-        }
-        this.bg = gevents.level.static_assets.get(options.bg); 
-
-        this.name = "Villager";
-        if(Object.hasOwn(options,'name')){
-            this.name = options.name;
-        }
-
-        this.slug = "";
-        if(Object.hasOwn(options,'slug')){
-            this.slug = options.slug;
-        }
-        this.slug2 = ""; // Prompt during chat (doesn't include intro)
-        if(Object.hasOwn(options,'slug2')){
-            this.slug2 = options.slug2;
-        }
-        this.character = null;
-        if(Object.hasOwn(options,'character')){
-            this.character = gevents.level.static_assets.get(options.character);
-        }
-        this.chat = false;
-        if(Object.hasOwn(options,'chat')){
-            this.chat = options.chat; // whether you can chat with this character
-        }
-
-        this.orig_dialog = "";
-        if(Object.hasOwn(options,'orig_dialog')){
-            this.orig_dialog = options.orig_dialog; // original game dialog 
-        }
-
-        this.music = null
-        if(Object.hasOwn(options,'music')){
-            this.music = options.music; // original game dialog 
-        }
-
-        this.visits = 0;
-        this.finished = false;
-
-    } // constructor
-
-    // after first dialog, create input
-    dialogdone() {
-    }
-
-    // once user has entered text, call prompt
-    inputcallme(val){
-        if(this.slug2 != ""){
-            BT.bt(this.slug2, val, this.visits, this.dodialog.bind(this, val));
-        } else {
-            BT.bt(this.slug, val, this.visits, this.dodialog.bind(this, val));
-        }
-    }
-    // dialog whilechatting
-    dodialog(user, val) {
-        if (!this.finished) {
-            let str = "You: "+user+"\n"+this.name+": "+val;
-            this.gevents.dialog_now(str, "inputbottom", null, true);
-        }
-    }
-
-    firstpromptdone(val) {
-        if (!this.finished) {
-            this.gevents.dialog_now(this.name +": "+val, "inputbottom", this.dialogdone.bind(this), true);
-        }
-        if (!this.finished && this.chat) {
-            this.gevents.input_now("", this.inputcallme.bind(this));
-        }
-    }
-
-    // Called each time house is entered
-    init() {
-        this.visits += 1;
-        this.finished = false;
-        this.gevents.esc = false; // clean just in case. 
-        if(this.music){
-            setbgmusic(this.music);
-        }
-    }
-
-    // Scene to load once screen fades in 
-    add_start_scene() {
-        this.gevents.level.app.stage.addChild(this.bg);
-        if(this.character){
-            this.gevents.level.app.stage.addChild(this.character);
-        }
-        if(this.slug == ""){
-            this.gevents.dialog_now(this.orig_dialog);
-        }
-        else { 
-            BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
-        }
-    }
-
-    // Tick called until scene is done.
-    // Ret false = finished
-    // Exit on ESC keypress
-    tick() {
-        if (this.gevents.esc) {
-            // 
-            this.gevents.esc = false;
-            this.finished = true;
-            return false; // finished
-        }
-        return true;
-    }
-
-    // remove scene fram app.stage to get back to level
-    remove_scene() {
-        if (this.chat) {
-            this.gevents.input_leave();
-        }
-        this.gevents.level.app.stage.removeChild(this.bg);
-        if(this.character){
-            this.gevents.level.app.stage.removeChild(this.character);
-        }
-        if(this.music){
-            setbgmusic('ps1-town');
-        }
-    }
-
-}; // class Camineet house 
-
-export class House1 extends CamineetScene {
+class House1 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             { bg: "bg", 
@@ -290,7 +148,7 @@ export class House1 extends CamineetScene {
     }
 };
 
-export class House2 extends CamineetScene {
+class House2 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             { bg: "bg", 
@@ -300,7 +158,7 @@ export class House2 extends CamineetScene {
     }
 };
 
-export class House3 extends CamineetScene {
+class House3 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -315,7 +173,7 @@ export class House3 extends CamineetScene {
     }
 };
 
-export class House4 extends CamineetScene {
+class House4 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -326,7 +184,7 @@ export class House4 extends CamineetScene {
     }
 };
 
-export class House5 extends CamineetScene {
+class House5 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -340,7 +198,7 @@ export class House5 extends CamineetScene {
     }
 };
 
-export class Man1 extends CamineetScene {
+class Man1 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -352,7 +210,7 @@ export class Man1 extends CamineetScene {
     }
 };
 
-export class Man2 extends CamineetScene {
+class Man2 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -364,7 +222,7 @@ export class Man2 extends CamineetScene {
     }
 };
 
-export class Man3 extends CamineetScene {
+class Man3 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents,
             {
@@ -376,7 +234,7 @@ export class Man3 extends CamineetScene {
     }
 };
 
-export class Man4 extends CamineetScene {
+class Man4 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents,
             {
@@ -388,7 +246,7 @@ export class Man4 extends CamineetScene {
     }
 };
 
-export class Guard1 extends CamineetScene {
+class Guard1 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents,
             {
@@ -399,7 +257,7 @@ export class Guard1 extends CamineetScene {
     }
 };
 
-export class Shop1 extends CamineetScene {
+class Shop1 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -414,7 +272,7 @@ export class Shop1 extends CamineetScene {
     }
 };
 
-export class Shop2 extends CamineetScene {
+class Shop2 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents,
             {
@@ -426,7 +284,7 @@ export class Shop2 extends CamineetScene {
     }
 };
 
-export class Shop3 extends CamineetScene {
+class Shop3 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -438,7 +296,7 @@ export class Shop3 extends CamineetScene {
     }
 };
 
-export class Church1 extends CamineetScene {
+class Church1 extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -450,7 +308,7 @@ export class Church1 extends CamineetScene {
     }
 };
 
-export class AlisAI extends CamineetScene {
+class AlisAI extends SCENE.InteractiveScene {
     constructor(gevents) {
         super(gevents, 
             {
@@ -462,5 +320,4 @@ export class AlisAI extends CamineetScene {
             });
     }
 };
-
 
