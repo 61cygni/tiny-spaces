@@ -17,10 +17,10 @@
 //     loading a sprite
 //  -- fix hardcoded animations, hack of putting spritesheet into g_ctx etc
 //  -- create tab that contains all animations for a given json file 
-//  -- if you load an animated sprite and then load a level, it just puts the sprite everywhere
 // 
 // 
 // Done:
+//  -- if you load an animated sprite and then load a level, it just puts the sprite everywhere
 //  -- fix level load bug where texture doesn't fit (load, mage, serene and then gentle)
 //  -- add portals to level for character start positions
 //  -- write maps with sprites
@@ -562,6 +562,7 @@ function loadMapFromModuleFinish(mod) {
 function loadMapFromModule(mod) {
 
     g_ctx.spritesheet = null; // reset
+    g_ctx.animatedsprites = null;
 
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;

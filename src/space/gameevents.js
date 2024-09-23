@@ -4,6 +4,35 @@ import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 
 // -- 
+// -- 
+export class ChangeLevel {
+    constructor(name, gevents) {
+        this.finished = false;
+        this.name = name;
+        this.gevents = gevents;
+    }
+    init() {
+        this.fade = new FadeOut(this.gevents);
+    }
+
+    tick() {
+        if (!this.finished) {
+            if (this.fade.finished) {
+                this.fade.finalize();
+                this.finished = true;
+                return this.name
+            } else {
+                this.fade.tick();
+            }
+        }
+    }
+
+    finalize() {
+
+    }
+    }// class ChangeLevel
+
+// -- 
 // "Parent" class (doesn't use inheritence uses composition) that
 // is a state machine for displaying a static scene in the level. This
 // is used for hoses, shops, church's battles, etc. 
@@ -80,7 +109,7 @@ export class StaticBackground {
         if(this.x != null){
             this.gevents.alis.arrive(this.x,this.y);
         }else{
-            this.gevents.alis.arrive(this.x, this.y);
+            this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
         }
         this.state = 0;
         this.finished = true;
@@ -132,9 +161,9 @@ class FadeOut{
 
 } // class FadeOut
 
-class FadeIn{
+export class FadeIn{
 
-    constructor(gevents, bg){
+    constructor(gevents, bg = null){
         this.gevents = gevents;
         this.startalpha = 1;
         this.endalpha   = 0;
@@ -192,8 +221,8 @@ export class GameEvents {
 
     constructor(alis) {
         this.alis = alis
-        this.alisoldx = alis.curanim.x
-        this.alisoldy = alis.curanim.y
+        this.alisoldx = alis.worldx
+        this.alisoldy = alis.worldy
         this.level = alis.level;
         this.dqueue = [];
 
@@ -344,7 +373,10 @@ export class GameEvents {
 
         if (this.eventqueue.length > 0) {
             if (!this.eventqueue[0].finished) {
-                this.eventqueue[0].tick();
+                let ret = this.eventqueue[0].tick();
+                if(ret != null){
+                    return ret; // events only return if a new level is being loaded.
+                }
             } else {
                 let event = this.eventqueue.shift();;
                 if (this.eventqueue.length > 0) {
@@ -355,12 +387,12 @@ export class GameEvents {
         } else {
 
             let firedhandler = false;
-            if (this.alisoldx != this.alis.curanim.x || this.alisoldy != this.alis.curanim.y) {
-                this.alisoldx = this.alis.curanim.x;
-                this.alisoldy = this.alis.curanim.y;
+            if (this.alisoldx != this.alis.worldx || this.alisoldy != this.alis.worldy) {
+                this.alisoldx = this.alis.worldx;
+                this.alisoldy = this.alis.worldy;
 
                 // check current x,y to see if there is a label. And if so if we have a handler.
-                const label = this.checkLabel(this.alis.curanim.x, this.alis.curanim.y);
+                const label = this.checkLabel(this.alis.worldx, this.alis.worldy);
                 // XXX FIXME. Currently linear search through all lable handlers. Should be constant time
                 //            lookup.
                 if (label) {

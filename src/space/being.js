@@ -10,6 +10,7 @@ Dir[Dir[4] = 'RIGHT'] = 8;
 export class Being {
 
     constructor(app, spritesheet, level) {
+        this.here = false; // on level or not.
         this.app = app;
         this.sheet = spritesheet;
         this.level = level;
@@ -32,23 +33,49 @@ export class Being {
         this.direction = 'DOWN'; 
         this.curanim = this.sprites['DOWN'];
         this.curanim.animationSpeed = 0.1666;
-        this.curanim.x = -1 
-        this.curanim.y = -1 
+
+        // position in world
+        this.worldx = -1; 
+        this.worldy = -1; 
+
+        // position on screen
+        this.curanim.x = -1;
+        this.curanim.y = -1;
+
+        // TODO FIXME remove magic numbers
+        this.screencenterx = 640/2;
+        this.screencentery = 480/2;
+    }
+
+    updateScreen(){
+        if(!this.here){
+            return;
+        }
+        // update map with given world and screen coordinates
+        let xdelta = this.screencenterx - this.worldx;
+        let ydelta = this.screencentery - this.worldy;
+        this.level.container.x = xdelta;
+        this.level.container.y = ydelta;
     }
 
     arrive(x, y) {
-        if(x != null){
-            this.curanim.x = x
-            this.curanim.y = y
-        }
+        this. curanim.x = this.screencenterx;
+        this. curanim.y = this.screencentery;
+
+        this.worldx = x; 
+        this.worldy = y;
 
         this.curanim = this.sprites[this.direction];
         this.curanim.animationSpeed = 0.1666;
         this.curanim.stop();
         this.app.stage.addChild(this.curanim);
+
+        this.here = true;
+        this.updateScreen()
     }
 
     leave(){
+        this.here = false;
         this.curanim.stop();
         this.app.stage.removeChild(this.curanim);
     }
@@ -108,40 +135,45 @@ export class Being {
     }
 
     tick(delta){
-        if (this.moving && this.curanim.x < 624 && this.curanim.x > -1 && this.curanim.y < 448 && this.curanim.y > -1) {
+        if (this.moving) {
             if (this.direction == 'RIGHT') {
                 if (this.timeToMove()) {
-                    if(this.isBlocked(this.curanim.x + 11, this.curanim.y + 16) ||
-                        this.isBlocked(this.curanim.x + 11, this.curanim.y + 25)){
+                    if(this.isBlocked(this.worldx + 11, this.worldy + 16) ||
+                        this.isBlocked(this.worldx + 11, this.worldy + 25)){
                     } else {
-                        this.curanim.x = this.curanim.x + 1;
+                        this.worldx = this.worldx + 1;
+                        this.updateScreen();
                     }
                 }
             }
             else if (this.direction == 'LEFT') {
                 if (this.timeToMove()) {
-                    if(this.isBlocked(this.curanim.x + 1, this.curanim.y + 16) ||
-                       this.isBlocked(this.curanim.x + 1, this.curanim.y + 25)){
+                    if(this.isBlocked(this.worldx + 1, this.worldy + 16) ||
+                       this.isBlocked(this.worldx + 1, this.worldy + 25)){
                     } else {
-                        this.curanim.x = this.curanim.x - 1;
+                        this.worldx = this.worldx - 1;
+                        this.updateScreen();
                     }
                 }
             }
             else if (this.direction == 'UP') {
                 if (this.timeToMove()) {
-                    if(this.isBlocked(this.curanim.x + 4, this.curanim.y + 15) ||
-                       this.isBlocked(this.curanim.x + 10, this.curanim.y + 15)){
+                    if(this.isBlocked(this.worldx + 4, this.worldy + 15) ||
+                       this.isBlocked(this.worldx + 10, this.worldy + 15)){
                     } else {
-                        this.curanim.y = this.curanim.y - 1;
+                        this.worldy = this.worldy - 1;
+                        this.updateScreen();
+                        //this.curanim.y = this.curanim.y - 1;
                     }
                 }
             }
             else if (this.direction == 'DOWN') {
                 if (this.timeToMove()) {
-                    if(this.isBlocked(this.curanim.x + 4, this.curanim.y + 26) || 
-                       this.isBlocked(this.curanim.x + 10, this.curanim.y + 26)){
+                    if(this.isBlocked(this.worldx + 4, this.worldy + 26) || 
+                       this.isBlocked(this.worldx + 10, this.worldy + 26)){
                     } else {
-                        this.curanim.y = this.curanim.y + 1;
+                        this.worldy = this.worldy + 1;
+                        this.updateScreen();
                     }
                 }
             }

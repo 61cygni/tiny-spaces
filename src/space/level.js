@@ -36,13 +36,15 @@ export class LevelContext {
         this.bgtiles = mod.bgtiles
         this.objmap  = mod.objmap
         this.maplabels = mod.maplabels;
+        this.animatedsprites = mod.animatedsprites;
     }
 
     finalize_load(){
         this.loadFromMapFile();
         this.app.stage.addChild(this.container)
 
-       this.createLabelDic();
+        this.loadAnimatedSprites();
+        this.createLabelDic();
     }
 
     createLabelDic(){
@@ -50,11 +52,11 @@ export class LevelContext {
         this.coordsdict = new Map()
         console.log("Creating label dictionary");
         for(let l = 0; l < this.maplabels.length; l++){
-            console.log(this.maplabels);
+            // console.log(this.maplabels);
             let label = this.maplabels[l];
             for(let x = label.sx; x <= label.ex; x++ ){
                 for(let y = label.sy; y <= label.ey; y++){
-                    console.log("Label "+x+" : "+y+" "+label.label);
+                    //console.log("Label "+x+" : "+y+" "+label.label);
                     this.labeldict.set(""+x+":"+y, label);
                     this.coordsdict.set(label.label, [x,y]);
                 }
@@ -62,7 +64,48 @@ export class LevelContext {
             }
 
         }
+        console.log("Done creating label dict");
 
+    }
+
+    onAnimatedLoad(m, key, sheet) {
+
+        // setup global state so we can use layer addTileLevelMethod
+        g_ctx.spritesheet = sheet;
+        g_ctx.spritesheetname = key;
+        let asprarray = m.get(key);
+        for (let asprite of asprarray) {
+            g_ctx.animrow = asprite.animation;
+            this.addTileLevelPx(asprite.x, asprite.y, -1);
+        }
+        g_ctx.spritesheet = null;
+        g_ctx.spritesheetname = null;
+
+    }
+
+    loadAnimatedSprites(){
+
+        if(this.animatedsprites.length <= 0){
+            return;
+        }
+    
+        let m = new Map();
+    
+        for(let x = 0; x < this.animatedsprites.length; x++){
+            let spr = this.animatedsprites[x];
+            if(! m.has(spr.sheet)){
+                m.set(spr.sheet, [spr]);
+            }else{
+                m.get(spr.sheet).push(spr);
+            }
+        }
+    
+        for(let key of m.keys()){
+            console.log("loadAnimatedSprites: ",key);
+            PIXI.Assets.load(key).then(
+                this.onAnimatedLoad.bind(this, m, key)
+            );
+        }
     }
 
     loadFromMapFile(mod) {
@@ -139,10 +182,19 @@ export class LevelContext {
         let xPx = x;
         let yPx = y;
 
-        //TODO
-        let pxloc = this.tileset_px_from_index(index);
-        let ctile = this.sprite_from_px(pxloc[0], pxloc[1]);
-        ctile.index = index;
+        let ctile = null;
+
+        if(g_ctx.spritesheet != null){
+            ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
+            ctile.animationSpeed = .05;
+            ctile.autoUpdate = true;
+            ctile.play();
+        } else {
+            //TODO
+            let pxloc = this.tileset_px_from_index(index);
+            ctile = this.sprite_from_px(pxloc[0], pxloc[1]);
+            ctile.index = index;
+        }
 
          // snap to grid
          const dx = g_ctx.tiledimx;
@@ -152,6 +204,11 @@ export class LevelContext {
          ctile.y  = Math.floor(yPx / dy) * dy;
 
          this.container.addChild(ctile);
+    }
+
+    destroy(){
+        this.container.removeChildren();
+        this.container.destroy();
     }
 
 } // class LevelContext
@@ -216,6 +273,10 @@ async function loadAssetsSync(app, mod, name, static_images, callme) {
 
 function loadMapFromModule(app, mod, name, static_images, callme) {
     console.log(mod);
+
+    g_ctx.spritesheet = null; // reset
+    g_ctx.animatedsprites = null;
+
     g_ctx.tilesetpath = mod.tilesetpath;
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;

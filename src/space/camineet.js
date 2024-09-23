@@ -13,7 +13,7 @@ import * as GAME   from './gameevents.js';
 
 import { sound } from '@pixi/sound';
 
-export const MAPFILE = "../maps/ps1-camineet.js";
+export const MAPFILE = "./ps1/ps1-camineet.js";
 
 // Helper function to change music
 function setbgmusic(newsong){
@@ -45,17 +45,51 @@ export function static_images(){
     return static_img;
 }
 
+var oneShotInit = (function() {
+    var executed = false;
+    return function() {
+        if (!executed) {
+            executed = true;
+
+            // Sound for camineet
+            sound.add('ps1-town', './ps1/ps1-town.mp3');
+            sound.add('ps1-camineet-shop', './ps1/ps1-shop.mp3');
+            sound.add('ps1-camineet-church', './ps1/ps1-camineet-church.mp3');
+
+            sound.volumeAll = 0.05;
+            //sound.play('ps1-town', {loop: true });
+
+            sound.toggleMuteAll();
+        }
+    };
+})();
+
+var oneShotIntroBlurb = (function(ge) {
+    var executed = false;
+    return function(ge) {
+        if (!executed) {
+            executed = true;
+            let str = "This is Camineet. Alice's hometown on planet Palma." +
+                "Alice just witness the death of her brother nero." +
+                "The planet is under seige by Lassic." +
+                "Alice is determined to break Lassic's control" +
+                "on Palma and the rest of the Algol planets." +
+                "And she will exact revenge on Lassic and his" +
+                "men for killing her brother.";
+
+
+            const astr = BT.asyncbt("intro-blurb-a6a7", "");
+            ge.dialog_now(str);
+
+        }
+    };
+})();
+
 export function init(gameevents) {
 
-    // Sound for camineet
-    sound.add('ps1-town', '../music/ps1-town.mp3');
-    sound.add('ps1-camineet-shop', './ps1/ps1-shop.mp3');
-    sound.add('ps1-camineet-church', './ps1/ps1-camineet-church.mp3');
+    oneShotInit();
 
-    sound.volumeAll = 0.05;
-    sound.play('ps1-town', {loop: true });
-
-    sound.toggleMuteAll();
+    setbgmusic('ps1-town');
 
     let house2 = new House2(gameevents);
     let house1 = new House1(gameevents);
@@ -90,21 +124,14 @@ export function init(gameevents) {
     gameevents.register_label_handler("shop3", new GAME.StaticBackground(shop3, gameevents, (25 * 16), (17 * 16)));
     gameevents.register_label_handler("church1", new GAME.StaticBackground(church1, gameevents, (33 * 16), (22 * 16)));
 
+    // on esc go to AI view
     gameevents.register_esc_handler(new GAME.StaticBackground(alis_ai, gameevents));
 
+    // on exit, go to Palma overworld
+    gameevents.register_label_handler("exit1", new GAME.ChangeLevel("palma-start1", gameevents)); 
+
     // Intro blurb
-
-    let str = "This is Camineet. Alice's hometown on planet Palma." +
-        "Alice just witness the death of her brother nero." +
-        "The planet is under seige by Lassic." +
-        "Alice is determined to break Lassic's control" +
-        "on Palma and the rest of the Algol planets." +
-        "And she will exact revenge on Lassic and his" +
-        "men for killing her brother.";
-
-
-    const astr = BT.asyncbt("intro-blurb-a6a7", "");
-    gameevents.dialog_now(str);
+    oneShotIntroBlurb(gameevents);
 
 } // init
 
