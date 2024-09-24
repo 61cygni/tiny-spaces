@@ -35,6 +35,8 @@ let levelname = "camineet";
 let startname = "start1";
 function init(level) {
 
+    level.arrive();
+
     let start = level.coordsdict.get(startname);
     console.log("Alis start " + start[0] + " : " + start[1]);
 
@@ -94,4 +96,33 @@ function init(level) {
     console.log("Ticker speed: "+ticker.speed);
     ticker.start();
 }
-LEVEL.load(app, "Camineet", CAM.MAPFILE, CAM.static_images(), init);
+
+
+// --
+//  World setup and initialization 
+// --
+
+//  all levels to preload
+const levels = [
+    ["Camineet", CAM.MAPFILE, CAM.static_images()],
+    ["Palma", PALMA.MAPFILE, PALMA.static_images()],
+];
+
+const levelmap = new Map();
+
+let promises = levels.map((leveldetails) =>{
+  return LEVEL.loadSync(app, leveldetails[0], leveldetails[1], leveldetails[2]);
+}
+);
+
+Promise.all(promises).then((levels) => {
+    levels.map((alevel) => {
+        console.log("Loaded level: "+alevel.name);
+        levelmap.set(alevel.name, alevel)
+    });
+
+    // initial entry to main loop
+    // start on Camineet
+    init(levelmap.get("Camineet"));
+}
+);

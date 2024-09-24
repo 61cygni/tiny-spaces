@@ -16,11 +16,7 @@ import { sound } from '@pixi/sound';
 
 export const MAPFILE = "./ps1/ps1-camineet.js";
 
-// Helper function to change music
-function setbgmusic(newsong){
-        sound.stopAll();
-        sound.play(newsong, {loop: true});
-}
+
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 export function static_images(){
@@ -90,7 +86,7 @@ export function init(gameevents) {
 
     oneShotInit();
 
-    setbgmusic('ps1-town');
+    SCENE.setbgmusic('ps1-town');
 
     let house2 = new House2(gameevents);
     let house1 = new House1(gameevents);

@@ -5,7 +5,13 @@
 // -- 
 
 import * as BT  from './bt.js';
+import { sound } from '@pixi/sound';
 
+// Helper function to change music
+export function setbgmusic(newsong){
+    sound.stopAll();
+    sound.play(newsong, {loop: true});
+}
 
 // Interactive Scene:
 //

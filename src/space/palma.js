@@ -4,13 +4,7 @@ import * as LEVEL  from './level.js';
 
 import { sound } from '@pixi/sound';
 
-export const MAPFILE = "./ps1/palma-anim.js";
-
-// Helper function to change music
-function setbgmusic(newsong){
-    sound.stopAll();
-    sound.play(newsong, {loop: true});
-}
+export const MAPFILE = "../ps1/palma-anim.js";
 
 export function static_images(){
     // all static images to load;
@@ -35,7 +29,7 @@ var oneShotInit = (function() {
 export function init(gameevents) {
 
     oneShotInit();
-    setbgmusic('ps1-palma');
+    SCENE.setbgmusic('ps1-palma');
 
     let alis_ai = new AlisAI(gameevents);
     
