@@ -10,53 +10,58 @@ import * as KEY    from './keyevents.js';
 import * as CAM   from './camineet.js';
 import * as PALMA from './palma.js';
 
-let gameevents = null;
-
 // Pixi init
 const app = new PIXI.Application();
 app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas') });
 
+// TODO: Move all this to alis.js and do asynconous load at the bottom of this file
 // Alis  (main character)
 const alicespritesheet = 'spritesheets/alice2.json';
 const sheet = await Assets.load(alicespritesheet);
 let Alis = new ALIS.Alis(app, sheet, null);
 
-// 
-// Initialization and main loop
-// 
-// Order of loading is:
-// 1. Level map (includes labels)
-// 2. Alis
-// 3. Game event harness
-// 4. Level specific logic
+// utility functions 
+function getLevelName(tag){
+    return tag.split('-')[0];
+}
+function getLabelName(tag){
+    return tag.split('-')[1];
+}
 
-// This is a total hack while writing code FIXME!!
-let levelname = "camineet";
-let startname = "start1";
-function init(level) {
+// Level-Label to start the game on 
+const startlocation = "Camineet-start1";
 
+const levelmap = new Map();
+
+function alisEnterLevel(location, gameevents) {
+    let levelname = getLevelName(location);
+    let labelname = getLabelName(location);
+
+    console.log("Entering level " + levelname + ' : ' + labelname);
+
+    let level = levelmap.get(levelname);
+    Alis.level = level;
+    gameevents.reset(Alis);
     level.arrive();
 
-    let start = level.coordsdict.get(startname);
+    let start = level.coordsdict.get(labelname);
     console.log("Alis start " + start[0] + " : " + start[1]);
-
-    Alis.level = level;
     Alis.arrive(start[0] * level.tiledimx, start[1] * level.tiledimy - 14);
 
-    // game event harness
-    gameevents = new GAME.GameEvents(Alis);
-    KEY.init(gameevents, Alis);
-
-    // Fade in current level
+    // Fade in 
     gameevents.add_to_tick_event_queue(new GAME.FadeIn(gameevents));
 
-    if(levelname == "camineet"){
-        CAM.init(gameevents);
-    }else if (levelname == "palma"){
-        PALMA.init(gameevents);
-    }else{
-        console.log("Error, unknown level name");
-    }
+    level.details.initonenter(gameevents);
+    return level;
+}
+
+function init(startlevel) {
+
+    // game event harness
+    let gameevents = new GAME.GameEvents(Alis);
+    KEY.init(gameevents, Alis);
+
+    let level = alisEnterLevel(startlocation, gameevents);
 
     const ticker = new Ticker();
 
@@ -66,29 +71,13 @@ function init(level) {
         Alis.tick(deltaTime);
         nextlevel = gameevents.tick(deltaTime);
         if(nextlevel != null){
-            if (nextlevel.startsWith("palma")) {
-                ticker.stop();
-                console.log("Destroying level: "+level.name);
-                Alis.leave();
-                level.destroy();
-                levelname = "palma";
-                startname = nextlevel.split('-')[1]; 
-                console.log("Loading next level " + levelname + ' : '+ startname);
-                LEVEL.load(app, "Palma", PALMA.MAPFILE, PALMA.static_images(), init);
-                ticker.destroy();
-            }else if (nextlevel.startsWith("camineet")){
-                ticker.stop();
-                console.log("Destroying level: "+level.name);
-                Alis.leave();
-                level.destroy();
-                levelname = "camineet";
-                startname = nextlevel.split('-')[1]; 
-                console.log("Loading next level " + levelname + ' : '+ startname);
-                LEVEL.load(app, "Camineet", CAM.MAPFILE, CAM.static_images(), init);
-                ticker.destroy();
-            }else{
-                console.log("Error: Unknown level " + nextlevel);
-            }
+            ticker.stop();
+            console.log("Leaving "+getLevelName(nextlevel));
+            Alis.leave();
+            level.leave();
+
+            level = alisEnterLevel(nextlevel, gameevents);
+            ticker.start();
         }
     });
 
@@ -104,14 +93,12 @@ function init(level) {
 
 //  all levels to preload
 const levels = [
-    ["Camineet", CAM.MAPFILE, CAM.static_images()],
-    ["Palma", PALMA.MAPFILE, PALMA.static_images()],
+    CAM.Instance,
+    PALMA.Instance,
 ];
 
-const levelmap = new Map();
-
 let promises = levels.map((leveldetails) =>{
-  return LEVEL.loadSync(app, leveldetails[0], leveldetails[1], leveldetails[2]);
+  return LEVEL.loadSync(app, leveldetails);
 }
 );
 
@@ -122,7 +109,6 @@ Promise.all(promises).then((levels) => {
     });
 
     // initial entry to main loop
-    // start on Camineet
-    init(levelmap.get("Camineet"));
+    init();
 }
 );

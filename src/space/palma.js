@@ -4,9 +4,9 @@ import * as LEVEL  from './level.js';
 
 import { sound } from '@pixi/sound';
 
-export const MAPFILE = "../ps1/palma-anim.js";
+const MAPFILE = "../ps1/palma-anim.js";
 
-export function static_images(){
+function static_images(){
     // all static images to load;
     let static_img = [];
 
@@ -26,7 +26,8 @@ var oneShotInit = (function() {
         }
     };
 })();
-export function init(gameevents) {
+
+function init(gameevents) {
 
     oneShotInit();
     SCENE.setbgmusic('ps1-palma');
@@ -34,7 +35,7 @@ export function init(gameevents) {
     let alis_ai = new AlisAI(gameevents);
     
     // on exit, go to Palma overworld
-    gameevents.register_label_handler("camineet", new GAME.ChangeLevel("camineet-start2", gameevents)); 
+    gameevents.register_label_handler("camineet", new GAME.ChangeLevel("Camineet-start2", gameevents)); 
 
       // on esc go to AI view
     gameevents.register_esc_handler(new GAME.StaticBackground(alis_ai, gameevents));
@@ -52,3 +53,27 @@ class AlisAI extends SCENE.InteractiveScene {
             });
     }
 };
+
+
+class Palma extends LEVEL.Level {
+    constructor(){
+        super("Palma");
+    }
+
+    mapfile() {
+        return MAPFILE;
+    }
+
+    static_images(){
+        return static_images();
+    }
+
+    initonce(){
+    }
+
+    initonenter(ge){
+        return init(ge);
+    }
+}
+
+export var Instance = new Palma();

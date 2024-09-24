@@ -238,6 +238,26 @@ export class GameEvents {
         this.input = null;
     }
 
+    // called when Alis enters a new level
+    reset(alis) {
+        this.alis = alis
+        this.alisoldx = alis.worldx
+        this.alisoldy = alis.worldy
+        this.level = alis.level;
+        this.dqueue = [];
+
+        this.pauseevents = false;
+
+        this.esc = false; // has the escape key been pressed?
+        this.esc_handler = null; // fired when escape key is pressed
+
+        this.eventqueue = []; // queue of game events
+        this.label_handlers = new Map();
+
+        this.bg = null;
+        this.input = null;
+    }
+
     // --
     // Display a dialog on the screen. Uses a stack to manage multiple dialog requests
     // -- 
@@ -319,6 +339,7 @@ export class GameEvents {
         if(!this.level){
             return null;
         }
+
         let coordsx = Math.floor(x / this.level.tiledimx);
         let coordsy = Math.floor((y+20) / this.level.tiledimy); // FIXME MAGIC #
         let ret = this.level.labeldict.get(""+coordsx+":"+coordsy);
@@ -365,6 +386,7 @@ export class GameEvents {
     //
     // --
     tick(delta) {
+
 
         // handle dialog queue first. 
         if (this.dqueue.length > 0) {

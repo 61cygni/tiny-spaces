@@ -14,12 +14,11 @@ import * as SCENE  from './scene.js';
 
 import { sound } from '@pixi/sound';
 
-export const MAPFILE = "./ps1/ps1-camineet.js";
-
+const MAPFILE = "./ps1/ps1-camineet.js";
 
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
-export function static_images(){
+function static_images(){
     // all static images to load;
     let static_img = [];
 
@@ -82,7 +81,7 @@ var oneShotIntroBlurb = (function(ge) {
     };
 })();
 
-export function init(gameevents) {
+function init(gameevents) {
 
     oneShotInit();
 
@@ -125,7 +124,7 @@ export function init(gameevents) {
     gameevents.register_esc_handler(new GAME.StaticBackground(alis_ai, gameevents));
 
     // on exit, go to Palma overworld
-    gameevents.register_label_handler("exit1", new GAME.ChangeLevel("palma-start1", gameevents)); 
+    gameevents.register_label_handler("exit1", new GAME.ChangeLevel("Palma-start1", gameevents)); 
 
     // Intro blurb
     oneShotIntroBlurb(gameevents);
@@ -317,3 +316,25 @@ class AlisAI extends SCENE.InteractiveScene {
     }
 };
 
+class Camineet extends LEVEL.Level {
+    constructor(){
+        super("Camineet");
+    }
+
+    mapfile() {
+        return MAPFILE;
+    }
+
+    static_images(){
+        return static_images();
+    }
+
+    initonce(){
+    }
+
+    initonenter(ge){
+        return init(ge);
+    }
+}
+
+export var Instance = new Camineet();

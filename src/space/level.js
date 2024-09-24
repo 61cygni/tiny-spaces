@@ -8,6 +8,31 @@ import * as PIXI from 'pixi.js'
 import { g_ctx }  from  '../shared/lecontext.js' // global context
 import * as CONFIG from '../shared/leconfig.js' 
 
+// parent class used by specific levels
+export class Level {
+
+    constructor (name) {
+        this.name = name;
+    }
+
+    // return list of static images to load
+    static_images() {
+        console.log("Error: Must override");
+    }
+
+    // called once during init
+    initonce() {
+        console.log("Error: Must override");
+    }
+
+    //called everytime entered
+    initonenter() {
+        console.log("Error: Must override");
+    }
+
+
+} // class Level
+
 export class StaticImage {
 
     constructor (name, filename, width, height, x, y) {
@@ -21,11 +46,13 @@ export class StaticImage {
 
 }; // class StaticImage
 
+
 export class LevelContext {
 
-    constructor(app, mod, name) {
-        this.app = app
-        this.name = name
+    constructor(app, mod, leveldetails) {
+        this.app = app;
+        this.name = leveldetails.name;
+        this.details = leveldetails;
         this.container = new PIXI.Container();
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
@@ -220,37 +247,12 @@ export class LevelContext {
 
 } // class LevelContext
 
-function loadMapFromModuleFinish(callme, level) {
-    level.finalize_load();
-    callme(level);
-}
 
 function loadMapFromModuleFinishSync(level) {
     console.log("loadMapFromModuleFinishSync");
     level.finalize_load();
     console.log(level);
     return level;
-}
-
-// TODO: move these to a separate class called "camineet" or whatever
-async function loadStaticImages(level, static_images) {
-    console.log("loadStaticImages: "+g_ctx.tilesetpath);
-
-    level.static_assets = new Map();
-
-    for (let i = 0; i < static_images.length; i++){
-        let assetin = static_images[i];
-        const img = await PIXI.Assets.load(assetin.filename);
-        const spr = new PIXI.Sprite(img);
-        spr.width = assetin.width;
-        spr.height = assetin.height;
-        spr.x = assetin.x;
-        spr.y = assetin.y;
-
-        level.static_assets.set(assetin.name, spr);
-    }
-
-    level.label_handlers = new Map();
 }
 
 function loadStaticImagesSync(static_images, level) {
@@ -276,40 +278,10 @@ function loadStaticImagesSync(static_images, level) {
     return Promise.all(promises);
 }
 
-async function loadAssetsASync(app, mod, name, static_images, callme) {
+function loadAssetsSync(app, mod, leveldetails) {
 
-    let level = new LevelContext(app, mod, name);
-
-    await loadStaticImages(level, static_images);
-
-    console.log("loadAssetsASync: "+g_ctx.tilesetpath);
-    const texture = await PIXI.Assets.load(g_ctx.tilesetpath);
-
-    if (texture.valid) {
-        console.log("Texture already valid");
-        callme(level);
-        return;
-    }
-
-    console.log("Loading texture ", g_ctx.tilesetpath);
-    // size of g_ctx.tileset in px
-    g_ctx.tilesetpxw = texture.width;
-    g_ctx.tilesetpxh = texture.height;
-    console.log("Texture size w:", g_ctx.tilesetpxw, "h:", g_ctx.tilesetpxh);
-    // size of g_ctx.tileset in tiles
-    let tileandpad = g_ctx.tiledimx + CONFIG.tilesetpadding;
-    let numtilesandpadw = Math.floor(g_ctx.tilesetpxw / tileandpad);
-    g_ctx.tilesettilew = numtilesandpadw + Math.floor((g_ctx.tilesetpxw - (numtilesandpadw * tileandpad)) / g_ctx.tiledimx);
-    let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
-    g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
-    console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
-
-    callme(level);
-}
-
-function loadAssetsSync(app, mod, name, static_images) {
-
-    let level = new LevelContext(app, mod, name);
+    let level = new LevelContext(app, mod, leveldetails);
+    let static_images = leveldetails.static_images();
 
     console.log("loadAssetsSync");
     console.log(level);
@@ -346,20 +318,7 @@ function loadAssetsSync(app, mod, name, static_images) {
 }
 
 
-function loadMapFromModule(app, mod, name, static_images, callme) {
-    console.log(mod);
-
-    g_ctx.spritesheet = null; // reset
-    g_ctx.animatedsprites = null;
-
-    g_ctx.tilesetpath = mod.tilesetpath;
-    g_ctx.tiledimx = mod.tiledimx;
-    g_ctx.tiledimy = mod.tiledimy;
-
-    loadAssetsASync(app, mod, name, static_images, loadMapFromModuleFinish.bind(null, callme));
-}
-
-function loadMapFromModuleSync(app, mod, name, static_images) {
+function loadMapFromModuleSync(app, mod, leveldetails) {
     console.log("loadMapFromModuleSync ");
 
     g_ctx.spritesheet = null; // reset
@@ -369,22 +328,16 @@ function loadMapFromModuleSync(app, mod, name, static_images) {
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
 
-    return loadAssetsSync(app, mod, name, static_images).then((level) => {
+    return loadAssetsSync(app, mod, leveldetails).then((level) => {
         console.log("ladAssetsSync done!!");
         return loadMapFromModuleFinishSync(level);
     });
 }
 
-export function load(app, name, filename, static_images, callme) {
+//export function loadSync(app, name, filename, static_images) {
+export function loadSync(app, leveldetails) {
     // level loading
-    let mod = import(filename).then((mod) => {
-        loadMapFromModule(app, mod, name, static_images, callme);
-    });
-}
-
-export function loadSync(app, name, filename, static_images) {
-    // level loading
-    return import(filename).then((mod) => {
-        return loadMapFromModuleSync(app, mod, name, static_images);
+    return import(leveldetails.mapfile()).then((mod) => {
+        return loadMapFromModuleSync(app, mod, leveldetails);
     });
 }
