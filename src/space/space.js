@@ -1,5 +1,4 @@
 import { Ticker } from '@pixi/ticker';
-import { Assets } from 'pixi.js';
 import * as PIXI from 'pixi.js'
 
 import * as LEVEL  from './level.js';
@@ -14,11 +13,8 @@ import * as PALMA from './palma.js';
 const app = new PIXI.Application();
 app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas') });
 
-// TODO: Move all this to alis.js and do asynconous load at the bottom of this file
 // Alis  (main character)
-const alicespritesheet = 'spritesheets/alice2.json';
-const sheet = await Assets.load(alicespritesheet);
-let Alis = new ALIS.Alis(app, sheet, null);
+let Alis = await ALIS.getInstance(app); 
 
 // utility functions 
 function getLevelName(tag){
@@ -31,7 +27,13 @@ function getLabelName(tag){
 // Level-Label to start the game on 
 const startlocation = "Camineet-start1";
 
-const levelmap = new Map();
+//  all levels to preload
+const levels = [
+    CAM.Instance,
+    PALMA.Instance,
+];
+
+let levelmap = new Map();
 
 function alisEnterLevel(location, gameevents) {
     let levelname = getLevelName(location);
@@ -51,7 +53,9 @@ function alisEnterLevel(location, gameevents) {
     // Fade in 
     gameevents.add_to_tick_event_queue(new GAME.FadeIn(gameevents));
 
+    // call level initialization when entering
     level.details.initonenter(gameevents);
+
     return level;
 }
 
@@ -59,17 +63,18 @@ function init(startlevel) {
 
     // game event harness
     let gameevents = new GAME.GameEvents(Alis);
+    // initialize keyboard handler
     KEY.init(gameevents, Alis);
-
-    let level = alisEnterLevel(startlocation, gameevents);
 
     const ticker = new Ticker();
 
+    // Alis enters first level
+    let level = alisEnterLevel(startlocation, gameevents);
+
     // Main loop
-    let nextlevel = null;
-    ticker.add((deltaTime) => {
-        Alis.tick(deltaTime);
-        nextlevel = gameevents.tick(deltaTime);
+    ticker.add((delta) => {
+        Alis.tick(delta);
+        let nextlevel = gameevents.tick(delta);
         if(nextlevel != null){
             ticker.stop();
             console.log("Leaving "+getLevelName(nextlevel));
@@ -82,20 +87,11 @@ function init(startlevel) {
     });
 
     ticker.speed = .2;
-    console.log("Ticker speed: "+ticker.speed);
     ticker.start();
 }
 
-
-// --
-//  World setup and initialization 
-// --
-
-//  all levels to preload
-const levels = [
-    CAM.Instance,
-    PALMA.Instance,
-];
+//  Preload all levels this requires a bunch of async calls, so kick off all of them
+//    and then wait for them all to complete before running the main loop 
 
 let promises = levels.map((leveldetails) =>{
   return LEVEL.loadSync(app, leveldetails);

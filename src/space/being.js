@@ -26,8 +26,8 @@ export class Being {
             this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
         }
 
-        this.pausetime = Math.floor(Math.random() * 5);;
-        this.pausecountdown = this.pausetime;
+        this.movedelta = .1; // FIXME don't use magic number
+        this.pausecountdown = this.movedelta;
 
         this.moving = 0;
         this.direction = 'DOWN'; 
@@ -109,16 +109,14 @@ export class Being {
             }
     }
 
-    timeToMove(){
-        return true;
+    timeToMove(delta) {
+        this.pausecountdown = this.pausecountdown - delta;
 
-        // FIXME
-        // let ret = this.pausecountdown--;
-        // if(ret <= 0){
-        //     this.pausecountdown = this.pausetime;
-        //     return true;
-        // }
-        // return false;
+        if (this.pausecountdown <= 0) {
+            this.pausecountdown = this.movedelta;
+            return true;
+        }
+        return false;
     }
 
     // --
@@ -137,7 +135,7 @@ export class Being {
     tick(delta){
         if (this.moving) {
             if (this.direction == 'RIGHT') {
-                if (this.timeToMove()) {
+                if (this.timeToMove(delta)) {
                     if(this.isBlocked(this.worldx + 11, this.worldy + 16) ||
                         this.isBlocked(this.worldx + 11, this.worldy + 25)){
                     } else {
@@ -147,7 +145,7 @@ export class Being {
                 }
             }
             else if (this.direction == 'LEFT') {
-                if (this.timeToMove()) {
+                if (this.timeToMove(delta)) {
                     if(this.isBlocked(this.worldx + 1, this.worldy + 16) ||
                        this.isBlocked(this.worldx + 1, this.worldy + 25)){
                     } else {
@@ -157,7 +155,7 @@ export class Being {
                 }
             }
             else if (this.direction == 'UP') {
-                if (this.timeToMove()) {
+                if (this.timeToMove(delta)) {
                     if(this.isBlocked(this.worldx + 4, this.worldy + 15) ||
                        this.isBlocked(this.worldx + 10, this.worldy + 15)){
                     } else {
@@ -168,7 +166,7 @@ export class Being {
                 }
             }
             else if (this.direction == 'DOWN') {
-                if (this.timeToMove()) {
+                if (this.timeToMove(delta)) {
                     if(this.isBlocked(this.worldx + 4, this.worldy + 26) || 
                        this.isBlocked(this.worldx + 10, this.worldy + 26)){
                     } else {

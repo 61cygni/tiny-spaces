@@ -1,6 +1,11 @@
 import * as BEING  from './being.js';
+import { Assets } from 'pixi.js';
 
-export class Alis extends BEING.Being{
+
+const alicespritesheet = 'spritesheets/alice2.json';
+
+class Alis extends BEING.Being{
+
 
     constructor(app, spritesheet, level) {
         super(app, spritesheet, level);
@@ -17,3 +22,17 @@ export class Alis extends BEING.Being{
     }
 
 };
+
+var instance = null;
+
+async function loadAlis(app){
+    if(instance){
+        return instance;
+    }
+    const sheet = await Assets.load(alicespritesheet);
+    return new Alis(app, sheet, null);
+}
+
+export async function  getInstance(app){
+    return await loadAlis(app);
+}
