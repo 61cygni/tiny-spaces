@@ -83,12 +83,62 @@ export class InteractiveScene {
     dialogdone() {
     }
 
+    async invoke_prompt_stream(){
+            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
+            let result = await BT.asyncbtStream(this.slug, "", this.visits);
+            let preamble = "";
+            if(this.name != ""){
+                preamble = this.name + ": ";
+            }
+            if (!this.finished) {
+                this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
+                for await (const chunk of result) {
+                    if (this.finished) {
+                        break;
+                    }
+                    this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+                }
+            }
+            // this.gevents.dialog_stream_done();
+            if (!this.finished && this.chat) {
+                this.gevents.input_now("", this.inputcallme.bind(this));
+            }else{
+              this.gevents.dialog_stream_done();
+            }
+    }
+
+    // TODO consolidate with above
+    async invoke_prompt_input_stream(slug, val){
+            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
+            let result = await BT.asyncbtStream(slug, val, this.visits);
+            let preamble = "Alis: "+val+"\n";
+            if(this.name != ""){
+                preamble = preamble + this.name + ": ";
+            }
+            if (!this.finished) {
+                this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
+                for await (const chunk of result) {
+                    if (this.finished){
+                        break;
+                    }
+                    this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+                }
+            }
+
+            if (this.finished ){
+              this.gevents.dialog_stream_done();
+            }
+    }
+
+
     // once user has entered text, call prompt
     inputcallme(val){
         if(this.slug2 != ""){
-            BT.bt(this.slug2, val, this.visits, this.dodialog.bind(this, val));
+            this.invoke_prompt_input_stream(this.slug2, val);
+            //BT.bt(this.slug2, val, this.visits, this.dodialog.bind(this, val));
         } else {
-            BT.bt(this.slug, val, this.visits, this.dodialog.bind(this, val));
+            this.invoke_prompt_input_stream(this.slug, val);
+            //BT.bt(this.slug, val, this.visits, this.dodialog.bind(this, val));
         }
     }
     // dialog whilechatting
@@ -128,7 +178,8 @@ export class InteractiveScene {
             this.gevents.dialog_now(this.orig_dialog);
         }
         else { 
-            BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
+            this.invoke_prompt_stream();
+            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
         }
     }
 
@@ -147,9 +198,11 @@ export class InteractiveScene {
 
     // remove scene fram app.stage to get back to level
     remove_scene() {
+        this.finished = true;
         if (this.chat) {
             this.gevents.input_leave();
         }
+              this.gevents.dialog_stream_done();
         this.gevents.level.app.stage.removeChild(this.bg);
         if(this.character){
             this.gevents.level.app.stage.removeChild(this.character);

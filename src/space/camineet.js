@@ -79,7 +79,7 @@ var oneShotIntroBlurb = (function(ge) {
             let result = await BT.asyncbtStream("intro-blurb-a6a7", "");
             console.log(result);
             for await (const chunk of result) {
-                ge.dialog_stream(chunk.data, 'botton', null, true);
+                ge.dialog_stream(chunk.data, 'bottom', null, true);
             }
             ge.dialog_stream_done();
 
