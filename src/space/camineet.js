@@ -62,7 +62,7 @@ var oneShotInit = (function() {
 
 var oneShotIntroBlurb = (function(ge) {
     var executed = false;
-    return function(ge) {
+    return async function(ge) {
         if (!executed) {
             executed = true;
             let str = "This is Camineet. Alice's hometown on planet Palma." +
@@ -74,8 +74,14 @@ var oneShotIntroBlurb = (function(ge) {
                 "men for killing her brother.";
 
 
-            const astr = BT.asyncbt("intro-blurb-a6a7", "");
-            ge.dialog_now(str);
+            //const astr = BT.asyncbt("intro-blurb-a6a7", "");
+            // ge.dialog_now(astr);
+            let result = await BT.asyncbtStream("intro-blurb-a6a7", "");
+            console.log(result);
+            for await (const chunk of result) {
+                ge.dialog_stream(chunk.data, 'botton', null, true);
+            }
+            ge.dialog_stream_done();
 
         }
     };

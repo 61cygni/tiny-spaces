@@ -7,6 +7,7 @@
 
 
 import { initLogger } from "braintrust";
+import { BraintrustStream } from "braintrust";
 
 
 // Use this to get around a node.js dependency in BT
@@ -104,4 +105,39 @@ export async function asyncbt(slugin, msgin, visits) {
     } catch (e) {
         console.log('Could not parse response as JSON');
     }
+}
+
+export async function asyncbtStream(slugin, msgin, visits) {
+    const data = {
+    input: {
+        visits: visits,
+        msg: msgin,
+    },
+    parent: logdata, 
+    stream: true,
+    project_name: "spaces",
+    slug: slugin 
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer sk-HCWgy4xVdaaxAw0a9LAX0Ji0cxORkIpvfbCN35VsuyGvALF0`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    });
+
+    console.log('Status:', response.status);
+    console.log('StatusText:', response.statusText);
+    return new BraintrustStream(response.body)
+    // const text = await response.text();  // Get the raw text instead of parsing JSON
+    // console.log('Response:', text);
+    // try {
+    //     const data = JSON.parse(text);
+    //     console.log('Parsed data:', data);
+    //     return data;
+    // } catch (e) {
+    //     console.log('Could not parse response as JSON');
+    // }
 }

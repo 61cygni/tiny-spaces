@@ -278,6 +278,32 @@ export class GameEvents {
         }
     }
 
+    // Stream to a dialog
+    dialog_stream(text = "", place = 'bottom') {
+        // if an existing dialog is up and finished, clean it up
+        if (this.dqueue.length > 0 && this.dqueue[0].finished) {
+            this.dqueue[0].leave();
+            this.dqueue.shift();
+        }
+
+        // if an existing dialog is up and pinned, append to that dialog
+        if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
+            this.dqueue[0].append(text);
+        } else {
+            let d = new DIALOG.Dialog(this.level, text, true, 42, 4, place, null);
+            this.dqueue.push(d);
+            d.arrive();
+        }
+    }
+
+    dialog_stream_done() {
+        if (this.dqueue.length < 1 || !this.dqueue[0].pinned) {
+            console.log("dialog_stream_done called with no active dialog. Bailing");
+            return;
+        }
+        this.dqueue[0].pinned = false;
+    }
+
     // --
     // Delete all pending dialogs
     // -- 
