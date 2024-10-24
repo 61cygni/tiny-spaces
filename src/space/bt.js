@@ -24,16 +24,7 @@ const logger = initLogger({
 });
 let logdata = await logger.export();
 
-// const data = {
-//   input: null,
-//   parent: logdata, 
-//   stream: false,
-//   project_name: "spaces",
-//   slug: "alice-home-9fee"
-// };
-
 export function bt(slugin, msgin, visits, callme) {
-    console.log("VISITS "+visits);
     const data = {
     input: {
         visits: visits,
@@ -107,11 +98,10 @@ export async function asyncbt(slugin, msgin, visits) {
     }
 }
 
-export async function asyncbtStream(slugin, msgin, visits) {
+export async function asyncbtStream(slugin, systeminput) {
     const data = {
     input: {
-        visits: visits,
-        msg: msgin,
+        ...systeminput,
     },
     parent: logdata, 
     stream: true,
@@ -131,13 +121,4 @@ export async function asyncbtStream(slugin, msgin, visits) {
     console.log('Status:', response.status);
     console.log('StatusText:', response.statusText);
     return new BraintrustStream(response.body)
-    // const text = await response.text();  // Get the raw text instead of parsing JSON
-    // console.log('Response:', text);
-    // try {
-    //     const data = JSON.parse(text);
-    //     console.log('Parsed data:', data);
-    //     return data;
-    // } catch (e) {
-    //     console.log('Could not parse response as JSON');
-    // }
 }

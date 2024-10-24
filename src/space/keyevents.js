@@ -1,17 +1,29 @@
 
 import { sound } from '@pixi/sound';
 
-let Alis = null;
 let gameevents = null;
+let textfocus = false;
+let textinputhandler = null;
 
-export function init(gevents, alis){
+export function init(gevents){
     gameevents = gevents;
-    Alis = alis;
+}
+
+export function set_text_input_focus(flag){
+    textfocus = flag;
+}
+
+export function register_input_handler(callme){
+    textinputhandler = callme;
 }
 
 
 window.addEventListener(
     "keydown", (event) => {
+
+        if(textfocus){
+            return;
+        }
 
         // prevent browser from handling movement events
         if (event.code == 'Space' || 
@@ -44,6 +56,12 @@ window.addEventListener(
             }
         }
 
+        if(!gameevents.alis){
+            return;
+        }
+
+        let Alis = gameevents.alis;
+
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
             Alis.goDir('UP');
         }
@@ -61,7 +79,24 @@ window.addEventListener(
 );
 
 window.addEventListener(
+
     "keyup", (event) => {
+
+        if(textfocus){
+            console.log(event.code);
+            if (event.code == "Enter") {
+                if(textinputhandler){
+                    textinputhandler(event.target);
+                }
+            }
+            return;
+        }
+
+        if(!gameevents.alis){
+            return;
+        }
+
+        let Alis = gameevents.alis;
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
             Alis.stopDir('UP');

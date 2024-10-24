@@ -76,6 +76,7 @@ export class InteractiveScene {
 
         this.visits = 0;
         this.finished = false;
+        this.history = "";
 
     } // constructor
 
@@ -83,20 +84,32 @@ export class InteractiveScene {
     dialogdone() {
     }
 
-    async invoke_prompt_stream(){
-            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
-            let result = await BT.asyncbtStream(this.slug, "", this.visits);
+    async invoke_initial_prompt_stream(){
+
+            const sysinput = {
+                history: this.history,
+                visits: this.visits,
+            };
+
+            let usrinput = this.user_input();
+            let promptinput = {...sysinput, ...usrinput};
+
+            console.log(promptinput);
+
+            let result = await BT.asyncbtStream(this.slug, promptinput);
             let preamble = "";
             if(this.name != ""){
                 preamble = this.name + ": ";
             }
             if (!this.finished) {
                 this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
+                this.history = this.history + preamble;
                 for await (const chunk of result) {
                     if (this.finished) {
                         break;
                     }
                     this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+                    this.history = this.history + chunk.data;
                 }
             }
             // this.gevents.dialog_stream_done();
@@ -109,25 +122,45 @@ export class InteractiveScene {
 
     // TODO consolidate with above
     async invoke_prompt_input_stream(slug, val){
-            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
-            let result = await BT.asyncbtStream(slug, val, this.visits);
+
+            const sysinput = {
+                history: this.history,
+                visits: this.visits,
+                msg: val,
+            };
+
+            let usrinput = this.user_input();
+            let promptinput = {...sysinput, ...usrinput};
+
+            console.log(promptinput);
+            console.log("PROMPT");
+
+
+            let result = await BT.asyncbtStream(slug, promptinput);
             let preamble = "Alis: "+val+"\n";
             if(this.name != ""){
                 preamble = preamble + this.name + ": ";
             }
             if (!this.finished) {
                 this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
+                this.history = this.history + "\n" + preamble;
                 for await (const chunk of result) {
                     if (this.finished){
                         break;
                     }
                     this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+                    this.history = this.history + chunk.data;
                 }
             }
 
             if (this.finished ){
               this.gevents.dialog_stream_done();
             }
+    }
+
+    user_input(){
+        // override to send additional info to LLM
+        return {};
     }
 
 
@@ -178,8 +211,7 @@ export class InteractiveScene {
             this.gevents.dialog_now(this.orig_dialog);
         }
         else { 
-            this.invoke_prompt_stream();
-            // BT.bt(this.slug, "", this.visits, this.firstpromptdone.bind(this));
+            this.invoke_initial_prompt_stream();
         }
     }
 
@@ -199,6 +231,8 @@ export class InteractiveScene {
     // remove scene fram app.stage to get back to level
     remove_scene() {
         this.finished = true;
+        console.log("Chat history" +this.history);
+        this.history = "";
         if (this.chat) {
             this.gevents.input_leave();
         }

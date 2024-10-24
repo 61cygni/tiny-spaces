@@ -1,6 +1,7 @@
 import * as GAME   from './gameevents.js';
 import * as SCENE  from './scene.js';
 import * as LEVEL  from './level.js';
+import * as ALIS  from './alis.js';
 
 import { sound } from '@pixi/sound';
 
@@ -51,6 +52,26 @@ class AlisAI extends SCENE.InteractiveScene {
                 chat: true,
                 orig_dialog: "CHECK YOUR ITEMS AND SHIT"
             });
+    }
+
+    user_input(){
+        let alis = ALIS.rawInstance();
+        console.log(alis);
+        if (alis.items.length == 0) {
+            let lac = {
+                name: "laconion pot"
+            };
+            let sword = {
+                name: "rusty sword",
+            };
+            alis.items.push(lac)
+            alis.items.push(sword);
+        }
+        return {
+            health: alis.health,
+            level: alis.explevel,
+            items: alis.items,
+        };
     }
 };
 

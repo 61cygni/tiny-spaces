@@ -239,12 +239,14 @@ export class GameEvents {
     }
 
     // called when Alis enters a new level
-    reset(alis) {
-        this.alis = alis
-        this.alisoldx = alis.worldx
-        this.alisoldy = alis.worldy
-        this.level = alis.level;
-        this.dqueue = [];
+    reset(level, alis) {
+        this.level = level; 
+        this.alis = alis;
+        if(alis != null){
+            this.alisoldx = alis.worldx
+            this.alisoldy = alis.worldy
+            this.dqueue = [];
+        }
 
         this.pauseevents = false;
 
@@ -432,32 +434,39 @@ export class GameEvents {
                 }
                 event.finalize();
             }
-        } else {
+
+        } else { // event queue is empty. 
 
             let firedhandler = false;
-            if (this.alisoldx != this.alis.worldx || this.alisoldy != this.alis.worldy) {
-                this.alisoldx = this.alis.worldx;
-                this.alisoldy = this.alis.worldy;
 
-                // check current x,y to see if there is a label. And if so if we have a handler.
-                const label = this.checkLabel(this.alis.worldx, this.alis.worldy);
-                // XXX FIXME. Currently linear search through all lable handlers. Should be constant time
-                //            lookup.
-                if (label) {
-                    for (let [key, value] of this.label_handlers) {
-                        if (label == key) {
-                            firedhandler = true;
-                            this.add_to_tick_event_queue(value);
+            if (this.alis != null) {
+                if (this.alisoldx != this.alis.worldx || this.alisoldy != this.alis.worldy) {
+                    this.alisoldx = this.alis.worldx;
+                    this.alisoldy = this.alis.worldy;
+
+                    // check current x,y to see if there is a label. And if so if we have a handler.
+                    const label = this.checkLabel(this.alis.worldx, this.alis.worldy);
+                    // XXX FIXME. Currently linear search through all lable handlers. Should be constant time
+                    //            lookup.
+                    if (label) {
+                        for (let [key, value] of this.label_handlers) {
+                            if (label == key) {
+                                firedhandler = true;
+                                this.add_to_tick_event_queue(value);
+                            }
                         }
                     }
                 }
-            }
+            } // end alis handler
+
+            // run escape handler is pressed
             if(!firedhandler && this.esc){
                 if(this.esc_handler){
                     this.add_to_tick_event_queue(this.esc_handler);
                     this.esc = false;
                 }
             }
+
         } // if eventqueue
     } // Tick (main loop)
 

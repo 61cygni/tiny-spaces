@@ -11,6 +11,7 @@ import * as BT     from './bt.js';
 import * as LEVEL  from './level.js';
 import * as GAME   from './gameevents.js';
 import * as SCENE  from './scene.js';
+import * as ALIS  from './alis.js';
 
 import { sound } from '@pixi/sound';
 
@@ -53,9 +54,8 @@ var oneShotInit = (function() {
             sound.add('ps1-camineet-church', './ps1/ps1-camineet-church.mp3');
 
             sound.volumeAll = 0.05;
-            //sound.play('ps1-town', {loop: true });
 
-            sound.toggleMuteAll();
+            // sound.toggleMuteAll();
         }
     };
 })();
@@ -77,7 +77,6 @@ var oneShotIntroBlurb = (function(ge) {
             //const astr = BT.asyncbt("intro-blurb-a6a7", "");
             // ge.dialog_now(astr);
             let result = await BT.asyncbtStream("intro-blurb-a6a7", "");
-            console.log(result);
             for await (const chunk of result) {
                 ge.dialog_stream(chunk.data, 'bottom', null, true);
             }
@@ -320,6 +319,26 @@ class AlisAI extends SCENE.InteractiveScene {
                 orig_dialog: "CHECK YOUR ITEMS AND SHIT"
             });
     }
+
+    user_input(){
+        let alis = ALIS.rawInstance();
+        console.log(alis);
+        console.log("HEALTH "+alis.health);
+        let lac = {
+            name: "laconion pot"
+        };
+        let sword = {
+            name: "rusty sword",
+        };
+        alis.items.push(lac)
+        alis.items.push(sword);
+        return {
+            health: alis.health,
+            level: alis.explevel,
+            items: alis.items,
+        };
+    }
+    
 };
 
 class Camineet extends LEVEL.Level {

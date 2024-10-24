@@ -12,6 +12,7 @@ import * as CONFIG from '../shared/leconfig.js'
 export class Level {
 
     constructor (name) {
+        this.type = "level";
         this.name = name;
     }
 
@@ -32,6 +33,36 @@ export class Level {
 
 
 } // class Level
+
+// parent class used by spash screens
+export class Splash {
+
+    constructor (name) {
+        this.type = "splash";
+        this.name = name;
+    }
+
+    startscreen() {
+        console.log("Error: Must override");
+    }
+
+    // return list of static images to load
+    static_images() {
+        console.log("Error: Must override");
+    }
+
+    // called once during init
+    initonce() {
+        console.log("Error: Must override");
+    }
+
+    //called everytime entered
+    initonenter() {
+        console.log("Error: Must override");
+    }
+
+} // class Splash
+
 
 export class StaticImage {
 
@@ -98,7 +129,6 @@ export class LevelContext {
             }
 
         }
-        console.log("Done creating label dict");
 
     }
 
@@ -247,17 +277,44 @@ export class LevelContext {
 
 } // class LevelContext
 
+export class SplashContext {
+
+    constructor(app, splashdetails) {
+        this.app = app;
+        this.name    = splashdetails.name;
+        this.details = splashdetails;
+        this.container = new PIXI.Container();
+    }
+
+    finalize_load(){
+        // TODO add static image to container
+    }
+
+    arrive(){
+        this.bg = this.static_assets.get("start"); 
+        console.log("BGGGG ",this.bg);
+        this.container.addChild(this.bg);
+        this.app.stage.addChild(this.container)
+    }
+
+    leave(){
+        this.app.stage.removeChild(this.container)
+    }
+    
+    destroy(){
+        this.container.removeChildren();
+        this.container.destroy();
+    }
+
+} // SplashContext
+
 
 function loadMapFromModuleFinishSync(level) {
-    console.log("loadMapFromModuleFinishSync");
     level.finalize_load();
-    console.log(level);
     return level;
 }
 
 function loadStaticImagesSync(static_images, level) {
-    console.log("loadStaticImagesSync");
-    console.log(level);
     level.static_assets = new Map();
 
     let promises = [];
@@ -274,28 +331,21 @@ function loadStaticImagesSync(static_images, level) {
         });
         promises.push(p);
     }
-    console.log("Promises promises");
     return Promise.all(promises);
 }
 
-function loadAssetsSync(app, mod, leveldetails) {
+function loadAssetsSync(levelcontext) {
 
-    let level = new LevelContext(app, mod, leveldetails);
-    let static_images = leveldetails.static_images();
+    let static_images = levelcontext.details.static_images();
 
-    console.log("loadAssetsSync");
-    console.log(level);
-    return loadStaticImagesSync(static_images, level).then((static_images) =>
+    return loadStaticImagesSync(static_images, levelcontext).then((static_images) =>
     {
-        console.log("loadAssetsSync 2: ");
-        console.log(static_images);
-        console.log("loadAssetsSync: " + g_ctx.tilesetpath);
         return  PIXI.Assets.load(g_ctx.tilesetpath).then((texture) =>
         {
 
         if (texture.valid) {
             console.log("Texture already valid");
-            return level;
+            return levelcontext;
         }
 
         console.log("Loading texture ", g_ctx.tilesetpath);
@@ -311,15 +361,12 @@ function loadAssetsSync(app, mod, leveldetails) {
         g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
         console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
 
-        console.log(level);
-        return level;
+        return levelcontext;
        });
     });
 }
 
-
 function loadMapFromModuleSync(app, mod, leveldetails) {
-    console.log("loadMapFromModuleSync ");
 
     g_ctx.spritesheet = null; // reset
     g_ctx.animatedsprites = null;
@@ -328,16 +375,35 @@ function loadMapFromModuleSync(app, mod, leveldetails) {
     g_ctx.tiledimx = mod.tiledimx;
     g_ctx.tiledimy = mod.tiledimy;
 
-    return loadAssetsSync(app, mod, leveldetails).then((level) => {
-        console.log("ladAssetsSync done!!");
+    let levelcontext = new LevelContext(app, mod, leveldetails);
+    return loadAssetsSync(levelcontext).then((level) => {
         return loadMapFromModuleFinishSync(level);
+    });
+}
+
+function loadSplashSync(app, splashdetails) {
+
+    let splashcontext = new SplashContext(app, splashdetails);
+    let static_images = splashcontext.details.static_images();
+    return loadStaticImagesSync(static_images, splashcontext).then((static_images) => {
+        splashcontext.finalize_load();
+        return splashcontext;
     });
 }
 
 //export function loadSync(app, name, filename, static_images) {
 export function loadSync(app, leveldetails) {
-    // level loading
-    return import(leveldetails.mapfile()).then((mod) => {
-        return loadMapFromModuleSync(app, mod, leveldetails);
-    });
+
+    console.log("Loading level: ", leveldetails.name);
+
+    if (leveldetails.type == "level") {
+        // level loading
+        return import(leveldetails.mapfile()).then((mod) => {
+            return loadMapFromModuleSync(app, mod, leveldetails);
+        });
+    } else if (leveldetails.type == "splash") {
+        return loadSplashSync(app, leveldetails);
+    } else {
+        console.log("Error: Unknown level type");
+    }
 }
