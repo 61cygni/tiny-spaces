@@ -121,8 +121,11 @@ export class StaticBackground {
     }
 
     finalize() {
-        if (this.alis != null) {
+        console.log("finalizing");
+        if (this.gevents.alis != null) {
+            console.log("alis");
             if (this.x != null) {
+                console.log("-- x:"+this.x+" y:"+this.y);
                 this.gevents.alis.arrive(this.x, this.y);
             } else {
                 this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
