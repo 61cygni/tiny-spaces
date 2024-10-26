@@ -17,7 +17,6 @@ export function register_input_handler(callme){
     textinputhandler = callme;
 }
 
-
 window.addEventListener(
     "keydown", (event) => {
 

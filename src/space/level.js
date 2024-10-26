@@ -291,8 +291,7 @@ export class SplashContext {
     }
 
     arrive(){
-        this.bg = this.static_assets.get("start"); 
-        console.log("BGGGG ",this.bg);
+        this.bg = this.static_assets.get(this.details.startscreen); 
         this.container.addChild(this.bg);
         this.app.stage.addChild(this.container)
     }

@@ -15,14 +15,14 @@ export class ChangeLevel {
         this.fade = new FadeOut(this.gevents);
     }
 
-    tick() {
+    tick(delta) {
         if (!this.finished) {
             if (this.fade.finished) {
                 this.fade.finalize();
                 this.finished = true;
                 return this.name
             } else {
-                this.fade.tick();
+                this.fade.tick(delta);
             }
         }
     }
@@ -30,7 +30,7 @@ export class ChangeLevel {
     finalize() {
 
     }
-    }// class ChangeLevel
+}// class ChangeLevel
 
 // -- 
 // "Parent" class (doesn't use inheritence uses composition) that
@@ -48,18 +48,27 @@ export class StaticBackground {
         this.x = x;
         this.y = y;
         this.doinput = false;
+        this.next_in_chain = null; // next StaticBackground if chained
     }
 
 
     init() {
         this.logic.init(this);
         // fade out main level
+
         this.fade = new FadeOut(this.gevents);
-        this.gevents.alis.leave();
+        if (this.gevents.alis) {
+            this.gevents.alis.leave();
+        }
         this.finished = false;
     }
 
-    tick(){
+    chain(next) {
+        this.next_in_chain = next;
+        return next;
+    }
+
+    tick(delta) {
         if (!this.finished) {
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
@@ -68,20 +77,26 @@ export class StaticBackground {
                     this.fade.init();
                     this.state = 1;
                 }else{
-                    this.fade.tick();
+                    this.fade.tick(delta);
                 }
-            } else if(this.state == 1){ // fade in Alice's house 
+            } else if(this.state == 1){ // fade in scene 
                 if(this.fade.finished){
                     this.logic.add_start_scene();
                     this.fade.finalize();
                     this.state = 2;
                 }else{
-                    this.fade.tick();
+                    this.fade.tick(delta);
                 }
-            } else if(this.state == 2){ // dialog in Alice's house
-                if (!this.logic.tick()){
-                    this.fade = new FadeOut(this.gevents);
-                    this.state = 3;
+            } else if(this.state == 2){ // run scene specific logic 
+                if (!this.logic.tick(delta)){
+                    if (this.next_in_chain) {
+                        // will handle fading out next scene
+                        this.gevents.add_to_tick_event_queue(this.next_in_chain);
+                        this.state = 4;
+                    } else {
+                        this.fade = new FadeOut(this.gevents);
+                        this.state = 3;
+                    }
                 }
             } else if(this.state == 3){ // fade out
                 if(this.fade.finished){
@@ -92,24 +107,26 @@ export class StaticBackground {
                     this.fade.init();
                     this.state = 4;
                 }else{
-                    this.fade.tick();
+                    this.fade.tick(delta);
                 }
-            } else if(this.state == 4){ // fade in level
+            } else if(this.state == 4){ // fade in next scene 
                 if(this.fade.finished){
                     this.fade.finalize();
                     this.finished = true;
                 }else{
-                    this.fade.tick();
+                    this.fade.tick(delta);
                 }
             }
         }
     }
 
     finalize() {
-        if(this.x != null){
-            this.gevents.alis.arrive(this.x,this.y);
-        }else{
-            this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
+        if (this.alis != null) {
+            if (this.x != null) {
+                this.gevents.alis.arrive(this.x, this.y);
+            } else {
+                this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
+            }
         }
         this.state = 0;
         this.finished = true;
@@ -134,7 +151,7 @@ class FadeOut{
         // empty
     }
 
-    tick(){
+    tick(delta) {
         if(this.alpha <= this.endalpha){
             this.alpha += this.alphadelta;
 
@@ -187,7 +204,7 @@ export class FadeIn{
         this.gevents.level.app.stage.addChild(this.container);
     }
 
-    tick(){
+    tick(delta) {
         if(this.alpha >= this.endalpha){
             this.alpha -= this.alphadelta;
 
@@ -233,7 +250,7 @@ export class GameEvents {
 
         this.eventqueue = []; // queue of game events
         this.label_handlers = new Map();
-
+        this.key_handlers = new Map();
         this.bg = null;
         this.input = null;
     }
@@ -255,7 +272,7 @@ export class GameEvents {
 
         this.eventqueue = []; // queue of game events
         this.label_handlers = new Map();
-
+        this.key_handlers = new Map();
         this.bg = null;
         this.input = null;
     }
@@ -335,9 +352,18 @@ export class GameEvents {
     // keyboard handler for managing dialog paging etc.
     // --
     handle_event(event) {
+
+        // Warning. This will steal event code!
+        if(this.key_handlers.has(event.code)){
+            let handler = this.key_handlers.get(event.code);
+            this.add_to_tick_event_queue(handler);
+            return true;
+        }
+
         if( this.dqueue.length == 0 && this.eventqueue.length == 0){
             return false; // nothing to handle
         }
+
         if (event.code == 'Space') {
             event.preventDefault();
 
@@ -385,6 +411,10 @@ export class GameEvents {
         this.label_handlers.set(label, handler);
     }
 
+    register_key_handler(key, handler){
+        this.key_handlers.set(key, handler);
+    }
+
     register_esc_handler(handler){
         this.esc_handler = handler;
     }
@@ -423,13 +453,14 @@ export class GameEvents {
 
         if (this.eventqueue.length > 0) {
             if (!this.eventqueue[0].finished) {
-                let ret = this.eventqueue[0].tick();
+                let ret = this.eventqueue[0].tick(delta);
                 if(ret != null){
                     return ret; // events only return if a new level is being loaded.
                 }
             } else {
                 let event = this.eventqueue.shift();;
                 if (this.eventqueue.length > 0) {
+                    console.log(this.eventqueue[0]);
                     this.eventqueue[0].init();
                 }
                 event.finalize();
