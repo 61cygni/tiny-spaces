@@ -256,6 +256,8 @@ export class GameEvents {
         this.key_handlers = new Map();
         this.bg = null;
         this.input = null;
+
+        this.last_key = null; // last key event code
     }
 
     // called when Alis enters a new level
@@ -359,9 +361,13 @@ export class GameEvents {
         // Warning. This will steal event code!
         if(this.key_handlers.has(event.code)){
             let handler = this.key_handlers.get(event.code);
+            this.key_handlers.delete(event.code);
             this.add_to_tick_event_queue(handler);
             return true;
         }
+
+        this.last_key = event.code;
+        console.log("last_key:"+this.last_key);
 
         if( this.dqueue.length == 0 && this.eventqueue.length == 0){
             return false; // nothing to handle

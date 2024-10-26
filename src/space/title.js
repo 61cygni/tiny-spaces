@@ -90,8 +90,9 @@ class IntroOne {
     }
 
     tick(delta) {
-        if (this.gevents.esc) {
-            // 
+
+        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
             return false; // finished
@@ -139,6 +140,12 @@ class IntroTwo {
     }
 
     tick(delta) {
+        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+            return false; // finished
+        }
         this.elapsed += delta;
         if (this.elapsed > this.pause_time) {
             return false;
@@ -174,6 +181,12 @@ class IntroThree {
     }
 
     tick(delta) {
+        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+            return false; // finished
+        }
         this.elapsed += delta;
         if (this.elapsed > this.pause_time) {
             return false;
@@ -209,6 +222,12 @@ class IntroFour {
     }
 
     tick(delta) {
+        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+            return false; // finished
+        }
         this.elapsed += delta;
         if (this.elapsed > this.pause_time) {
             return false;
@@ -244,6 +263,12 @@ class IntroFive {
     }
 
     tick(delta) {
+        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+            return false; // finished
+        }
         this.elapsed += delta;
         if (this.elapsed > this.pause_time) {
             return false;
