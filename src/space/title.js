@@ -76,7 +76,7 @@ class IntroOne {
         this.bg = gevents.level.static_assets.get("intro1");
         this.state = 0; // 0 = scroll, 1 = pause, 2 = done
         this.elapsed = 0;
-        this.pause_time = 10;
+        this.pause_time = 20;
     }
 
     init(gevents){
@@ -91,7 +91,7 @@ class IntroOne {
 
     tick(delta) {
 
-        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc || this.gevents.last_key == 'Space') {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
@@ -128,7 +128,7 @@ class IntroTwo {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get("city-bg");
         this.elapsed = 0;
-        this.pause_time = 10;
+        this.pause_time = 30;
     }
 
     init(gevents){
@@ -137,18 +137,22 @@ class IntroTwo {
 
     add_start_scene() {
         this.gevents.level.container.addChild(this.bg);
+        let options = {fontsize: 20};
+        this.gevents.dialog_now("SPACE CENTURY 342,\nCAMINEET ON PALMA", "topleft", null, false, options);
     }
 
     tick(delta) {
-        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc || this.gevents.last_key == 'Space') {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
             return false; // finished
         }
-        this.elapsed += delta;
-        if (this.elapsed > this.pause_time) {
-            return false;
+        if (this.gevents.dialogs_finished()) {
+            this.elapsed += delta;
+            if (this.elapsed > this.pause_time) {
+                return false;
+            }
         }
         if (this.gevents.esc) {
             // 
@@ -160,6 +164,7 @@ class IntroTwo {
     }
 
     remove_scene() {
+        this.gevents.clear_dialogs();
         this.gevents.level.app.stage.removeChild(this.bg);
     }
 };
@@ -170,26 +175,34 @@ class IntroThree {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get("intro3");
         this.elapsed = 0;
-        this.pause_time = 10;
+        this.pause_time = 30;
     }
 
     init(gevents){
     }
 
     add_start_scene() {
+        let text1 = "SCUM! DO NO SNIFF AROUND IN LASSIC'S AFFAIRS! LEARN THIS LESSON WELL !";
+        let text2 = "NERO! WHAT HAPPENED! DON'T DIE!";
         this.gevents.level.container.addChild(this.bg);
+        let options = {fontsize: 12};
+        this.gevents.dialog_now(text1, "bottom", null, false, options);
+        this.gevents.dialog_now(text2, "bottom", null, false, options);
     }
 
     tick(delta) {
-        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc || this.gevents.last_key == 'Space') {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
             return false; // finished
         }
-        this.elapsed += delta;
-        if (this.elapsed > this.pause_time) {
-            return false;
+
+        if (this.gevents.dialogs_finished()) {
+            this.elapsed += delta;
+            if (this.elapsed > this.pause_time) {
+                return false;
+            }
         }
         if (this.gevents.esc) {
             // 
@@ -201,6 +214,7 @@ class IntroThree {
     }
 
     remove_scene() {
+        this.gevents.clear_dialogs();
         this.gevents.level.app.stage.removeChild(this.bg);
     }
 };
@@ -211,26 +225,31 @@ class IntroFour {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get("intro4");
         this.elapsed = 0;
-        this.pause_time = 10;
+        this.pause_time = 30;
     }
 
     init(gevents){
     }
 
     add_start_scene() {
+        let text1 = "ALICE, LISTEN! LASSIC IS LEADING OUR WORLD TO DESTRUCTION. I TRIED TO DISCOVER HIS PLANS BUT I COULD NOT DO MUCH BY MYSELF. I HAD HEARD OF A MAN WITH GREAT STRENGTH NAMED \"ODIN\". MAYBE THE TWO OF YOU CAN STOP LASSIC. ALIS, IT'S TOO LATE FOR ME. BE STRONG."; 
         this.gevents.level.container.addChild(this.bg);
+        let options = {fontsize: 12};
+        this.gevents.dialog_now(text1, "bottom", null, false, options);
     }
 
     tick(delta) {
-        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc  || this.gevents.last_key == 'Space') {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
             return false; // finished
         }
-        this.elapsed += delta;
-        if (this.elapsed > this.pause_time) {
-            return false;
+        if (this.gevents.dialogs_finished()) {
+            this.elapsed += delta;
+            if (this.elapsed > this.pause_time) {
+                return false;
+            }
         }
         if (this.gevents.esc) {
             // 
@@ -252,26 +271,31 @@ class IntroFive {
         this.gevents = gevents;
         this.bg = gevents.level.static_assets.get("intro5");
         this.elapsed = 0;
-        this.pause_time = 10;
+        this.pause_time = 30;
     }
 
     init(gevents){
     }
 
     add_start_scene() {
+        let text1 = "I WILL MAKE SURE MY BROTHER DIED NOT IN VAIN! WATCH OVER AND PROTECT ME NERO!";
         this.gevents.level.container.addChild(this.bg);
+        let options = {fontsize: 12};
+        this.gevents.dialog_now(text1, "bottom", null, false, options);
     }
 
     tick(delta) {
-        if (this.gevents.esc || this.gevents.last_key == 'Enter' || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc || this.gevents.last_key == 'Space') {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
             return false; // finished
         }
-        this.elapsed += delta;
-        if (this.elapsed > this.pause_time) {
-            return false;
+        if (this.gevents.dialogs_finished()) {
+            this.elapsed += delta;
+            if (this.elapsed > this.pause_time) {
+                return false;
+            }
         }
         if (this.gevents.esc) {
             // 

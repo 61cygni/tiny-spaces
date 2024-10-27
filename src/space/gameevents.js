@@ -121,11 +121,10 @@ export class StaticBackground {
     }
 
     finalize() {
-        console.log("finalizing");
+        this.gevents.clear_dialogs();
         if (this.gevents.alis != null) {
             console.log("alis");
             if (this.x != null) {
-                console.log("-- x:"+this.x+" y:"+this.y);
                 this.gevents.alis.arrive(this.x, this.y);
             } else {
                 this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
@@ -282,10 +281,17 @@ export class GameEvents {
         this.input = null;
     }
 
+    //--
+    // Return true if all dialogs are finished
+    //--
+    dialogs_finished(){
+        return this.dqueue.length == 0 || (this.dqueue.length == 1 && this.dqueue[0].finished);
+    }
+
     // --
     // Display a dialog on the screen. Uses a stack to manage multiple dialog requests
     // -- 
-    dialog_now(text = "", place = 'bottom', callme = null, pinned = false) {
+    dialog_now(text = "", place = 'bottom', callme = null, pinned = false, options = null) {
         // if an existing dialog is up and finished, clean it up
         if (this.dqueue.length > 0 && this.dqueue[0].finished) {
             this.dqueue[0].leave();
@@ -295,15 +301,18 @@ export class GameEvents {
         // if an existing dialog is up and pinned, append to that dialog
         if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
             this.dqueue[0].append("\n\n"+text);
+        } else if (this.dqueue.length > 0) {
+            let d = new DIALOG.Dialog(this.level, text, pinned, place, callme, options);
+            this.dqueue.push(d);
         } else {
-            let d = new DIALOG.Dialog(this.level, text, pinned, 42, 4, place, callme);
+            let d = new DIALOG.Dialog(this.level, text, pinned, place, callme, options);
             this.dqueue.push(d);
             d.arrive();
         }
     }
 
     // Stream to a dialog
-    dialog_stream(text = "", place = 'bottom') {
+    dialog_stream(text = "", place = 'bottom', options = null) {
         // if an existing dialog is up and finished, clean it up
         if (this.dqueue.length > 0 && this.dqueue[0].finished) {
             this.dqueue[0].leave();
@@ -314,7 +323,7 @@ export class GameEvents {
         if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
             this.dqueue[0].append(text);
         } else {
-            let d = new DIALOG.Dialog(this.level, text, true, 42, 4, place, null);
+            let d = new DIALOG.Dialog(this.level, text, true, place, null, options);
             this.dqueue.push(d);
             d.arrive();
         }
@@ -367,7 +376,6 @@ export class GameEvents {
         }
 
         this.last_key = event.code;
-        console.log("last_key:"+this.last_key);
 
         if( this.dqueue.length == 0 && this.eventqueue.length == 0){
             return false; // nothing to handle
@@ -383,9 +391,14 @@ export class GameEvents {
                 if (!this.dqueue[0].pinned) {
                     this.dqueue[0].leave();
                     this.dqueue.shift();
+                    if(this.dqueue.length > 0){
+                        this.dqueue[0].arrive();
+                    }   
+                    this.last_key = null; // gobble event 
                 }
             } else {
                 this.dqueue[0].nextpage();
+                this.last_key = null; // gobble event 
             }
         }
         return true;

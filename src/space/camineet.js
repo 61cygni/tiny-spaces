@@ -132,7 +132,8 @@ function init(gameevents) {
     gameevents.register_label_handler("exit1", new GAME.ChangeLevel("Palma-start1", gameevents)); 
 
     // Intro blurb
-    oneShotIntroBlurb(gameevents);
+    // Keeping this around as an example. But it's currently been replaced with a proper intro.
+    // oneShotIntroBlurb(gameevents);
 
 } // init
 

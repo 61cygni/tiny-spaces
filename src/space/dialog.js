@@ -8,15 +8,23 @@ const TEXTPAUSE = .25
 const MAXTHEIGHT = DHEIGHT - (2*DPAD)
 const MAXTWIDTH  = DWIDTH  - (2*DPAD)
 
+const DEFAULTFONTSIZE = 10;
+
 export class Dialog{
 
 
     // tw = textwidth
     // pw = page width
-    constructor(level, msg, pinned=false,  tw=42, pw = 4, place = 'bottom', callme = null){
+    constructor(level, msg, pinned=false, place = 'bottom', callme = null,options = null){
         this.level = level
-        this.tw = tw;
-        this.pw = pw;
+
+        this.frontsize = DEFAULTFONTSIZE;
+
+        if(options && Object.hasOwn(options,'fontsize')){
+            console.log("setting fontsize to "+options.fontsize);
+            this.frontsize = options.fontsize;
+        }
+
         this.msg = msg;
         this.finished = false;
         this.startindex = 0;
@@ -26,7 +34,7 @@ export class Dialog{
         this.callme = callme;
         this.style = new PIXI.TextStyle({
             fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-            fontSize: 10,
+            fontSize: this.frontsize,
             fill: "#ffffff",
             fontWeight: "bold",
             wordWrap: true,
@@ -74,11 +82,14 @@ export class Dialog{
         let topleftx = (640/2) - 120;
         let toplefty = 480 - (DHEIGHT + 4);
         if(this.place == 'top'){
-            topleftx = 0;
-            toplefty = 0;
+            toplefty = DPAD;
+        }
+        else if(this.place == 'topleft'){
+            topleftx = DPAD;
+            toplefty = DPAD;
         }
         else if(this.place == 'left'){
-            topleftx = 0;
+            topleftx = DPAD;
             toplefty = (480/2) - (DHEIGHT/2);
         }
         else if(this.place == 'inputbottom'){
@@ -100,7 +111,9 @@ export class Dialog{
         this.level.app.stage.removeChild(this.container);
         this.container.removeChild(this.text);
         this.container.removeChild(this.rrect);
+        if(this.text){
         this.text.destroy();
+        }
         this.rrect.destroy();
         this.container.destroy();
         if(this.callme){
