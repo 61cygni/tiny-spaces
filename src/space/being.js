@@ -133,8 +133,8 @@ export class Being {
     }
 
     curBGTile(){
-        let coordsx = Math.floor(this.worldx / 16);
-        let coordsy = Math.floor(this.worldy / 16);
+        let coordsx = Math.floor((this.worldx + 11) / 16);
+        let coordsy = Math.floor((this.worldy + 16) / 16);
         return this.level.bgtiles[0][coordsx][coordsy];
     }
 

@@ -13,6 +13,7 @@ function static_images(){
     let static_img = [];
 
     static_img.push(new LEVEL.StaticImage("field-bg",      "./ps1/ps1-palma-field-bg.png",   640, 480, 0,0));
+    static_img.push(new LEVEL.StaticImage("forest-bg",      "./ps1/ps1-palma-forest-bg.png",   640, 480, 0,0));
 
     return static_img;
 }

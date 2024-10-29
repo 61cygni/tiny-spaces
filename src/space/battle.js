@@ -14,7 +14,13 @@ export class BattleScene extends SCENE.InteractiveScene {
     }
 
     init(){
-        console.log("BGTILE "+this.gevents.alis.curBGTile());
+        let bgtilenum = this.gevents.alis.curBGTile();
+        console.log("BGTILE "+bgtilenum);
+        if(bgtilenum == 158 || bgtilenum == 106){
+            this.bg = this.gevents.level.static_assets.get("forest-bg");
+        }else{
+            this.bg = this.gevents.level.static_assets.get("field-bg");
+        }
         super.init();
     }
 
