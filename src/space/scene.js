@@ -24,6 +24,7 @@ export function setbgmusic(newsong){
 // slug :   "intro prompt slug",
 // slug2 : "conversation prompt slug",
 // music : "music to play during scene",
+// basemusic : music to return to after scene
 // character : "name of character for scene,
 // chat : bool, // add a chat input
 // orig_dialog = "original game dialog" 
@@ -72,6 +73,11 @@ export class InteractiveScene {
         this.music = null
         if(Object.hasOwn(options,'music')){
             this.music = options.music; // original game dialog 
+        }
+
+        this.basemusic = null
+        if(Object.hasOwn(options,'basemusic')){
+            this.basemusic = options.basemusic; // music to return to after scene 
         }
 
         this.visits = 0;
@@ -241,9 +247,15 @@ export class InteractiveScene {
         if(this.character){
             this.gevents.level.app.stage.removeChild(this.character);
         }
-        if(this.music){
-            setbgmusic('ps1-town');
+        if(this.basemusic){
+            setbgmusic(this.basemusic);
         }
     }
 
 }; // class Camineet house 
+
+
+
+export class SplashScene {
+
+}; // class SplashScene

@@ -123,7 +123,6 @@ export class StaticBackground {
     finalize() {
         this.gevents.clear_dialogs();
         if (this.gevents.alis != null) {
-            console.log("alis");
             if (this.x != null) {
                 this.gevents.alis.arrive(this.x, this.y);
             } else {
@@ -251,8 +250,9 @@ export class GameEvents {
         this.esc_handler = null; // fired when escape key is pressed
 
         this.eventqueue = []; // queue of game events
-        this.label_handlers = new Map();
-        this.key_handlers = new Map();
+        this.label_handlers  = new Map();
+        this.key_handlers    = new Map();
+        this.random_handlers = new Map();
         this.bg = null;
         this.input = null;
 
@@ -277,6 +277,8 @@ export class GameEvents {
         this.eventqueue = []; // queue of game events
         this.label_handlers = new Map();
         this.key_handlers = new Map();
+        this.random_handlers = new Map();
+
         this.bg = null;
         this.input = null;
     }
@@ -427,14 +429,35 @@ export class GameEvents {
     }
 
     // --
+    // Register a random handler. This is used for random encounters
+    // calls rand_func to determine if the handler should fire.
+    // Does not clear the handler after it has fired. 
+    // --
+    register_random_handler(key, rand_func, handler){
+        this.random_handlers.set(key, {rand_func: rand_func, handler: handler});
+    }   
+    delete_random_handler(key){
+        this.random_handlers.delete(key);
+    }   
+
+    // --
     // To be called when Alis steps on a label
     // --
     register_label_handler(label, handler) {
         this.label_handlers.set(label, handler);
     }
+    delete_label_handler(label){
+        this.label_handlers.delete(label);
+    }
 
+    // --
+    // Register keyboard handler.  
+    // --
     register_key_handler(key, handler){
         this.key_handlers.set(key, handler);
+    }
+    delete_key_handler(key){
+        this.key_handlers.delete(key);
     }
 
     register_esc_handler(handler){
@@ -509,7 +532,18 @@ export class GameEvents {
                             }
                         }
                     }
-                }
+
+                    // Note: we only check handlers if Alis has moved. Else the world just seems too unfair 
+                    if (!firedhandler) {
+                        // check random handlers
+                        for (let [key, value] of this.random_handlers) {
+                            let val = value.rand_func();
+                            if (val) {
+                                this.add_to_tick_event_queue(value.handler);
+                            }
+                        }
+                    }   
+                } // end if alis has moved
             } // end alis handler
 
             // run escape handler is pressed
@@ -519,6 +553,7 @@ export class GameEvents {
                     this.esc = false;
                 }
             }
+
 
         } // if eventqueue
     } // Tick (main loop)

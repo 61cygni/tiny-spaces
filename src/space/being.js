@@ -132,6 +132,12 @@ export class Being {
         return ret;
     }
 
+    curBGTile(){
+        let coordsx = Math.floor(this.worldx / 16);
+        let coordsy = Math.floor(this.worldy / 16);
+        return this.level.bgtiles[0][coordsx][coordsy];
+    }
+
     tick(delta){
         if (this.moving) {
             if (this.direction == 'RIGHT') {

@@ -1,4 +1,5 @@
 import * as GAME   from './gameevents.js';
+import * as BATTLE from './battle.js';
 import * as SCENE  from './scene.js';
 import * as LEVEL  from './level.js';
 import * as ALIS  from './alis.js';
@@ -24,6 +25,10 @@ var oneShotInit = (function() {
 
             // Sound for camineet
             sound.add('ps1-palma', './ps1/ps1-palma.mp3');
+            sound.add('battle', './ps1/battle.mp3');
+
+            sound.volumeAll = 0.05;
+            sound.toggleMuteAll();
         }
     };
 })();
@@ -37,6 +42,12 @@ function init(gameevents) {
     
     // on exit, go to Palma overworld
     gameevents.register_label_handler("camineet", new GAME.ChangeLevel("Camineet-start2", gameevents)); 
+
+
+    // 10% chance of monster encounter
+    let battle = new BATTLE.BattleScene(gameevents);
+    gameevents.register_random_handler("palma-monster", () => {return Math.floor(Math.random() * 200) == 0;}, 
+                            new GAME.StaticBackground(battle, gameevents));
 
       // on esc go to AI view
     gameevents.register_esc_handler(new GAME.StaticBackground(alis_ai, gameevents));

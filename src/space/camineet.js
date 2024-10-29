@@ -268,7 +268,8 @@ class Shop1 extends SCENE.InteractiveScene {
                 character: "vill3-half", 
                 chat: true,
                 orig_dialog: "GUARDS SELL BETTER SHIT.",
-                music: "ps1-camineet-shop"
+                music: "ps1-camineet-shop",
+                basemusic: "ps1-town"
             });
     }
 };
@@ -280,7 +281,8 @@ class Shop2 extends SCENE.InteractiveScene {
                 bg: "food-bg",
                 character: "vill5-half",
                 orig_dialog: "Buy giblits!.",
-                music: "ps1-camineet-shop"
+                music: "ps1-camineet-shop",
+                basemusic: "ps1-town"
             });
     }
 };
@@ -292,7 +294,8 @@ class Shop3 extends SCENE.InteractiveScene {
                 bg: "second-hand-bg",  
                 character: "vill1-half",
                 orig_dialog: "Buy crap!",
-               music: "ps1-camineet-shop"
+                music: "ps1-camineet-shop",
+                basemusic: "ps1-town"
             });
     }
 };
@@ -304,7 +307,8 @@ class Church1 extends SCENE.InteractiveScene {
                 bg: "church-bg", 
                 character: "priest-half",
                 orig_dialog: "Save your soul!",
-                music: "ps1-camineet-church"
+                music: "ps1-camineet-church",
+                basemusic: "ps1-town"
             });
     }
 };
