@@ -1,12 +1,17 @@
+import * as PIXI from 'pixi.js'
+
 import * as GAME   from './gameevents.js';
 import * as BATTLE from './battle.js';
 import * as SCENE  from './scene.js';
 import * as LEVEL  from './level.js';
 import * as ALIS  from './alis.js';
+import * as BeachBG from './anim-bg.js';
 
 import { sound } from '@pixi/sound';
 
 const MAPFILE = "../ps1/palma-anim.js";
+
+let animations = new Map();
 
 function static_images(){
     // all static images to load;
@@ -14,6 +19,16 @@ function static_images(){
 
     static_img.push(new LEVEL.StaticImage("field-bg",      "./ps1/ps1-palma-field-bg.png",   640, 480, 0,0));
     static_img.push(new LEVEL.StaticImage("forest-bg",      "./ps1/ps1-palma-forest-bg.png",   640, 480, 0,0));
+    static_img.push(new LEVEL.StaticImage("beach-bg",      "./ps1/beach-bg.png",   640, 480, 0,0));
+
+    BeachBG.load_assets(static_img);
+
+    let key = "./ps1/wingeye.json";
+    console.log("loadAnimatedSprites: ",key);
+    PIXI.Assets.load(key).then((value) => {
+        console.log("loadAnimatedSprites: ",value);
+        animations.set("wingeye", value);
+    });
 
     return static_img;
 }
@@ -46,7 +61,7 @@ function init(gameevents) {
 
 
     // 10% chance of monster encounter
-    let battle = new BATTLE.BattleScene(gameevents);
+    let battle = new BATTLE.BattleScene(gameevents, animations);
     gameevents.register_random_handler("palma-monster", () => {return Math.floor(Math.random() * 200) == 0;}, 
                             new GAME.StaticBackground(battle, gameevents));
 

@@ -211,6 +211,8 @@ export class InteractiveScene {
     add_start_scene() {
         this.gevents.level.app.stage.addChild(this.bg);
         if(this.character){
+            console.log("Adding character");
+            console.log(this.character);
             this.gevents.level.app.stage.addChild(this.character);
         }
         if(this.slug == ""){

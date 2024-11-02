@@ -4,6 +4,7 @@
 // Start screen and menu
 //--
 
+
 import * as LEVEL  from './level.js';
 import * as GAME   from './gameevents.js';
 import * as SCENE  from './scene.js';
@@ -23,7 +24,6 @@ function static_images(){
 
     return static_img;
 }
-
 var oneShotInit = (function() {
     var executed = false;
     return function() {
