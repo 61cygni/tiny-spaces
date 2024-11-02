@@ -29,6 +29,13 @@ function static_images(){
         console.log("loadAnimatedSprites: ",value);
         animations.set("wingeye", value);
     });
+    key = "./ps1/sworm.json";
+    console.log("loadAnimatedSprites: ",key);
+    PIXI.Assets.load(key).then((value) => {
+        console.log("loadAnimatedSprites: ",value);
+        animations.set("sworm", value);
+    });
+
 
     return static_img;
 }

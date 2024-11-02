@@ -36,15 +36,29 @@ export class BattleScene extends SCENE.InteractiveScene {
             this.bg = this.beach_bg.container;
         }
 
-        let wingeye = this.animations.get("wingeye");
-        let ctile  = new PIXI.AnimatedSprite(wingeye.animations["row0"]);
-        ctile.width = 116;
-        ctile.x = 640/2 - ctile.width/2;
-        ctile.height = 116;
-        ctile.y = 480/2 - ctile.height/2;
-        ctile.animationSpeed = .10;
-        ctile.play();
-        this.character = ctile;
+        //if random number is even, use wingeye, else use sworm
+        let random = Math.floor(Math.random() * 10);
+        if (Math.floor(Math.random() * 10) % 2 == 0) {
+            let wingeye = this.animations.get("wingeye");
+            let ctile = new PIXI.AnimatedSprite(wingeye.animations["row0"]);
+            ctile.width = 116;
+            ctile.x = 640 / 2 - ctile.width / 2;
+            ctile.height = 116;
+            ctile.y = 480 / 2 - ctile.height / 2;
+            ctile.animationSpeed = .10;
+            ctile.play();
+            this.character = ctile;
+        } else {
+            let sworm = this.animations.get("sworm");
+            let ctile  = new PIXI.AnimatedSprite(sworm.animations["row0"]);
+            ctile.width = 116;
+            ctile.x = 640/2 - ctile.width/2;
+            ctile.height = 116;
+            ctile.y = 480/2 - ctile.height/2;
+            ctile.animationSpeed = .10;
+            ctile.play();
+            this.character = ctile;
+        }
 
         super.init();
     }
