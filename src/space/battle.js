@@ -1,10 +1,11 @@
 import * as PIXI from 'pixi.js'
 import * as SCENE  from './scene.js';
 import * as BeachBG from './anim-bg.js';
+import * as Monsters from './palma-monsters.js';
 
 export class BattleScene extends SCENE.InteractiveScene {
 
-    constructor(gevents, animations) {
+    constructor(gevents) {
         super(gevents, 
             {
                 bg:"field-bg", 
@@ -13,7 +14,6 @@ export class BattleScene extends SCENE.InteractiveScene {
                 basemusic: "ps1-palma",
                 orig_dialog: "FIGHT!!",
             });
-        this.animations = animations;
 
         this.beach_bg = BeachBG.get_beach_bg(gevents); // grab singleton instance
     }
@@ -39,25 +39,11 @@ export class BattleScene extends SCENE.InteractiveScene {
         //if random number is even, use wingeye, else use sworm
         let random = Math.floor(Math.random() * 10);
         if (Math.floor(Math.random() * 10) % 2 == 0) {
-            let wingeye = this.animations.get("wingeye");
-            let ctile = new PIXI.AnimatedSprite(wingeye.animations["row0"]);
-            ctile.width = 116;
-            ctile.x = 640 / 2 - ctile.width / 2;
-            ctile.height = 116;
-            ctile.y = 480 / 2 - ctile.height / 2;
-            ctile.animationSpeed = .10;
-            ctile.play();
-            this.character = ctile;
+            let wingeye = Monsters.get_monster("wingeye");
+            this.character = wingeye.sprite;
         } else {
-            let sworm = this.animations.get("sworm");
-            let ctile  = new PIXI.AnimatedSprite(sworm.animations["row0"]);
-            ctile.width = 116;
-            ctile.x = 640/2 - ctile.width/2;
-            ctile.height = 116;
-            ctile.y = 480/2 - ctile.height/2;
-            ctile.animationSpeed = .10;
-            ctile.play();
-            this.character = ctile;
+            let sworm = Monsters.get_monster("sworm");
+            this.character = sworm.sprite;
         }
 
         super.init();
