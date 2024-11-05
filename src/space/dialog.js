@@ -19,10 +19,15 @@ export class Dialog{
         this.level = level
 
         this.frontsize = DEFAULTFONTSIZE;
+        this.pad = DPAD;
 
         if(options && Object.hasOwn(options,'fontsize')){
             console.log("setting fontsize to "+options.fontsize);
             this.frontsize = options.fontsize;
+        }
+        if(options && Object.hasOwn(options,'pad')){
+            console.log("setting padding to "+options.pad);
+            this.pad = options.pad;
         }
 
         this.msg = msg;
@@ -105,6 +110,23 @@ export class Dialog{
         this.text.y = toplefty + DPAD;
         this.container.addChild(this.text);
         this.level.app.stage.addChild(this.container);
+    }
+
+    create_static(text, topleftx, toplefty, pad=8){
+        let newcontainer = new PIXI.Container();
+        this.text = new PIXI.Text({text: text, style: this.style});
+        this.text.x = 0 + pad; 
+        this.text.y = 0 + pad; 
+        newcontainer.addChild(this.text);
+        this.rrect.roundRect(0, 0, newcontainer.width + pad*2, newcontainer.height + pad*2, 10);
+        this.rrect.setStrokeStyle(2, 0xffd900, 1);
+        this.rrect.fill(0x0)
+            .stroke({ width: 2, color: 'white' });
+        console.log("newcontainer: ", newcontainer.width, newcontainer.height);
+        newcontainer.removeChild(this.text);
+        this.container.addChild(this.text);
+        this.container.x = topleftx;
+        this.container.y = toplefty;
     }
 
     leave() {

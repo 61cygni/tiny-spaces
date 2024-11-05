@@ -216,7 +216,12 @@ export class InteractiveScene {
             this.gevents.level.app.stage.addChild(this.character);
         }
         if(this.slug == ""){
-            this.gevents.dialog_now(this.orig_dialog);
+            if(this.chat){
+                this.gevents.dialog_now(this.orig_dialog, "inputbottom", null, true);
+                this.gevents.input_now("", this.inputcallme.bind(this));
+            }else{
+                this.gevents.dialog_now(this.orig_dialog);
+            }
         }
         else { 
             this.invoke_initial_prompt_stream();

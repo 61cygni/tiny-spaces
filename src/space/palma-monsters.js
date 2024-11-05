@@ -25,6 +25,8 @@ class Monster {
         this.name = name;
         this.spritename = spritename;
         this.sprite = null;
+        this.hp = 0;
+        this.init();
     }
 
     init() {
@@ -38,37 +40,63 @@ class Monster {
         this.sprite = ctile;
     }
 
+    // stats is an object with the following properties:
+    // HP, ATP, DFP, Exp, Mes, Num, Run, Trp, Win, T, C, R, P, M
+    set_stats(stats){
+        this.hp = stats.HP;
+        this.atp = stats.ATP;
+        this.dfp = stats.DFP;
+        this.exp = stats.Exp;
+        this.mes = stats.Mes;
+        this.num = stats.Num;
+        this.run = stats.Run;
+        this.trip = stats.Trp;
+        this.win = stats.Win;
+        this.t = stats.T;
+        this.c = stats.C;
+        this.r = stats.R;
+        this.p = stats.P;
+        this.m = stats.M;
+    }
+
 }; // class Monster
+
+/*
+Name      HP   ATP  DFP  Exp  Mes  Num  Run  Trp  Win   T  C  R  P  M Special
+WING EYE  11   12   10   2    6    6    127  15    -   -  y  y  y 
+
+*/
 
 class WingEye extends Monster {
     constructor(){
-        super("wingeye", "wingeye");
+        super("wingeye", "wingeye", );
+        this.set_stats({HP:11, ATP:12, DFP:10, Exp:2, Mes:6, Num:6, Run:127, Trp:15, Win:false, T:false, C:true, R:true, P:true, M:false});
     }
 }
+
+/*
+Name      HP   ATP  DFP  Exp  Mes  Num  Run  Trp  Win   T  C  R  P  M Special
+SWORM     8    13   9    2    3    8    255  12         -  -  y  y  y 
+
+*/
 
 class Sworm extends Monster {
     constructor(){
         super("sworm", "sworm");
+        this.set_stats({HP:8, ATP:13, DFP:9, Exp:2, Mes:3, Num:8, Run:255, Trp:12, Win:false, T:false, C:false, R:true, P:true, M:false});
     }
 }
+
+let palma_monsters = null;
 
 let wingeye_instance = null;
 let sworm_instance = null;
 
-export function get_monster(name){
-    if(name == "wingeye"){
-        if(wingeye_instance == null){
-            wingeye_instance = new WingEye();
-            wingeye_instance.init();
-        }
-        return wingeye_instance;
+export function get_monsters(){
+    if(palma_monsters == null){
+        palma_monsters = []; 
+        palma_monsters.push(new WingEye());
+        palma_monsters.push(new Sworm());
     }
-    if(name == "sworm"){
-        if(sworm_instance == null){
-            sworm_instance = new Sworm();
-            sworm_instance.init();
-        }
-        return sworm_instance;
-    }
-    return null;
+    return palma_monsters; // return singleton map of monsters
 }
