@@ -52,7 +52,22 @@ export class BattleScene extends SCENE.InteractiveScene {
         this.beach_bg = BeachBG.get_beach_bg(gevents); // grab singleton instance
     }
 
+    attack(action){
+        console.log("Battle ATTACK ");
+    }
+
+    run(action){
+        console.log("Battle RUN ");
+        console.log(this);
+        this.gevents.esc = true;
+    }
+
     init(){
+
+        this.register_action("attack", this.attack.bind(this));
+        this.register_action("run", this.run.bind(this));
+
+
         let bgtilenum = this.gevents.alis.curBGTile();
         console.log("BGTILE "+bgtilenum);
         if(bgtilenum == 105 || bgtilenum == 157){

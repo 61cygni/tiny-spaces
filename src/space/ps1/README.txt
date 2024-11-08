@@ -111,3 +111,8 @@ ZOMBIE    87   108  58   20   27   4    153  15         -  -  y  y  -
 * DARKFALZ is actually two 255HP creatures fought consecutively. About half
   way through the battle you'll notice he only attacks once per round instead
   of twice. 
+
+  Braintrust:
+
+export  BRAINTRUST_API_KEY=<key>
+npx braintrust pull

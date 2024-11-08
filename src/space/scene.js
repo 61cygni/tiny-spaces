@@ -37,6 +37,8 @@ export class InteractiveScene {
     //constructor(gevents, bg, slug, slug2 = "", character = null, chat = false) {
     constructor(gevents, options) {
         this.gevents = gevents;
+        this.actions = new Map();
+
         if(!Object.hasOwn(options,'bg')){
             console.log("ERR: InteractiveScene:error options needs to specify bg")
             return;
@@ -92,33 +94,8 @@ export class InteractiveScene {
 
     async invoke_initial_prompt_stream(){
 
-            const sysinput = {
-                history: this.history,
-                visits: this.visits,
-            };
+            await this.invoke_prompt_input_stream(this.slug, "");
 
-            let usrinput = this.user_input();
-            let promptinput = {...sysinput, ...usrinput};
-
-            console.log(promptinput);
-
-            let result = await BT.asyncbtStream(this.slug, promptinput);
-            let preamble = "";
-            if(this.name != ""){
-                preamble = this.name + ": ";
-            }
-            if (!this.finished) {
-                this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
-                this.history = this.history + preamble;
-                for await (const chunk of result) {
-                    if (this.finished) {
-                        break;
-                    }
-                    this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
-                    this.history = this.history + chunk.data;
-                }
-            }
-            // this.gevents.dialog_stream_done();
             if (!this.finished && this.chat) {
                 this.gevents.input_now("", this.inputcallme.bind(this));
             }else{
@@ -138,26 +115,47 @@ export class InteractiveScene {
             let usrinput = this.user_input();
             let promptinput = {...sysinput, ...usrinput};
 
-            console.log(promptinput);
-            console.log("PROMPT");
-
+            console.log("Prompt: "+promptinput);
 
             let result = await BT.asyncbtStream(slug, promptinput);
-            let preamble = "Alis: "+val+"\n";
+            let preamble = "";
+            if(val != ""){
+                preamble = "Alis: "+val+"\n";
+            }
             if(this.name != ""){
                 preamble = preamble + this.name + ": ";
             }
+
+            let session = "";
             if (!this.finished) {
                 this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
-                this.history = this.history + "\n" + preamble;
                 for await (const chunk of result) {
                     if (this.finished){
                         break;
                     }
                     this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
-                    this.history = this.history + chunk.data;
+                    this.session = this.session + chunk.data;
                 }
             }
+
+            // detect any actions. They should be the end of the message, delimintated by '###'
+            // and written in JSON
+            console.log("Session: "+this.session);
+            let actions = this.session.split("###");
+            if(actions.length > 1){
+                // TODO! Try / catch block here
+                let act = JSON.parse(actions[actions.length - 1]);
+                console.log("Action: ");
+                console.log(act);
+                if(Object.prototype.hasOwnProperty.call(act, 'action')){
+                    console.log("Dispatching action: "+act.action);
+                    this.dispatch_action(act);
+                }else{
+                    console.log("No action found in JSON object");
+                }
+            }
+
+            this.history = this.history + "\n" + preamble + this.session;
 
             if (this.finished ){
               this.gevents.dialog_stream_done();
@@ -256,6 +254,21 @@ export class InteractiveScene {
         }
         if(this.basemusic){
             setbgmusic(this.basemusic);
+        }
+    }
+
+    register_action(action, callback){
+        this.actions.set(action, callback);
+    }
+
+    remove_action(action){
+        this.actions.delete(action);
+    }
+
+    dispatch_action(action){
+        let callback = this.actions.get(action.action);
+        if(callback){
+            callback(action);
         }
     }
 
