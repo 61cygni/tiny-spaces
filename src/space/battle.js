@@ -52,8 +52,20 @@ export class BattleScene extends SCENE.InteractiveScene {
         this.beach_bg = BeachBG.get_beach_bg(gevents); // grab singleton instance
     }
 
+    do_attack_round(){
+        let first = Math.floor(Math.random() * 2);
+        if(first == 0){
+            this.do_player_attack();
+            this.do_monster_attack();
+        }else{
+            this.do_monster_attack();
+            this.do_player_attack();
+        }
+    }
+
     attack(action){
         console.log("Battle ATTACK ");
+        this.do_attack_round();
     }
 
     run(action){
