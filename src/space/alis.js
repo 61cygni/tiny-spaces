@@ -8,13 +8,18 @@ class Alis extends BEING.Being{
 
     constructor(app, spritesheet, level) {
         super(app, spritesheet, level);
+        this.reset();
+    }
+
+    reset(){
         this.name = 'Alis';
         this.items = []; 
         this.maseta = 0;
 
         this.level = 1;
         this.exp = 0;
-        this.maxhp = 16;
+        this.maxhp = 1;
+        // this.maxhp = 16;
         this.hp = this.maxhp;
         this.health = this.maxhealth;
         this.explevel = 0; //experience level

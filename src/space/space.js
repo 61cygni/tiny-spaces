@@ -115,6 +115,12 @@ function init() {
         Alis.tick(delta);
         let nextlevel = gameevents.tick(delta);
         if(nextlevel != null){
+
+            if(Alis.hp <= 0){
+                console.log("Alis is dead. Going to title screen");
+                nextlevel = "Title-start1";
+            }
+
             ticker.stop();
             console.log("Leaving "+getLevelName(nextlevel));
             Alis.leave();

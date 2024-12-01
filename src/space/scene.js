@@ -38,6 +38,7 @@ export class InteractiveScene {
     constructor(gevents, options) {
         this.gevents = gevents;
         this.actions = new Map();
+        this.bgharness = null;
 
         if(!Object.hasOwn(options,'bg')){
             console.log("ERR: InteractiveScene:error options needs to specify bg")
@@ -196,7 +197,8 @@ export class InteractiveScene {
     }
 
     // Called each time house is entered
-    init() {
+    init(harness) {
+        this.bgharness = harness;
         this.visits += 1;
         this.finished = false;
         this.gevents.esc = false; // clean just in case. 

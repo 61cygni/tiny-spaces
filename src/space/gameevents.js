@@ -49,6 +49,10 @@ export class StaticBackground {
         this.y = y;
         this.doinput = false;
         this.next_in_chain = null; // next StaticBackground if chained
+
+
+        // if not null, tick will return the string of a new level.
+        this.tick_return_new_level = null;
     }
 
 
@@ -69,6 +73,10 @@ export class StaticBackground {
     }
 
     tick(delta) {
+        if(this.tick_return_new_level != null){
+            this.finished = true;
+            return this.tick_return_new_level;
+        }
         if (!this.finished) {
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
