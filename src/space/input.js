@@ -46,6 +46,10 @@ export class TextInput {
         this.input.eventMode = 'static';
         this.input.onEnter.connect((val) => {
             console.log("Text input"+val);
+            if(val == ""){
+                console.log("Text input empty. Bailing");
+                return;
+            }
             if(this.callme){
                 this.callme(val);
             }

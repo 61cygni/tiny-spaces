@@ -128,13 +128,21 @@ export class InteractiveScene {
             }
 
             let session = "";
+            let afterstopword = false;
             if (!this.finished) {
                 this.gevents.dialog_stream(preamble, 'inputbottom', null, true);
                 for await (const chunk of result) {
                     if (this.finished){
                         break;
                     }
-                    this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+
+                    if(chunk.data.includes("###")){
+                        this.gevents.dialog_stream(chunk.data.split("###")[0], 'inputbottom', null, true);
+                        afterstopword = true;
+                    }
+                    if(!afterstopword){
+                        this.gevents.dialog_stream(chunk.data, 'inputbottom', null, true);
+                    }
                     this.session = this.session + chunk.data;
                 }
             }

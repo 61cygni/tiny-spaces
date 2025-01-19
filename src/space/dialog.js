@@ -52,10 +52,15 @@ export class Dialog{
         this.pagepause = false;
         this.elapsed = 0;
         this.waitperiod = TEXTPAUSE;
+
+        // 
+        this.appendcallback = null;
     }
 
-    append(text){
+    append(text, callback = null){
         this.msg = this.msg + text;
+        this.callme = callback;
+        //this.appendcallback = callback;
     }
 
     nextpage() {
@@ -75,6 +80,11 @@ export class Dialog{
             this.displayText();
             if (this.endindex >= this.msg.length) {
                 this.finished = true;
+                if(this.appendcallback){
+                    console.log("firing appendcallback");
+                    this.appendcallback();
+                    this.appendcallback = null;
+                }
             }
         }
 
@@ -191,6 +201,11 @@ export class Dialog{
             }
             if (this.endindex >= this.msg.length) {
                 this.finished = true;
+                if(this.appendcallback){
+                    console.log("firing appendcallback");
+                    this.appendcallback();
+                    this.appendcallback = null;
+                }
             }
         }
     }

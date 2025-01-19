@@ -329,11 +329,18 @@ export class GameEvents {
             this.dqueue.shift();
         }
 
+        let cb = null;
+        console.log("dialog_stream options", options);
+        if(options && Object.hasOwn(options, 'appendcb')){
+            cb = options.appendcb;
+        }
+
         // if an existing dialog is up and pinned, append to that dialog
         if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
-            this.dqueue[0].append(text);
+            console.log("dialog_stream cb", cb);
+            this.dqueue[0].append(text, cb);
         } else {
-            let d = new DIALOG.Dialog(this.level, text, true, place, null, options);
+            let d = new DIALOG.Dialog(this.level, text, true, place, cb, options);
             this.dqueue.push(d);
             d.arrive();
         }

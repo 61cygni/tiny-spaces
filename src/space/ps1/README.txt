@@ -112,6 +112,30 @@ ZOMBIE    87   108  58   20   27   4    153  15         -  -  y  y  -
   way through the battle you'll notice he only attacks once per round instead
   of twice. 
 
+Items: 
+
+ Woodcane	Woodcane	+ 3	25	Alis  Odin  Noah
+ Short Sword	Short Sword	+ 4	40	Alis  Odin  Noah
+ Iron Axe	Iron Axe	+ 10	64	Odin
+ Iron Fang	Iron Fang	+ 10	-	Myau
+ Wand	Wand	+ 10	1200	Alis  Odin  Noah
+ Iron Sword	Iron Sword	+ 12	75	Alis  Odin
+ Needle Gun	Needle Gun	+ 18	400	Odin
+ Titan(ium) Sword	Titanium Sword	+ 21	320	Alis  Odin
+ Heat Gun	Heat Gun	+ 30	1540	Odin
+ Silver Fang	Silver Fang	+ 30	1620	Myau
+ Ceramic Sword	Ceramic Sword	+ 31	1120	Alis  Odin
+ Light Saber	Light Saber	+ 46	2980	Alis  Odin
+ Laser Gun	Laser Gun	+ 50	4120	Odin
+ Laconian Sword	Laconian Sword	+ 60	-	Alis  Odin
+ Laconian Axe	Laconian Axe	+ 80	-	Odin
+
+Walkthroughs:
+
+https://www.crunkgames.com/?p=17&page=2
+
+
+
   Braintrust:
 
 export  BRAINTRUST_API_KEY=<key>

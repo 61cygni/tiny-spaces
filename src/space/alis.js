@@ -18,8 +18,8 @@ class Alis extends BEING.Being{
 
         this.level = 1;
         this.exp = 0;
-        this.maxhp = 1;
-        // this.maxhp = 16;
+        // this.maxhp = 1;
+        this.maxhp = 16;
         this.hp = this.maxhp;
         this.health = this.maxhealth;
         this.explevel = 0; //experience level

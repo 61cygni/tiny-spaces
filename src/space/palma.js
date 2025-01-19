@@ -36,6 +36,7 @@ var oneShotInit = (function() {
             // Sound for camineet
             sound.add('ps1-palma', './ps1/ps1-palma.mp3');
             sound.add('battle', './ps1/battle.mp3');
+            sound.add('gameover', './ps1/gameover.mp3');
 
             sound.volumeAll = 0.05;
             sound.toggleMuteAll();

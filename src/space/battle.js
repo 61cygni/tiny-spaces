@@ -1,13 +1,12 @@
 import { Ticker } from '@pixi/ticker';
 import * as PIXI from 'pixi.js'
-import * as GAME   from './gameevents.js';
 import * as SCENE  from './scene.js';
 import * as BeachBG from './anim-bg.js';
 import * as Monsters from './palma-monsters.js';
 import * as DIALOG from './dialog.js';
 
+import { sound } from '@pixi/sound';
 
-let timer_fired = false;
 
 
 class BattleTimer {
@@ -52,6 +51,7 @@ export class BattleScene extends SCENE.InteractiveScene {
 
         this.beach_bg = BeachBG.get_beach_bg(gevents); // grab singleton instance
 
+        this.battlefinished = false;
         this.monsters = [];
         this.namedialog = null;
         this.hpdialog = null;
@@ -70,26 +70,35 @@ export class BattleScene extends SCENE.InteractiveScene {
     }
 
     next_round(){
-        if(this.finished){
+        if(this.battlefinished){
             return;
         }
         if (this.gevents.alis.hp <= 0) {
             console.log("Alis is dead");
-            this.gevents.clear_dialogs();
-            this.gevents.dialog_now("Alis died. Alis's hope can not overcome the power of Lassic. The adventure is over", "bottom",
-                () => {
-                    this.finished = true;
-                    this.bg.removeChildren();
-                    this.gevents.alis.reset();
-                    // Have staticbackground return to the title screen 
-                    this.bgharness.tick_return_new_level = "Title-start1";
+            // this.gevents.clear_dialogs();
+            // this.gevents.input_leave();
+            this.gevents.dialog_stream("\nALIS DIED. ALIS'S HOPE CAN NOT OVERCOME THE POWER OF LASSIC. THE ADVENTURE IS OVER", 
+                'bottom',
+                {
+                    appendcb: () => {
+                        console.log("dialog cb");
+                        this.battlefinished = true;
+                    }
                 }
             );
+            this.gevents.dialog_stream_done();
+            sound.stopAll();
+            sound.play('gameover');
             return;
         }
 
         if(this.monsters_dead()){
             console.log("All monsters are dead");
+            this.gevents.dialog_now("You have defeated all the monsters!", "bottom",
+                () => {
+                    this.battlefinished = true;
+                }
+            );
             this.gevents.esc = true;
             return;
         }
@@ -107,6 +116,7 @@ export class BattleScene extends SCENE.InteractiveScene {
     }
 
     do_player_attack(callback){
+        console.log("do_player_attack");
         if(this.finished){
             return;
         }
@@ -127,22 +137,30 @@ export class BattleScene extends SCENE.InteractiveScene {
 
         new BattleTimer().wait_n_seconds(2, () => {
 
-            this.monsters[monster].hp -= dmg;
-            this.gevents.dialog_stream("You hit the monster for "+dmg+" damage!\n", 'inputbottom', null, true);
-            if(this.monsters[monster].hp <= 0){
-                console.log("Monster is dead");
-                this.monsters[monster].hp = 0;
+            if (this.gevents.alis.hp > 0) {
+                this.monsters[monster].hp -= dmg;
+                this.gevents.dialog_stream("You hit the monster for " + dmg + " damage!\n", 'inputbottom', null, true);
+                if (this.monsters[monster].hp <= 0) {
+                    console.log("Monster is dead");
+                    this.monsters[monster].hp = 0;
+                }
+                this.update_monster_hud();
+                // Call next function when dialog is done
+                this.gevents.dqueue[0].appendcallback = () => {
+                    new BattleTimer().wait_n_seconds(2, callback);
+                };
+            } else {
+                if (callback) {
+                    callback();
+                }
             }
-            this.update_monster_hud();
 
-            if(callback){
-                callback();
-            }
         });
 
     }
 
     do_monster_attack(callback){
+        console.log("do_monster_attack");
         if(this.finished){
             return;
         }
@@ -152,9 +170,13 @@ export class BattleScene extends SCENE.InteractiveScene {
             this.gevents.dialog_stream("The monster hit you for "+dmg+" damage!\n", 'inputbottom', null, true);
             this.gevents.alis.hp -= dmg;
             this.character.stop();
-            if(callback){
-                callback();
-            }
+            this.gevents.dqueue[0].appendcallback = () => {
+                new BattleTimer().wait_n_seconds(2, callback);
+            };
+
+            // if(callback){
+            //     callback();
+            // }
         });
     }
 
@@ -174,18 +196,22 @@ export class BattleScene extends SCENE.InteractiveScene {
 
         // grab monster list and pick one at random
         let monsters = Monsters.get_monsters(); // sington instance so OK to get each call 
-        let ran = Math.floor(Math.random() * (monsters.length - 1)) + 1;
+        let ran = Math.floor(Math.random() * (monsters.length));
+
+        console.log("Choosing monster: "+ran);
 
         let monster = monsters[ran];
         this.character = monster.sprite;
-        console.log("Monster encountered: "+monster.name+" ["+ran+"]");
 
         // pick a random number of monsters
-        ran = Math.floor(Math.random() * monster.num);
+        ran = Math.floor(Math.random() * monster.num) + 1;
+
+        console.log("Monster encountered: "+monster.name+" ["+ran+"]");
 
         for(let i = 0; i < ran; i++){
             // shallow copy monster
             let m = Object.assign({}, monster);
+            console.log(m);
             this.monsters.push(m);
         }
     }
@@ -250,12 +276,18 @@ export class BattleScene extends SCENE.InteractiveScene {
 
     tick(delta){
 
-        if(!timer_fired){
-            timer_fired = true;
-            this.character.play();
-            new BattleTimer().wait_n_seconds(5, () => {
-                this.character.stop();
-            });
+        if(this.battlefinished){
+
+            // Alis is dead, clean up and return to title screen
+            if(this.gevents.alis.hp <= 0){
+                console.log("BattleScene tick: alis is dead");
+            }
+            this.bg.removeChildren();
+            this.gevents.alis.reset();
+            // have staticbackground return to the title screen 
+            this.bgharness.tick_return_new_level = "Title-start1";
+
+            return false; // battle over, fade out 
         }
 
         return super.tick(delta);

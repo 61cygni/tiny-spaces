@@ -36,7 +36,7 @@ var oneShotInit = (function() {
 
             sound.volumeAll = 0.05;
 
-            sound.toggleMuteAll();
+            // sound.toggleMuteAll();
         }
     };
 })();//sound.play('ps1-town', {loop: true });
