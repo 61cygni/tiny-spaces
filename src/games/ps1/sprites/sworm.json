@@ -1,0 +1,33 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 66, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 66, "h": 64 },
+	"sourceSize": {"w": 66, "h": 64 }
+	},
+"tile0_1": { 
+	"frame": {"x": 66, "y": 0, "w": 66, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 66, "h": 64 },
+	"sourceSize": {"w": 66, "h": 64 }
+	},
+"tile0_2": { 
+	"frame": {"x": 132, "y": 0, "w": 66, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 66, "h": 64 },
+	"sourceSize": {"w": 66, "h": 64 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2"]
+},
+"meta": {
+	"image": "sworm.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
