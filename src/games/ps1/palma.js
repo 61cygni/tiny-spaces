@@ -3,8 +3,8 @@ import * as PIXI from 'pixi.js'
 import * as GAME   from '@spaced/gameevents.js';
 import * as SCENE  from '@spaced/scene.js';
 import * as LEVEL  from '@spaced/level.js';
-import * as ALIS  from '@spaced/alis.js';
 
+import * as ALIS  from './alis.js';
 import * as BATTLE from './battle.js';
 import * as BeachBG from './anim-bg.js';
 import * as Monsters from './palma-monsters.js';

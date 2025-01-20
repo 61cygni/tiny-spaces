@@ -2,10 +2,10 @@ import { Ticker } from '@pixi/ticker';
 import * as PIXI from 'pixi.js'
 
 import * as LEVEL  from '@spaced/level.js';
-import * as ALIS  from '@spaced/alis.js';
 import * as GAME   from '@spaced/gameevents.js';
 import * as KEY    from '@spaced/keyevents.js';
 
+import * as ALIS  from './alis.js';
 import * as TITLE from './title.js';
 import * as CAM   from './camineet.js';
 import * as PALMA from './palma.js';
