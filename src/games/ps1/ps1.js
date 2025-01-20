@@ -24,9 +24,9 @@ app.init({ width: 640, height: 480, canvas: document.getElementById('spacecanvas
 let Alis = await ALIS.getInstance(app); 
 
 // Level-Label to start the game on 
+const startlocation = "Title-start1";
 //const startlocation = "Camineet-start1";
-//const startlocation = "Title-start1";
-const startlocation = "Palma-start1";
+//const startlocation = "Palma-start1";
 
 //  all levels to preload
 const levels = [
