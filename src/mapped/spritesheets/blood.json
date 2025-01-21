@@ -1,0 +1,19 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 320, "h": 208 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 320, "h": 208 },
+	"sourceSize": {"w": 320, "h": 208 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0"]
+},
+"meta": {
+	"image": "./blood.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
