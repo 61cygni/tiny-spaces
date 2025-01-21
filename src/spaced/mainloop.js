@@ -8,8 +8,10 @@
 // I also maintains a map of names to levels. And a basic
 // game loop handling transitions between levels
 
+import * as PIXI from 'pixi.js'
 import { Ticker } from '@pixi/ticker';
 
+import * as SCREEN from '@spaced/screen.js';
 import * as LEVEL  from '@spaced/level.js';
 import * as GAME   from '@spaced/gameevents.js';
 import * as KEY    from '@spaced/keyevents.js';
@@ -19,17 +21,24 @@ import * as KEY    from '@spaced/keyevents.js';
 let mainchar = null;
 // map of level name to level
 let levelmap = new Map();
+// pixi app
+let app = null;
+
+export function initApp(width, height, canvasname){
+    app = new PIXI.Application();
+    app.init({ width: width, height: height, canvas: document.getElementById(canvasname) });
+    SCREEN.initScreen(width, height, canvasname);
+}
 
 // OK these are annoyingly magic. But the current convention is to use
 // lavelname-labelname when descring an entry point to a level
 
-export function getLevelName(tag){
+function getLevelName(tag){
     return tag.split('-')[0];
 }
-export function getLabelName(tag){
+function getLabelName(tag){
     return tag.split('-')[1];
 }
-
 
 function maincharEnterLevel(location, gameevents) {
     let levelname = getLevelName(location);
@@ -45,8 +54,12 @@ function maincharEnterLevel(location, gameevents) {
         level.arrive();
 
         let start = level.coordsdict.get(labelname);
-        console.log("mainchar start " + start[0] + " : " + start[1]);
-        mainchar.arrive(start[0] * level.tiledimx, start[1] * level.tiledimy - 14);
+        if (start != null) {
+            console.log("mainchar start " + start[0] + " : " + start[1]);
+            mainchar.arrive(start[0] * level.tiledimx, start[1] * level.tiledimy - 14);
+        }else{
+            console.log("Error: No start location for " + labelname);
+        }
     }else{
         // Splash screens don't need mainchar 
         gameevents.reset(level, null);
@@ -65,7 +78,13 @@ function maincharEnterLevel(location, gameevents) {
 // Call this first with main character of class Being
 // and an array of levels.
 
-export async function initAndLoadLevels(app, mainbeing, levels) {
+export async function initAndLoadLevels(mainbeing, levels) {
+    if(!app){
+        console.log("Error: App not initialized");
+        throw new Error("App not initialized");
+    }
+
+    mainbeing.app = app;
     mainchar = mainbeing;
 
     //  Preload all levels this requires a bunch of async calls, so kick off all of them

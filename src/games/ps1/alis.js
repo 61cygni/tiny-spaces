@@ -6,8 +6,8 @@ const alicespritesheet = './sprites/alice2.json';
 
 class Alis extends BEING.Being{
 
-    constructor(app, spritesheet, level) {
-        super(app, spritesheet, level);
+    constructor(spritesheet, level) {
+        super(spritesheet, level);
         this.reset();
     }
 
@@ -34,17 +34,17 @@ class Alis extends BEING.Being{
 
 var instance = null;
 
-async function loadAlis(app){
+async function loadAlis(){
     if(instance){
         return instance;
     }
     const sheet = await Assets.load(alicespritesheet);
-    instance = new Alis(app, sheet, null);
+    instance = new Alis(sheet, null);
     return instance; 
 }
 
-export async function  getInstance(app){
-    return await loadAlis(app);
+export async function  getInstance(){
+    return await loadAlis();
 }
 
 export function rawInstance(){

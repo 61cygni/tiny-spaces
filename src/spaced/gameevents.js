@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 
 import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
+import * as SCREEN from './screen.js'
 
 // -- 
 // -- 
@@ -165,7 +166,7 @@ class FadeOut{
             this.alpha += this.alphadelta;
 
             let newgfx = new PIXI.Graphics();
-            newgfx.rect(0, 0, 640, 480);
+            newgfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
             newgfx.fill({color: 0x000000, alpha: this.alpha});
             this.gevents.level.app.stage.addChild(newgfx);
             if (this.gfx) {
@@ -207,7 +208,7 @@ export class FadeIn{
             this.container.addChild(this.bg);
         }
         this.gfx = new PIXI.Graphics();
-        this.gfx.rect(0, 0, 640, 480);
+        this.gfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
         this.gfx.fill({color: 0x000000, alpha: this.alpha});
         this.container.addChild(this.gfx);
         this.gevents.level.app.stage.addChild(this.container);
@@ -218,7 +219,7 @@ export class FadeIn{
             this.alpha -= this.alphadelta;
 
             let newgfx = new PIXI.Graphics();
-            newgfx.rect(0, 0, 640, 480);
+            newgfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
             newgfx.fill({color: 0x000000, alpha: this.alpha});
             this.container.addChild(newgfx);
             if (this.gfx) {
@@ -247,9 +248,11 @@ export class GameEvents {
 
     constructor(alis) {
         this.alis = alis
-        this.alisoldx = alis.worldx
-        this.alisoldy = alis.worldy
-        this.level = alis.level;
+        if(this.alis != null){
+            this.alisoldx = alis.worldx
+            this.alisoldy = alis.worldy
+            this.level = alis.level;
+        }
         this.dqueue = [];
 
         this.pauseevents = false;

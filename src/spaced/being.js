@@ -7,40 +7,55 @@ Dir[Dir[1] = 'DOWN']  = 2;
 Dir[Dir[2] = 'LEFT']  = 4;
 Dir[Dir[4] = 'RIGHT'] = 8;
 
+class PhonySprite{
+    constructor(){
+    }
+};
+
 export class Being {
 
-    constructor(app, spritesheet, level) {
+    constructor(spritesheet, level) {
+        this.app = null;
         this.here = false; // on level or not.
-        this.app = app;
         this.sheet = spritesheet;
         this.level = level;
         this.sprites = {};
-        this.sprites['DOWN'] = new PIXI.AnimatedSprite(this.sheet.animations.row0);
-        this.sprites['UP']   = new PIXI.AnimatedSprite(this.sheet.animations.row1);
-        this.sprites['LEFT'] = new PIXI.AnimatedSprite(this.sheet.animations.row3);
-        // Flip right for left
-        if (!this.sheet.animations.hasOwnProperty('row3')) {
-            this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
-            this.sprites['RIGHT'].scale.x = -1;
+
+        if (this.sheet != null) {
+            this.sprites['DOWN'] = new PIXI.AnimatedSprite(this.sheet.animations.row0);
+            this.sprites['UP'] = new PIXI.AnimatedSprite(this.sheet.animations.row1);
+            this.sprites['LEFT'] = new PIXI.AnimatedSprite(this.sheet.animations.row3);
+            // Flip right for left
+            if (!this.sheet.animations.hasOwnProperty('row3')) {
+                this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
+                this.sprites['RIGHT'].scale.x = -1;
+            } else {
+                this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
+            }
+
+            this.movedelta = .1; // FIXME don't use magic number
+            this.pausecountdown = this.movedelta;
+
+            this.moving = 0;
+            this.direction = 'DOWN';
+            this.curanim = this.sprites['DOWN'];
+            this.curanim.animationSpeed = 0.1666;
+
+            // position in world
+            this.worldx = -1;
+            this.worldy = -1;
+
+            // position on screen
+            this.curanim.x = -1;
+            this.curanim.y = -1;
         }else{
-            this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
+            let phony = new PhonySprite();
+            phony.x = -1;
+            phony.y = -1;
+            phony.animationSpeed = 0;
+            this.curanim = phony; 
+            this.sprites = null;
         }
-
-        this.movedelta = .1; // FIXME don't use magic number
-        this.pausecountdown = this.movedelta;
-
-        this.moving = 0;
-        this.direction = 'DOWN'; 
-        this.curanim = this.sprites['DOWN'];
-        this.curanim.animationSpeed = 0.1666;
-
-        // position in world
-        this.worldx = -1; 
-        this.worldy = -1; 
-
-        // position on screen
-        this.curanim.x = -1;
-        this.curanim.y = -1;
 
         // TODO FIXME remove magic numbers
         this.screencenterx = 640/2;
@@ -65,10 +80,12 @@ export class Being {
         this.worldx = x; 
         this.worldy = y;
 
-        this.curanim = this.sprites[this.direction];
-        this.curanim.animationSpeed = 0.1666;
-        this.curanim.stop();
-        this.app.stage.addChild(this.curanim);
+        if (this.sprites != null) {
+            this.curanim = this.sprites[this.direction];
+            this.curanim.animationSpeed = 0.1666;
+            this.curanim.stop();
+            this.app.stage.addChild(this.curanim);
+        }
 
         this.here = true;
         this.updateScreen()
@@ -76,37 +93,48 @@ export class Being {
 
     leave(){
         this.here = false;
-        this.curanim.stop();
-        this.app.stage.removeChild(this.curanim);
+        if(this.sprites != null){
+            this.curanim.stop();
+            this.app.stage.removeChild(this.curanim);
+        }
     }
 
     goDir(dir) {
         if(this.direction != dir){
             this.direction = dir;
-            this.app.stage.removeChild(this.curanim)
-            this.curanim.stop()
+            if (this.sprites != null) {
+                this.app.stage.removeChild(this.curanim)
+                this.curanim.stop()
+            }
             this.x = this.curanim.x
             this.y = this.curanim.y
-            this.curanim = this.sprites[dir];
+
+            if (this.sprites != null) {
+                this.curanim = this.sprites[dir];
+            }
             this.curanim.animationSpeed = 0.1666;
             this.curanim.x = this.x
             this.curanim.y = this.y
-            this.curanim.play();
-            this.app.stage.addChild(this.curanim);
+            if (this.sprites != null) {
+                this.curanim.play();
+                this.app.stage.addChild(this.curanim);
+            }
         } 
         else if(!this.curanim.playing){
             this.x = this.curanim.x
             this.y = this.curanim.y
-            this.curanim.play();
+            if (this.sprites != null) {
+                this.curanim.play();
+            }
         }
         this.moving |= Dir[dir];
     }
 
     stopDir(dir) {
-            this.moving &= ~Dir[dir]; // bitmask
-            if(this.moving == 0){
-                this.curanim.stop();
-            }
+        this.moving &= ~Dir[dir]; // bitmask
+        if(this.moving == 0 && this.sprites != null){
+            this.curanim.stop();
+        }
     }
 
     timeToMove(delta) {
@@ -184,3 +212,7 @@ export class Being {
         }
     } // tick
 } // class being
+
+export function NoBeing(){
+    return new Being(null, null);
+}
