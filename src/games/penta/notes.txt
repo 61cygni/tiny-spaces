@@ -11,16 +11,20 @@ To build:
 - npm run build-penta
 
 Test the local deployment
-- serve -s dist/games/penta 
+- serve -s dist/
 
 To deploy:
+create netlify.toml in game directory (e.g. src/games/penta) 
 netlify login
 
 # Initialize your site (first time only)
 netlify init
 
 # Deploy
-netlify deploy
+netlify deploy --dir=dist
 
 # When ready for production
-netlify deploy --prod
+netlify deploy --dir=dist --prod
+
+Current test site:
+Website URL:        https://tiny-spaces-penta.netlify.app

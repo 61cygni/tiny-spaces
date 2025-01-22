@@ -6,7 +6,9 @@ import * as SCENE  from '@spaced/scene.js';
 
 import { sound } from '@pixi/sound';
 
-const MAPFILE = "../games/mage/maps/mage.js";
+const MAPFILE = import.meta.env.DEV
+  ? '../games/mage/maps/mage.js'  // Dev path
+  : '/maps/mage.js';  // Production path
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 function static_images(){

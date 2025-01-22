@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite src/",
     "build-penta": "vite build src/games/penta",
+    "build-mage": "vite build src/games/mage",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
