@@ -1,0 +1,40 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 160, "h": 160 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 160 },
+	"sourceSize": {"w": 160, "h": 160 }
+	},
+"tile0_1": { 
+	"frame": {"x": 160, "y": 0, "w": 160, "h": 160 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 160 },
+	"sourceSize": {"w": 160, "h": 160 }
+	},
+"tile0_2": { 
+	"frame": {"x": 320, "y": 0, "w": 160, "h": 160 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 160 },
+	"sourceSize": {"w": 160, "h": 160 }
+	},
+"tile0_3": { 
+	"frame": {"x": 480, "y": 0, "w": 160, "h": 160 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 160 },
+	"sourceSize": {"w": 160, "h": 160 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3"]
+},
+"meta": {
+	"image": "./Street_Lamp_2_32x32.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

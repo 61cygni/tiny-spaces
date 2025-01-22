@@ -1,0 +1,19 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 512, "h": 512 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 512, "h": 512 },
+	"sourceSize": {"w": 512, "h": 512 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0"]
+},
+"meta": {
+	"image": "./pentagram.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

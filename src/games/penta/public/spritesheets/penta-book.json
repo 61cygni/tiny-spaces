@@ -1,0 +1,40 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 256, "w": 110, "h": 128 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 110, "h": 128 },
+	"sourceSize": {"w": 110, "h": 128 }
+	},
+"tile0_1": { 
+	"frame": {"x": 110, "y": 256, "w": 110, "h": 128 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 110, "h": 128 },
+	"sourceSize": {"w": 110, "h": 128 }
+	},
+"tile0_2": { 
+	"frame": {"x": 220, "y": 256, "w": 110, "h": 128 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 110, "h": 128 },
+	"sourceSize": {"w": 110, "h": 128 }
+	},
+"tile0_3": { 
+	"frame": {"x": 330, "y": 256, "w": 110, "h": 128 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 110, "h": 128 },
+	"sourceSize": {"w": 110, "h": 128 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3"]
+},
+"meta": {
+	"image": "./pentagramm.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

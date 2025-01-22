@@ -1,0 +1,26 @@
+To build / deploy:
+
+things to install:
+npm install -g serve
+npm install -g netlify-cli
+
+Static copy:
+- all maps, spritesheets and audio files need to be copied to public
+
+To build:
+- npm run build-penta
+
+Test the local deployment
+- serve -s dist/games/penta 
+
+To deploy:
+netlify login
+
+# Initialize your site (first time only)
+netlify init
+
+# Deploy
+netlify deploy
+
+# When ready for production
+netlify deploy --prod

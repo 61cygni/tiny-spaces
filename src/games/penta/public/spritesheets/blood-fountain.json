@@ -1,0 +1,124 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_1": { 
+	"frame": {"x": 32, "y": 0, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_2": { 
+	"frame": {"x": 64, "y": 0, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_3": { 
+	"frame": {"x": 96, "y": 0, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_4": { 
+	"frame": {"x": 0, "y": 96, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_5": { 
+	"frame": {"x": 32, "y": 96, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_6": { 
+	"frame": {"x": 64, "y": 96, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_7": { 
+	"frame": {"x": 96, "y": 96, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_8": { 
+	"frame": {"x": 0, "y": 192, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_9": { 
+	"frame": {"x": 32, "y": 192, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_10": { 
+	"frame": {"x": 64, "y": 192, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_11": { 
+	"frame": {"x": 96, "y": 192, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_12": { 
+	"frame": {"x": 0, "y": 288, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_13": { 
+	"frame": {"x": 32, "y": 288, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_14": { 
+	"frame": {"x": 64, "y": 288, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	},
+"tile0_15": { 
+	"frame": {"x": 96, "y": 288, "w": 32, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 32, "h": 96 },
+	"sourceSize": {"w": 32, "h": 96 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3","tile0_4","tile0_5","tile0_6","tile0_7","tile0_8","tile0_9","tile0_10","tile0_11","tile0_12","tile0_13","tile0_14","tile0_15"]
+},
+"meta": {
+	"image": "./blood-fountain.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

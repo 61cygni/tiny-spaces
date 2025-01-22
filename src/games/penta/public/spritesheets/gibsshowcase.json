@@ -1,0 +1,19 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 460, "y": 176, "w": 160, "h": 176 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 176 },
+	"sourceSize": {"w": 160, "h": 176 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0"]
+},
+"meta": {
+	"image": "./gibsshowcase.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

@@ -1,0 +1,68 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_1": { 
+	"frame": {"x": 64, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_2": { 
+	"frame": {"x": 128, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_3": { 
+	"frame": {"x": 192, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_4": { 
+	"frame": {"x": 256, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_5": { 
+	"frame": {"x": 320, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_6": { 
+	"frame": {"x": 384, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	},
+"tile0_7": { 
+	"frame": {"x": 448, "y": 0, "w": 64, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 96 },
+	"sourceSize": {"w": 64, "h": 96 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3","tile0_4","tile0_5","tile0_6","tile0_7"]
+},
+"meta": {
+	"image": "./Fountain_32x32.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
