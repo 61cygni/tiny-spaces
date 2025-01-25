@@ -75,11 +75,11 @@ export class BattleScene extends SCENE.InteractiveScene {
         if(this.battlefinished){
             return;
         }
-        if (this.gevents.alis.hp <= 0) {
-            console.log("Alis is dead");
+        if (this.gevents.a.hp <= 0) {
+            console.log("A is dead");
             // this.gevents.clear_dialogs();
             // this.gevents.input_leave();
-            this.gevents.dialog_stream("\nALIS DIED. ALIS'S HOPE CAN NOT OVERCOME THE POWER OF LASSIC. THE ADVENTURE IS OVER", 
+            this.gevents.dialog_stream("\nA DIED. mainchar'S HOPE CAN NOT OVERCOME THE POWER OF LASSIC. THE ADVENTURE IS OVER", 
                 'bottom',
                 {
                     appendcb: () => {
@@ -105,7 +105,7 @@ export class BattleScene extends SCENE.InteractiveScene {
             return;
         }
 
-        this.gevents.dialog_stream("Alis has "+this.gevents.alis.hp+" HP left.\nWhat would you like to do?", 'inputbottom', null, true);
+        this.gevents.dialog_stream("A has "+this.gevents.mainchar.hp+" HP left.\nWhat would you like to do?", 'inputbottom', null, true);
     }
 
     monsters_dead(){
@@ -139,7 +139,7 @@ export class BattleScene extends SCENE.InteractiveScene {
 
         new BattleTimer().wait_n_seconds(2, () => {
 
-            if (this.gevents.alis.hp > 0) {
+            if (this.gevents.a.hp > 0) {
                 this.monsters[monster].hp -= dmg;
                 this.gevents.dialog_stream("You hit the monster for " + dmg + " damage!\n", 'inputbottom', null, true);
                 if (this.monsters[monster].hp <= 0) {
@@ -170,7 +170,7 @@ export class BattleScene extends SCENE.InteractiveScene {
         let dmg = Math.floor(Math.random() * 10);
         new BattleTimer().wait_n_seconds(2, () => {
             this.gevents.dialog_stream("The monster hit you for "+dmg+" damage!\n", 'inputbottom', null, true);
-            this.gevents.alis.hp -= dmg;
+            this.gevents.a.hp -= dmg;
             this.character.stop();
             this.gevents.dqueue[0].appendcallback = () => {
                 new BattleTimer().wait_n_seconds(2, callback);
@@ -196,7 +196,7 @@ export class BattleScene extends SCENE.InteractiveScene {
     choose_and_setup_monster(){
         this.monsters = [];
 
-        // grab monster list and pick one at random
+        // grab monster t and pick one at random
         let monsters = Monsters.get_monsters(); // sington instance so OK to get each call 
         let ran = Math.floor(Math.random() * (monsters.length));
 
@@ -251,7 +251,7 @@ export class BattleScene extends SCENE.InteractiveScene {
         this.register_action("run", this.run.bind(this));
 
 
-        let bgtilenum = this.gevents.alis.curBGTile();
+        let bgtilenum = this.gevents.mainchar.curBGTile();
         console.log("BGTILE "+bgtilenum);
         if(bgtilenum == 105 || bgtilenum == 157){
             this.bg = new PIXI.Container();
@@ -280,12 +280,12 @@ export class BattleScene extends SCENE.InteractiveScene {
 
         if(this.battlefinished){
 
-            // Alis is dead, clean up and return to title screen
-            if(this.gevents.alis.hp <= 0){
-                console.log("BattleScene tick: alis is dead");
+            // A is dead, clean up and return to title screen
+            if(this.gevents.a.hp <= 0){
+                console.log("BattleScene tick: a is dead");
             }
             this.bg.removeChildren();
-            this.gevents.alis.reset();
+            this.gevents.a.reset();
             // have staticbackground return to the title screen 
             this.bgharness.tick_return_new_level = "Title-start1";
 

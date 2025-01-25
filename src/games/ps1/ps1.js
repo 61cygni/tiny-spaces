@@ -21,8 +21,8 @@ SPACED.initApp(640, 480, 'spacecanvas');
 let Alis = await ALIS.getInstance(); 
 
 // Level-Label to start the game on 
-//const startlocation = "Title-start1";
-const startlocation = "Camineet-start1";
+const startlocation = "Title-start1";
+//const startlocation = "Camineet-start1";
 //const startlocation = "Palma-start1";
 
 //  all levels to preload

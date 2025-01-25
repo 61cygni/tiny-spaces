@@ -1,10 +1,11 @@
 // Global screen configuration parameters
 
 class Screen {
-    constructor(width, height, canvasname){
+    constructor(width, height, canvasname, app){
         this.width = width;
         this.height = height;
         this.canvasname = canvasname;
+        this.app = app;
     }
 }
 

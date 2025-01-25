@@ -62,8 +62,8 @@ export class StaticBackground {
         // fade out main level
 
         this.fade = new FadeOut(this.gevents);
-        if (this.gevents.alis) {
-            this.gevents.alis.leave();
+        if (this.gevents.mainchar) {
+            this.gevents.mainchar.leave();
         }
         this.finished = false;
     }
@@ -131,11 +131,11 @@ export class StaticBackground {
 
     finalize() {
         this.gevents.clear_dialogs();
-        if (this.gevents.alis != null) {
+        if (this.gevents.mainchar != null) {
             if (this.x != null) {
-                this.gevents.alis.arrive(this.x, this.y);
+                this.gevents.mainchar.arrive(this.x, this.y);
             } else {
-                this.gevents.alis.arrive(this.gevents.alis.worldx, this.gevents.alis.worldy);
+                this.gevents.mainchar.arrive(this.gevents.mainchar.worldx, this.gevents.mainchar.worldy);
             }
         }
         this.state = 0;
@@ -246,12 +246,12 @@ export class FadeIn{
 // --
 export class GameEvents {
 
-    constructor(alis) {
-        this.alis = alis
-        if(this.alis != null){
-            this.alisoldx = alis.worldx
-            this.alisoldy = alis.worldy
-            this.level = alis.level;
+    constructor(mainchar) {
+        this.mainchar = mainchar
+        if(this.mainchar != null){
+            this.alisoldx = mainchar.worldx
+            this.alisoldy = mainchar.worldy
+            this.level = mainchar.level;
         }
         this.dqueue = [];
 
@@ -270,13 +270,13 @@ export class GameEvents {
         this.last_key = null; // last key event code
     }
 
-    // called when Alis enters a new level
-    reset(level, alis) {
+    // called when mainchar enters a new level
+    reset(level, mainchar) {
         this.level = level; 
-        this.alis = alis;
-        if(alis != null){
-            this.alisoldx = alis.worldx
-            this.alisoldy = alis.worldy
+        this.mainchar = mainchar;
+        if(mainchar != null){
+            this.alisoldx = mainchar.worldx
+            this.alisoldy = mainchar.worldy
             this.dqueue = [];
         }
 
@@ -429,7 +429,7 @@ export class GameEvents {
     }
 
     // -- 
-    // Determine if Alis is on a label on the map. If so return label
+    // Determine if mainchar is on a label on the map. If so return label
     // --
     checkLabel(x, y){
         if(!this.level){
@@ -459,7 +459,7 @@ export class GameEvents {
     }   
 
     // --
-    // To be called when Alis steps on a label
+    // To be called when mainchar steps on a label
     // --
     register_label_handler(label, handler) {
         this.label_handlers.set(label, handler);
@@ -487,7 +487,7 @@ export class GameEvents {
     }
 
     // --
-    // Even alis called per tick
+    // Even mainchar called per tick
     // --
     add_to_tick_event_queue(task) {
         this.eventqueue.push(task);
@@ -508,6 +508,10 @@ export class GameEvents {
     // --
     tick(delta) {
 
+        // loop through beings and tick them
+        for(let b of this.level.beings){
+            b.tick(delta);
+        }
 
         // handle dialog queue first. 
         if (this.dqueue.length > 0) {
@@ -533,13 +537,13 @@ export class GameEvents {
 
             let firedhandler = false;
 
-            if (this.alis != null) {
-                if (this.alisoldx != this.alis.worldx || this.alisoldy != this.alis.worldy) {
-                    this.alisoldx = this.alis.worldx;
-                    this.alisoldy = this.alis.worldy;
+            if (this.mainchar != null) {
+                if (this.alisoldx != this.mainchar.worldx || this.alisoldy != this.mainchar.worldy) {
+                    this.alisoldx = this.mainchar.worldx;
+                    this.alisoldy = this.mainchar.worldy;
 
                     // check current x,y to see if there is a label. And if so if we have a handler.
-                    const label = this.checkLabel(this.alis.worldx, this.alis.worldy);
+                    const label = this.checkLabel(this.mainchar.worldx, this.mainchar.worldy);
                     // XXX FIXME. Currently linear search through all lable handlers. Should be constant time
                     //            lookup.
                     if (label) {
@@ -551,7 +555,7 @@ export class GameEvents {
                         }
                     }
 
-                    // Note: we only check handlers if Alis has moved. Else the world just seems too unfair 
+                    // Note: we only check handlers if mainchar has moved. Else the world just seems too unfair 
                     if (!firedhandler) {
                         // check random handlers
                         for (let [key, value] of this.random_handlers) {
@@ -561,8 +565,8 @@ export class GameEvents {
                             }
                         }
                     }   
-                } // end if alis has moved
-            } // end alis handler
+                } // end if mainchar has moved
+            } // end mainchar handler
 
             // run escape handler is pressed
             if(!firedhandler && this.esc){

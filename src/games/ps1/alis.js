@@ -9,6 +9,7 @@ class Alis extends BEING.Being{
     constructor(spritesheet, level) {
         super(spritesheet, level);
         this.reset();
+        this.setFocus(true);
     }
 
     reset(){

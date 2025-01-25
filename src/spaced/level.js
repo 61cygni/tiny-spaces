@@ -18,7 +18,12 @@ export class Level {
 
     // return list of static images to load
     static_images() {
-        console.log("Error: Must override");
+        return [];
+    }
+
+    // return list of spritesheets to load
+    spritesheets() {
+        return [];
     }
 
     // called once during init
@@ -77,6 +82,16 @@ export class StaticImage {
 
 }; // class StaticImage
 
+// TODO create Sprite Class
+export class Sprite {
+
+    constructor(name, filename){
+        this.name = name;
+        this.filename = filename;
+    }
+
+}; // class Sprite
+
 
 export class LevelContext {
 
@@ -95,6 +110,13 @@ export class LevelContext {
         this.objmap  = mod.objmap
         this.maplabels = mod.maplabels;
         this.animatedsprites = mod.animatedsprites;
+        this.beings = [];
+    }
+
+    addBeing(being){
+        being.app = this.app;
+        being.level = this;
+        this.beings.push(being);
     }
 
     finalize_load(){
@@ -176,7 +198,7 @@ export class LevelContext {
 
         for (let i = 0; i < this.bgtiles.length; i++) {
             let tiles = this.bgtiles[i];
-            console.log("Blitting tiles for layer "+i);
+            // console.log("Blitting tiles for layer "+i);
             for (let x = 0; x < tiles.length; x++) {
                 for (let y = 0; y < tiles[0].length; y++) {
                     if (tiles[x][y] != -1) {
@@ -187,7 +209,7 @@ export class LevelContext {
         }
         for (let i = 0; i < this.objmap.length; i++) {
             let tiles = this.objmap[i];
-            console.log("Blitting tiles for layer "+i);
+            // console.log("Blitting tiles for layer "+i);
             for (let x = 0; x < tiles.length; x++) {
                 for (let y = 0; y < tiles[0].length; y++) {
                     if (tiles[x][y] != -1) {
@@ -284,6 +306,7 @@ export class SplashContext {
         this.name    = splashdetails.name;
         this.details = splashdetails;
         this.container = new PIXI.Container();
+        this.beings = [];
     }
 
     finalize_load(){
@@ -333,12 +356,28 @@ function loadStaticImagesSync(static_images, level) {
     return Promise.all(promises);
 }
 
+function loadSpritesheetsSync(spritesheets, levelcontext) {
+    levelcontext.spritesheet_map = new Map();
+    let promises = [];
+    for (let i = 0; i < spritesheets.length; i++) {
+        let assetin = spritesheets[i];
+        promises.push(PIXI.Assets.load(assetin.filename).then((sheet) => {
+            console.log("Loaded spritesheet ", assetin.name, " from ", assetin.filename);
+            levelcontext.spritesheet_map.set(assetin.name, sheet);
+        }));
+    }
+    return Promise.all(promises);
+}
+
 function loadAssetsSync(levelcontext) {
 
     let static_images = levelcontext.details.static_images();
+    // TODOO - get list of spritesheets 
 
     return loadStaticImagesSync(static_images, levelcontext).then((static_images) =>
     {
+        return loadSpritesheetsSync(levelcontext.details.spritesheets(), levelcontext).then((spritesheets) => {
+        // TODO -- load all spriteshhets here
         return  PIXI.Assets.load(g_ctx.tilesetpath).then((texture) =>
         {
 
@@ -360,9 +399,10 @@ function loadAssetsSync(levelcontext) {
         g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
         console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
 
-        return levelcontext;
-       });
-    });
+            return levelcontext;
+           });
+        }); // loadSpritesheetsSync
+    }); // loadStaticImagesSync
 }
 
 function loadMapFromModuleSync(app, mod, leveldetails) {

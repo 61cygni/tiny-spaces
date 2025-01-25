@@ -55,23 +55,23 @@ window.addEventListener(
             }
         }
 
-        if(!gameevents.alis){
+        if(!gameevents.mainchar){
             return;
         }
 
-        let Alis = gameevents.alis;
+        let mainchar = gameevents.mainchar;
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            Alis.goDir('UP');
+            mainchar.goDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
-            Alis.goDir('DOWN');
+            mainchar.goDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
-            Alis.goDir('RIGHT');
+            mainchar.goDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
-            Alis.goDir('LEFT');
+            mainchar.goDir('LEFT');
         }
 
     }
@@ -91,26 +91,26 @@ window.addEventListener(
             return;
         }
 
-        if(!gameevents.alis){
+        if(!gameevents.mainchar){
             return;
         }
 
-        let Alis = gameevents.alis;
+        let mainchar = gameevents.mainchar;
 
         if (event.code == "KeyW" || event.code == 'ArrowUp') {
-            Alis.stopDir('UP');
+            mainchar.stopDir('UP');
         }
         else if (event.code == 'KeyS' || event.code == 'ArrowDown') {
             // DOWN
-            Alis.stopDir('DOWN');
+            mainchar.stopDir('DOWN');
         }
         else if (event.code == 'KeyD' || event.code == 'ArrowRight') {
             // Right 
-            Alis.stopDir('RIGHT');
+            mainchar.stopDir('RIGHT');
         }
         else if (event.code == 'KeyA' || event.code == 'ArrowLeft') {
             // Left 
-            Alis.stopDir('LEFT');
+            mainchar.stopDir('LEFT');
         }
     }
 );
