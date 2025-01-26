@@ -102,14 +102,18 @@ export class LevelContext {
         this.container = new PIXI.Container();
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
-        this.screenxtiles = mod.screenxtiles
-        this.screenytiles = mod.screenytiles
+        this.screenxtiles = mod.bgtiles[0][0].length
+        this.screenytiles = mod.bgtiles[0].length
         this.tilesetpxw = mod.tilesetpxw;
         this.tilesetpxh = mod.tilesetpxh;
         this.bgtiles = mod.bgtiles
         this.objmap  = mod.objmap
         this.maplabels = mod.maplabels;
         this.animatedsprites = mod.animatedsprites;
+
+        this.levelxpixels = this.screenxtiles * this.tiledimx;
+        this.levelypixels = this.screenytiles * this.tiledimy;
+
         this.beings = [];
     }
 

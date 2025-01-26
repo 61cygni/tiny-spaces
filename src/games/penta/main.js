@@ -7,7 +7,7 @@ import * as SCREEN from '@spaced/screen.js';
 import * as PENTA from './pentacity.js';
 
 // Pixi init
-SPACED.initApp(2200, 1600, 'spacecanvas');
+SPACED.initApp(2496, 2000, 'spacecanvas');
 
 const sheet = await Assets.load("./spritesheets/villagers.json");
 

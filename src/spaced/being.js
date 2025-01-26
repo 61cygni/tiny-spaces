@@ -23,6 +23,7 @@ export class Being {
         this.level = level;
         this.sprites = {};
         this.focus = false;
+        this.container = new PIXI.Container();
 
         if (this.sheet != null) {
             this.sprites['DOWN'] = new PIXI.AnimatedSprite(this.sheet.animations.row0);
@@ -83,14 +84,16 @@ export class Being {
 
     arrive(x, y) {
         if (this.focus) {
-            this.curanim.x = this.screencenterx;
-            this.curanim.y = this.screencentery;
+            this.container.x = this.screencenterx;
+            this.container.y = this.screencentery;
             this.worldx = x; 
             this.worldy = y;
             console.log("Focused character arriving at level ", this.worldx, this.worldy);
         }else{
-            this.curanim.x = x;
-            this.curanim.y = y;
+            this.container.x = x;
+            this.container.y = y;
+            // this.curanim.x = x;
+            // this.curanim.y = y;
         }
 
 
@@ -98,10 +101,11 @@ export class Being {
             this.curanim = this.sprites[this.direction];
             this.curanim.animationSpeed = 0.1666;
             this.curanim.stop();
+            this.container.addChild(this.curanim);
             if(this.focus){
-                this.app.stage.addChild(this.curanim);
+                this.app.stage.addChild(this.container);
             }else{
-                this.level.container.addChild(this.curanim);
+                this.level.container.addChild(this.container);
             }
         }
 
@@ -115,7 +119,11 @@ export class Being {
         this.here = false;
         if(this.sprites != null){
             this.curanim.stop();
-            this.app.stage.removeChild(this.curanim);
+            if(this.focus){
+                this.app.stage.removeChild(this.container);
+            }else{
+                this.level.container.removeChild(this.container);
+            }
         }
     }
 
@@ -136,17 +144,17 @@ export class Being {
             }
         } else {
             if (this.direction == 'RIGHT') {
-                return (this.isBlocked(this.curanim.x + 11, this.curanim.y + 16) ||
-                    this.isBlocked(this.curanim.x + 11, this.curanim.y + 25));
+                return (this.isBlocked(this.container.x + 11, this.container.y + 16) ||
+                    this.isBlocked(this.container.x + 11, this.container.y + 25));
             } if (this.direction == 'LEFT') {
-                return (this.isBlocked(this.curanim.x + 1, this.curanim.y + 16) ||
-                    this.isBlocked(this.curanim.x + 1, this.curanim.y + 25));
+                return (this.isBlocked(this.container.x + 1, this.container.y + 16) ||
+                    this.isBlocked(this.container.x + 1, this.container.y + 25));
             } if (this.direction == 'UP') {
-                return (this.isBlocked(this.curanim.x + 4, this.curanim.y + 15) ||
-                    this.isBlocked(this.curanim.x + 10, this.curanim.y + 15));
+                return (this.isBlocked(this.container.x + 4, this.container.y + 15) ||
+                    this.isBlocked(this.container.x + 10, this.container.y + 15));
             } if (this.direction == 'DOWN') {
-                return (this.isBlocked(this.curanim.x + 4, this.curanim.y + 26) ||
-                    this.isBlocked(this.curanim.x + 10, this.curanim.y + 26));
+                return (this.isBlocked(this.container.x + 4, this.container.y + 26) ||
+                    this.isBlocked(this.container.x + 10, this.container.y + 26));
             }
         }
         console.log("Error, no direction set ", this.direction);
@@ -157,28 +165,21 @@ export class Being {
         if(this.direction != dir){
             this.direction = dir;
             if (this.sprites != null) {
-                if(this.focus){
-                    this.app.stage.removeChild(this.curanim)
-                }else{
-                    this.level.container.removeChild(this.curanim)
-                }
+                this.container.removeChild(this.curanim);
                 this.curanim.stop()
             }
-            this.x = this.curanim.x
-            this.y = this.curanim.y
 
             if (this.sprites != null) {
                 this.curanim = this.sprites[dir];
             }
 
             this.curanim.animationSpeed = 0.1666;
-            this.curanim.x = this.x
-            this.curanim.y = this.y
             if (this.sprites != null) {
+                this.container.addChild(this.curanim);
                 if(this.focus){
-                    this.app.stage.addChild(this.curanim);
+                    this.app.stage.addChild(this.container);
                 }else{
-                    this.level.container.addChild(this.curanim);
+                    this.level.container.addChild(this.container);
                 }
                 this.curanim.play();
             }
@@ -196,6 +197,13 @@ export class Being {
     stopDir(dir) {
         this.moving &= ~Dir[dir]; // bitmask
         if(this.moving == 0 && this.sprites != null){
+            this.curanim.stop();
+        }
+    }
+
+    stop() {
+        this.moving = 0;
+        if(this.sprites != null){
             this.curanim.stop();
         }
     }
@@ -229,50 +237,54 @@ export class Being {
         return this.level.bgtiles[0][coordsx][coordsy];
     }
 
+    doMove(x, y){
+        if(this.focus){
+            let tx = this.worldx + x;
+            let ty = this.worldy + y;
+            if(tx < 0 || ty < 0 || tx >= this.level.levelxpixels || ty >= this.level.levelypixels){
+                return;
+            }
+            this.worldx = this.worldx + x;
+            this.worldy = this.worldy + y;
+            this.updateScreen();
+        }else{
+            // let tx = this.curanim.x + x;
+            // let ty = this.curanim.y + y;
+            let tx = this.container.x + x;
+            let ty = this.container.y + y;
+            if(tx < 0 || ty < 0 || tx >= this.level.levelxpixels || ty >= this.level.levelypixels){
+                return;
+            }
+            this.container.x = this.container.x + x;
+            this.container.y = this.container.y + y;
+        }
+    }
+
     tick(delta){
-        if (this.moving) {
+        if (this.moving && this.timeToMove(delta)) {
             if (this.direction == 'RIGHT') {
-                if (this.timeToMove(delta) && !this.isBlockedCurDir()) {
-                    if (this.focus) {
-                        this.worldx = this.worldx + 1;
-                        this.updateScreen();
-                    }else{
-                        this.curanim.x = this.curanim.x + 1;
-                    }
+                if (!this.isBlockedCurDir()) {
+                    this.doMove(1, 0);
                 }
             }
             else if (this.direction == 'LEFT') {
-                if (this.timeToMove(delta) && !this.isBlockedCurDir()) {
-                    if (this.focus) {
-                        this.worldx = this.worldx - 1;
-                        this.updateScreen();
-                    }else{
-                        this.curanim.x = this.curanim.x - 1;
-                    }
+                if (!this.isBlockedCurDir()) {
+                    this.doMove(-1, 0);
                 }
             }
             else if (this.direction == 'UP') {
-                if (this.timeToMove(delta) && !this.isBlockedCurDir()) {
-                    if (this.focus) {
-                        this.worldy = this.worldy - 1;
-                        this.updateScreen();
-                    }else{
-                        this.curanim.y = this.curanim.y - 1;
-                    }
+                if (!this.isBlockedCurDir()) {
+                    this.doMove(0, -1);
                 }
             }
             else if (this.direction == 'DOWN') {
-                if (this.timeToMove(delta) && !this.isBlockedCurDir()) {
-                    if (this.focus) {
-                        this.worldy = this.worldy + 1;
-                        this.updateScreen();
-                    }else{
-                        this.curanim.y = this.curanim.y + 1;
-                    }
+                if (!this.isBlockedCurDir()) {
+                    this.doMove(0, 1);
                 }
             }
         }
     } // tick
+
 } // class being
 
 export function NoBeing(){

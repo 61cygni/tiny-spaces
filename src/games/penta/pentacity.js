@@ -35,15 +35,15 @@ var oneShotInit = (function() {
             sound.volumeAll = 0.05;
 
             // FIXME : This is all test code. 
-            let v = new VILLAGER.Villager(gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
+            let v = new VILLAGER.Villager("nancy", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
             gameevents.level.addBeing(v);
             v.arrive(1000, 400);
 
-            let v2 = new VILLAGER.Villager(gameevents.level.spritesheet_map.get("villager3"), gameevents.level);
+            let v2 = new VILLAGER.Villager("jane", gameevents.level.spritesheet_map.get("villager3"), gameevents.level);
             gameevents.level.addBeing(v2);
             v2.arrive(800, 800);
 
-            let v3 = new VILLAGER.Villager(gameevents.level.spritesheet_map.get("villager4"), gameevents.level);
+            let v3 = new VILLAGER.Villager("bob", gameevents.level.spritesheet_map.get("villager4"), gameevents.level);
             gameevents.level.addBeing(v3);
             v3.arrive(400, 400);
 
