@@ -1,0 +1,68 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 376, "y": 58, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_1": { 
+	"frame": {"x": 56, "y": 202, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_2": { 
+	"frame": {"x": 216, "y": 202, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_3": { 
+	"frame": {"x": 376, "y": 202, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_4": { 
+	"frame": {"x": 56, "y": 346, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_5": { 
+	"frame": {"x": 216, "y": 346, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_6": { 
+	"frame": {"x": 376, "y": 346, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	},
+"tile0_7": { 
+	"frame": {"x": 56, "y": 490, "w": 160, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 160, "h": 144 },
+	"sourceSize": {"w": 160, "h": 144 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3","tile0_4","tile0_5","tile0_6","tile0_7"]
+},
+"meta": {
+	"image": "./raging_flame_sprite_sheet_by_flame_theultimate_dg1e45z-fullview.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
