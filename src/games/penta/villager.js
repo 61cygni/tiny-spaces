@@ -4,8 +4,9 @@ import * as BEING from '../../spaced/being.js';
 
 const Action = {};
 Action[Action[0] = 'READ']    = 1;
-Action[Action[1] = 'WALK']  = 2;
-Action[Action[2] = 'THINK']  = 4;
+Action[Action[1] = 'WALK']    = 2;
+Action[Action[2] = 'THINK']   = 4;
+Action[Action[3] = 'TALK']    = 8;
 
 export class Villager extends BEING.Being {
     constructor(name, spritesheet, level) {
@@ -56,6 +57,23 @@ export class Villager extends BEING.Being {
         }
     }
 
+    chatWithMainCharacter(char){
+        this.action = 'TALK';
+        this.curactiontime = 100000;
+        // HACK: remove thinking and reading bubbles
+        this.container.removeChild(this.thinking);
+        this.container.removeChild(this.reading);
+    }
+
+    endChatWithMainCharacter(){
+        this.curactiontime = 0;
+    }
+
+
+    doTalk(delta){
+        // do nothing
+    }
+
     doRead(delta){
         this.curactiontime-=delta;
         if (!this.reading.parent) {
@@ -88,6 +106,8 @@ export class Villager extends BEING.Being {
             this.doThink(delta);
         }else if(this.action == 'READ'){
             this.doRead(delta);
+        }else if(this.action == 'TALK'){
+            this.doTalk(delta);
         }else{
             console.log('Unknown action: ' + this.action);
         }

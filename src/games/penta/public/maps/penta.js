@@ -3,7 +3,7 @@
 export const tilesetpath = "./maps/mage-obj.png"
 export const tiledimx = 32
 export const tiledimy = 32
-export const screenxtiles = 24
+export const screenxtiles = 45
 export const screenytiles = 45
 export const tilesetpxw = 768
 export const tilesetpxh = 1450

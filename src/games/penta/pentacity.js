@@ -8,6 +8,9 @@ const MAPFILE = import.meta.env.DEV
   ? '../games/penta/maps/penta.js'  // Dev path
   : '/maps/penta.js';  // Production path
 
+
+let chatting_with_villager = null;
+
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 function static_images(){
     // all static images to load;
@@ -49,11 +52,77 @@ function initOnce(level){
 
 }
 
+class DialogHandler {
+    constructor(gameevents){
+        this.gameevents = gameevents;
+        this.finished = false;
+    }
+
+    init(){
+        console.log("DialogHandler init");
+        // let's see if there is someone close by
+        let v = this.gameevents.level.get_closest_being(this.gameevents.mainchar, 200);
+        if(v){
+            console.log("Talking to ", v.name);
+            v.chatWithMainCharacter(this.gameevents.mainchar);
+            chatting_with_villager = v;
+        }else{
+            console.log("No one close by");
+        }
+    }
+
+    tick(){
+        console.log("DialogHandler tick");
+        this.finished = true;
+    }
+
+    finalize(){
+        console.log("DialogHandler finalize");
+        this.gameevents.input_now("", null, {location: 'mainchar'});
+    //     console.log("DialogHandler finalize");
+        this.finished = false;
+        // this.gameevents.register_key_handler("Enter", this); 
+    }
+}
+
+class EscapeHandler{
+    constructor(gameevents){
+        this.gameevents = gameevents;
+        this.finished = false;
+    }
+
+    init(){
+        console.log("EscapeHandler init");
+        this.finished = true;
+        this.gameevents.register_esc_handler(this); 
+    }
+
+    tick(){
+        console.log("EscapeHandler tick");
+        this.finished = true;
+    }
+
+    finalize(){
+        console.log("EscapeHandler finalize");
+        this.finished = false;
+        this.gameevents.input_leave();
+        if(chatting_with_villager){
+            chatting_with_villager.endChatWithMainCharacter();
+            chatting_with_villager = null;
+        }
+
+        this.gameevents.register_key_handler("Enter", new DialogHandler(this.gameevents)); 
+    }
+
+}
+
 
 function init(gameevents) {
 
     oneShotInit(gameevents);
 
+    // Create a bunch of villagers 
+    // TODO : Use an LLM to create the villagers and their names
     let v = new VILLAGER.Villager("nancy", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
     gameevents.level.addBeing(v);
     v.arrive(1000, 400);
@@ -81,6 +150,13 @@ function init(gameevents) {
     let v7 = new VILLAGER.Villager("jill", gameevents.level.spritesheet_map.get("villager8"), gameevents.level);
     gameevents.level.addBeing(v7);
     v7.arrive(1200, 800);
+
+
+
+    gameevents.register_esc_handler(new EscapeHandler(gameevents));
+    gameevents.register_key_handler("Enter", new DialogHandler(gameevents));
+
+
 
     SCENE.setbgmusic('windandfire');
 

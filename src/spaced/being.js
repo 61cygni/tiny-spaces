@@ -45,7 +45,9 @@ export class Being {
             this.curanim = this.sprites['DOWN'];
             this.curanim.animationSpeed = 0.1666;
 
-            // position in world
+            // for the mainchar this is the position within the level (same as this.container.x/y for
+            // non focus characters). It's tracked seprately because the container is fixed to screen center
+            // for the main character and the level is moved instead.  
             this.worldx = -1;
             this.worldy = -1;
 
@@ -68,6 +70,22 @@ export class Being {
 
     setFocus(bool){
         this.focus = bool;
+    }
+
+
+    distance(being){
+        if(this.focus){
+            console.log("Error, right now can only calculate from non focused beings");
+            return;
+        }
+        if(!being.focus){
+            console.log("Error, can't calculate distance to focused being");
+            return;
+        }
+
+        let ret = Math.sqrt(Math.pow(being.worldx - this.container.x, 2) + Math.pow(being.worldy - this.container.y, 2));
+        // console.log("Distance to being ", this.container.x, this.container.y, " is ", ret);
+        return ret;
     }
 
     updateScreen(){

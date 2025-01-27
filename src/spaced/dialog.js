@@ -15,8 +15,9 @@ export class Dialog{
 
     // tw = textwidth
     // pw = page width
-    constructor(level, msg, pinned=false, place = 'bottom', callme = null,options = null){
-        this.level = level
+    constructor(ge, msg, pinned=false, place = 'bottom', callme = null,options = null){
+        this.ge = ge;
+        this.level = ge.level
 
         this.frontsize = DEFAULTFONTSIZE;
         this.pad = DPAD;
@@ -119,6 +120,7 @@ export class Dialog{
         this.text.x = topleftx + DPAD;
         this.text.y = toplefty + DPAD;
         this.container.addChild(this.text);
+
         this.level.app.stage.addChild(this.container);
     }
 

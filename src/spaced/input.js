@@ -10,13 +10,18 @@ const MAXTWIDTH  = DWIDTH  - (2*DPAD)
 
 export class TextInput {
 
-    // tw = textwidth
-    // pw = page width
-    constructor(gevents, msg = 'enter text', callme = null){
+    // constructor(gevents, msg = 'enter text', callme = null){
+
+    // options is an object that can contain:
+    // - location : string on where to place the input box
+    constructor(gevents, msg = 'enter text', callme = null, options = null){
+
         this.gevents = gevents;
         this.callme = callme; // call back for each time input is entered
         this.msg = msg;
         this.focus = false;
+
+        this.location = options?.location || 'bottom';
 
         this.input = new Input({
             bg: new PIXI.Graphics()
@@ -60,17 +65,35 @@ export class TextInput {
             this.gevents.pauseevents = true;
         }
 
-        // input.arrive()
-        this.input.x = (640/2) - (DWIDTH/2);
-        this.input.y = (480) - (DHEIGHT);
+        if(this.location == 'mainchar'){
+            this.input.x = 0;
+            this.input.y = 64
+            // this.input.x = (640/2) - (DWIDTH/2);
+            // this.input.y = (480) - (DHEIGHT);
+        }else{
+            this.input.x = (640/2) - (DWIDTH/2);
+            this.input.y = (480) - (DHEIGHT);
+        }
     }
 
     arrive() {
-        this.gevents.level.app.stage.addChild(this.input);
+        console.log("Adding text input");
+        if(this.location == 'mainchar'){
+            console.log("Adding text input mainchar");
+            this.gevents.mainchar.container.addChild(this.input);
+        }else{
+            this.gevents.level.app.stage.addChild(this.input);
+        }
     }
 
     leave() {
-        this.gevents.level.app.stage.removeChild(this.input);
+        console.log("Leaving text input");
+        if(this.location == 'mainchar'){
+            console.log("Leaving text input mainchar");
+            this.gevents.mainchar.container.removeChild(this.input);
+        }else{
+            this.gevents.level.app.stage.removeChild(this.input);
+        }
     }
 
 

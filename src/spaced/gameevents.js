@@ -315,10 +315,10 @@ export class GameEvents {
         if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
             this.dqueue[0].append("\n\n"+text);
         } else if (this.dqueue.length > 0) {
-            let d = new DIALOG.Dialog(this.level, text, pinned, place, callme, options);
+            let d = new DIALOG.Dialog(this, text, pinned, place, callme, options);
             this.dqueue.push(d);
         } else {
-            let d = new DIALOG.Dialog(this.level, text, pinned, place, callme, options);
+            let d = new DIALOG.Dialog(this, text, pinned, place, callme, options);
             this.dqueue.push(d);
             d.arrive();
         }
@@ -343,7 +343,7 @@ export class GameEvents {
             console.log("dialog_stream cb", cb);
             this.dqueue[0].append(text, cb);
         } else {
-            let d = new DIALOG.Dialog(this.level, text, true, place, cb, options);
+            let d = new DIALOG.Dialog(this, text, true, place, cb, options);
             this.dqueue.push(d);
             d.arrive();
         }
@@ -370,8 +370,8 @@ export class GameEvents {
     // --
     // Pop up text box for user input 
     // -- 
-    input_now(text, callme){
-        this.input = new INPUT.TextInput(this, text, callme);
+    input_now(text, callme, opts){
+        this.input = new INPUT.TextInput(this, text, callme, opts);
         this.input.arrive();
     }
 

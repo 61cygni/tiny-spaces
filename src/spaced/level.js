@@ -138,6 +138,20 @@ export class LevelContext {
         this.app.stage.removeChild(this.container)
     }
 
+    // find the closes being with a distance less than the given distance
+    get_closest_being(being, distance){
+        let closest = null;
+        let mindist = distance;
+        for(let b of this.beings){
+            let d = b.distance(being);
+            if(d < mindist){
+                mindist = d;
+                closest = b;
+            }
+        }
+        return closest;
+    }
+
     createLabelDic(){
         this.labeldict  = new Map()
         this.coordsdict = new Map()
