@@ -76,9 +76,15 @@ class DialogHandler {
         this.finished = true;
     }
 
+    handle_input(input){
+        console.log("DialogHandler handle_input", input);
+        let response = chatting_with_villager.handle_input(input);
+        this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
+    }
+
     finalize(){
         console.log("DialogHandler finalize");
-        this.gameevents.input_now("", null, {location: 'mainchar'});
+        this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
     //     console.log("DialogHandler finalize");
         this.finished = false;
         // this.gameevents.register_key_handler("Enter", this); 
@@ -110,6 +116,8 @@ class EscapeHandler{
             chatting_with_villager.endChatWithMainCharacter();
             chatting_with_villager = null;
         }
+
+        this.gameevents.clear_dialogs();
 
         this.gameevents.register_key_handler("Enter", new DialogHandler(this.gameevents)); 
     }

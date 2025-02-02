@@ -60,6 +60,7 @@ export class Villager extends BEING.Being {
     chatWithMainCharacter(char){
         this.action = 'TALK';
         this.curactiontime = 100000;
+        this.stop();
         // HACK: remove thinking and reading bubbles
         this.container.removeChild(this.thinking);
         this.container.removeChild(this.reading);
@@ -72,6 +73,11 @@ export class Villager extends BEING.Being {
 
     doTalk(delta){
         // do nothing
+    }
+
+    handle_input(input){
+        console.log("Villager handle_input", input);
+        return "I don't know what to say";
     }
 
     doRead(delta){
@@ -100,6 +106,7 @@ export class Villager extends BEING.Being {
         if(this.curactiontime <=0 ){
             this.chooseAction();;
         }
+
         if(this.action == 'WALK'){
             this.doWalk(delta);
         }else if(this.action == 'THINK'){

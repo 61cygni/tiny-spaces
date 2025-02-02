@@ -39,7 +39,7 @@ export function bt(slugin, msgin, visits, callme) {
     fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer sk-HCWgy4xVdaaxAw0a9LAX0Ji0cxORkIpvfbCN35VsuyGvALF0`,
+            'Authorization': `Bearer `+BRAINTRUST_API_KEY,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -79,7 +79,7 @@ export async function asyncbt(slugin, msgin, visits) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer sk-HCWgy4xVdaaxAw0a9LAX0Ji0cxORkIpvfbCN35VsuyGvALF0`,
+            'Authorization': `Bearer  `+BRAINTRUST_API_KEY,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -112,7 +112,7 @@ export async function asyncbtStream(slugin, systeminput) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer sk-HCWgy4xVdaaxAw0a9LAX0Ji0cxORkIpvfbCN35VsuyGvALF0`,
+            'Authorization': `Bearer `+BRAINTRUST_API_KEY,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)

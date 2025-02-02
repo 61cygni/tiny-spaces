@@ -30,6 +30,10 @@ export class Dialog{
             console.log("setting padding to "+options.pad);
             this.pad = options.pad;
         }
+        if(options && Object.hasOwn(options,'character')){
+            console.log("setting character to "+options.character);
+            this.character = options.character;
+        }
 
         this.msg = msg;
         this.finished = false;
@@ -110,6 +114,11 @@ export class Dialog{
         }
         else if(this.place == 'inputbottom'){
             toplefty = (480) - (DHEIGHT+64);// FIXME should get input height from input.js
+        }else if(this.place == 'character'){
+            toplefty =  -48; // add to character container
+            topleftx =  48;   // fixme magix number
+            this.container.zIndex = 1000;// FIXME
+            this.character.container.zIndex = 1000;
         }
         
         this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);
@@ -119,9 +128,14 @@ export class Dialog{
         this.text = new PIXI.Text({text: "", style: this.style});
         this.text.x = topleftx + DPAD;
         this.text.y = toplefty + DPAD;
+
         this.container.addChild(this.text);
 
-        this.level.app.stage.addChild(this.container);
+        if(this.place == 'character'){
+            this.character.container.addChild(this.container);
+        }else{
+            this.level.app.stage.addChild(this.container);
+        }
     }
 
     create_static(text, topleftx, toplefty, pad=8){
@@ -142,7 +156,11 @@ export class Dialog{
     }
 
     leave() {
-        this.level.app.stage.removeChild(this.container);
+        if(this.place == 'character'){
+            this.character.container.removeChild(this.container);
+        }else{
+            this.level.app.stage.removeChild(this.container);
+        }
         this.container.removeChild(this.text);
         this.container.removeChild(this.rrect);
         if(this.text){
