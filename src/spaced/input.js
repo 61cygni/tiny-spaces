@@ -26,13 +26,13 @@ export class TextInput {
         this.input = new Input({
             bg: new PIXI.Graphics()
             .roundRect(0, 0, DWIDTH, DHEIGHT, 11)
-            .fill(0xDCB000)
+            .fill({color: 0x000000, alpha: 0.7})
             .roundRect(0 +2, 0+2, DWIDTH - 4, DHEIGHT - 4, 11)
-            .fill(0xF1D583),
+            .fill({color: 0x333333, alpha: 0.9}),
             textStyle: {
                 fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-                fontSize: 10,
-                fill: 0,
+                fontSize: 14,
+                fill: 0xFFFFFF,
                 fontWeight: "bold",
                 wordWrap: true,
                 wordWrapWidth: DWIDTH - 8*DPAD 
@@ -67,10 +67,11 @@ export class TextInput {
 
         if(this.location == 'mainchar'){
             this.input.x = 0;
-            this.input.y = 64
-            // this.input.x = (640/2) - (DWIDTH/2);
-            // this.input.y = (480) - (DHEIGHT);
-        }else{
+            this.input.y = 64;
+        } else if(this.location == 'center') {
+            this.input.x = (640/2) - (DWIDTH/2);
+            this.input.y = (480/2) - (DHEIGHT/2);
+        } else {
             this.input.x = (640/2) - (DWIDTH/2);
             this.input.y = (480) - (DHEIGHT);
         }
