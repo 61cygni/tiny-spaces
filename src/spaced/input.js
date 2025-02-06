@@ -60,6 +60,7 @@ export class TextInput {
             }
             this.input.value = this.msg;
             this.gevents.pauseevents = false;
+            this.leave();
         });
         this.input.onclick = (event) => {
             this.gevents.pauseevents = true;
