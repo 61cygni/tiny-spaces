@@ -87,6 +87,11 @@ window.addEventListener(
                 if(textinputhandler){
                     textinputhandler(event.target);
                 }
+            } else if (event.code == "Escape") {
+                if(gameevents){
+                    gameevents.handle_escape();
+                }
+                set_text_input_focus(false);
             }
             return;
         }
