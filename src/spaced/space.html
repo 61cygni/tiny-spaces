@@ -6,29 +6,34 @@
         border-radius: 10px;
     }
 
-.form-group {
-  position: relative;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
-.form-control:focus + label,
-.form-control:not(:placeholder-shown) + label {
-  top: -10px;
-  font-size: 12px;
-  color: #999;
-}
-
-label {
+.dialog-input-container {
   position: absolute;
-  left: 10px;
-  top: 15px;
-  pointer-events: none;
-  transition: 0.2s ease all;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 600px;
+  display: none;
+}
+
+.dialog-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #4a4a4a;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  outline: none;
+}
+
+.dialog-input:focus {
+  border-color: #6a6aff;
+  box-shadow: 0 0 5px rgba(106, 106, 255, 0.5);
+}
+
+.dialog-input::placeholder {
+  color: #aaaaaa;
 }
  </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,12 +46,9 @@ label {
         </canvas>
 </div>
 
-<!--
-<div class="form-group">
-    <input type="text" id="myInput" class="form-control">
-    <label for="myInput">Label</label>
-  </div>
--->
+<div id="dialogInput" class="dialog-input-container">
+    <input type="text" id="myInput" class="dialog-input" placeholder="Type your message...">
+</div>
 
 </body>
 </html>

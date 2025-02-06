@@ -113,7 +113,7 @@ export function initMainLoop(startlocation) {
 
     // initialize keyboard handler
     KEY.init(gameevents, mainchar);
-    //register_text_input();
+    register_text_input();
 
     const ticker = new Ticker();
 
@@ -145,27 +145,44 @@ export function initMainLoop(startlocation) {
     ticker.start();
 }
 
-// Placeholder for using HTML input field for text input
-// function get_input(target){
-//     console.log(target.value);
-//     target.value = "";
-// }
-// const input = document.getElementById('myInput');
-// function register_text_input() {
-// 
-//     input.addEventListener('focus', () => {
-//         KEY.set_text_input_focus(true);
-//         console.log("FOCUS!");
-//         input.parentNode.classList.add('focused');
-//     });
-// 
-//     input.addEventListener('blur', () => {
-//         console.log("NOT FOCUS!");
-//         KEY.set_text_input_focus(false);
-//         if (!input.value) {
-//             input.parentNode.classList.remove('focused');
-//         }
-//     });
-// 
-//     KEY.register_input_handler(get_input);
-// }
+// Handle text input submission
+function get_input(target) {
+    const message = target.value.trim();
+    if (message) {
+        // TODO: Add your dialog handling logic here
+        console.log("Dialog input:", message);
+    }
+    target.value = "";
+}
+
+// Show/hide dialog input
+export function showDialogInput() {
+    const container = document.getElementById('dialogInput');
+    container.style.display = 'block';
+    document.getElementById('myInput').focus();
+}
+
+export function hideDialogInput() {
+    const container = document.getElementById('dialogInput');
+    container.style.display = 'none';
+    document.getElementById('myInput').blur();
+}
+
+// Register text input handlers
+function register_text_input() {
+    const input = document.getElementById('myInput');
+    const container = document.getElementById('dialogInput');
+
+    input.addEventListener('focus', () => {
+        KEY.set_text_input_focus(true);
+        container.classList.add('focused');
+    });
+
+    input.addEventListener('blur', () => {
+        KEY.set_text_input_focus(false);
+        container.classList.remove('focused');
+    });
+
+    // Register the input handler for Enter key press
+    KEY.register_input_handler(get_input);
+}
