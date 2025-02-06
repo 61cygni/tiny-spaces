@@ -91,6 +91,12 @@ window.addEventListener(
             return;
         }
 
+        if (event.code == "Enter" && gameevents && !gameevents.input) {
+            event.preventDefault();
+            gameevents.input_now("Enter message...", null, { location: 'center' });
+            return true;
+        }
+
         if(!gameevents.mainchar){
             return;
         }
