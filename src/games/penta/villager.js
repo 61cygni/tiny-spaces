@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as GLOBALS from '@spaced/globals.js';
 
 import * as BEING from '../../spaced/being.js';
 
@@ -9,9 +10,10 @@ Action[Action[2] = 'THINK']   = 4;
 Action[Action[3] = 'TALK']    = 8;
 
 export class Villager extends BEING.Being {
-    constructor(name, spritesheet, level) {
+    constructor(name, slug, spritesheet, level) {
         super(spritesheet, level);
         this.name = name;
+        this.slug = slug;
         this.focus = false;
         this.walk = 0;
         this.movedelta = .2;

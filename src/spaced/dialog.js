@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import * as GLOBALS from './globals.js';
 
 
 const DWIDTH = 256
@@ -51,6 +52,9 @@ export class Dialog{
             wordWrapWidth: MAXTWIDTH
         });
         this.container = new PIXI.Container();
+        this.container.zIndex = GLOBALS.ZINDEX.DIALOG;
+        this.container.sortableChildren = true;
+
         this.rrect = new PIXI.Graphics();
         this.container.addChild(this.rrect);
         
@@ -115,10 +119,10 @@ export class Dialog{
         else if(this.place == 'inputbottom'){
             toplefty = (480) - (DHEIGHT+64);// FIXME should get input height from input.js
         }else if(this.place == 'character'){
+            // topleftx = this.character.container.x - 48;
+            // toplefty = this.character.container.y + 48;
             toplefty =  -48; // add to character container
             topleftx =  48;   // fixme magix number
-            this.container.zIndex = 1000;// FIXME
-            this.character.container.zIndex = 1000;
         }
         
         this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);
@@ -128,8 +132,10 @@ export class Dialog{
         this.text = new PIXI.Text({text: "", style: this.style});
         this.text.x = topleftx + DPAD;
         this.text.y = toplefty + DPAD;
+        this.text.zIndex = GLOBALS.ZINDEX.DIALOG+1;
 
         this.container.addChild(this.text);
+        this.container.sortChildren();
 
         if(this.place == 'character'){
             this.character.container.addChild(this.container);
@@ -140,6 +146,8 @@ export class Dialog{
 
     create_static(text, topleftx, toplefty, pad=8){
         let newcontainer = new PIXI.Container();
+        newcontainer.zIndex = GLOBALS.ZINDEX.DIALOG;
+
         this.text = new PIXI.Text({text: text, style: this.style});
         this.text.x = 0 + pad; 
         this.text.y = 0 + pad; 

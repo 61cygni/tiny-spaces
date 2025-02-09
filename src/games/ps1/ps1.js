@@ -8,11 +8,14 @@
 
 
 import * as SPACED from '@spaced/mainloop.js';
+import * as BT from '@spaced/bt.js';
 
 import * as ALIS  from './alis.js';
 import * as TITLE from './title.js';
 import * as CAM   from './camineet.js';
 import * as PALMA from './palma.js';
+
+await BT.initBT("spaces");
 
 // Pixi init
 SPACED.initApp(640, 480, 'spacecanvas');

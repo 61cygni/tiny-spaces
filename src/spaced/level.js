@@ -4,6 +4,7 @@
 // Also loads all static images associated with a level (e.g. static backgrounds etc.)
 // --
 import * as PIXI from 'pixi.js'
+import * as GLOBALS from './globals.js';
 
 import { g_ctx }  from  '../shared/lecontext.js' // global context
 import * as CONFIG from '../shared/leconfig.js' 
@@ -100,6 +101,8 @@ export class LevelContext {
         this.name = leveldetails.name;
         this.details = leveldetails;
         this.container = new PIXI.Container();
+        this.container.sortableChildren = true;
+        this.container.zIndex = GLOBALS.ZINDEX.BACKGROUND;
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
         this.screenxtiles = mod.bgtiles[0][0].length
@@ -324,6 +327,8 @@ export class SplashContext {
         this.name    = splashdetails.name;
         this.details = splashdetails;
         this.container = new PIXI.Container();
+        this.container.sortableChildren = true;
+        this.container.zIndex = GLOBALS.ZINDEX.BACKGROUND;
         this.beings = [];
     }
 

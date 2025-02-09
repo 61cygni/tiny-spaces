@@ -1,8 +1,12 @@
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
 import * as VILLAGER  from './villager.js';
+import * as BT from '@spaced/bt.js';
+import * as GLOBALS from '@spaced/globals.js';
 
 import { sound } from '@pixi/sound';
+
+await BT.initBT("pentacity");
 
 const MAPFILE = import.meta.env.DEV
   ? '../games/penta/maps/penta.js'  // Dev path
@@ -66,6 +70,10 @@ class DialogHandler {
             console.log("Talking to ", v.name);
             v.chatWithMainCharacter(this.gameevents.mainchar);
             chatting_with_villager = v;
+            chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.FOCUS;
+            chatting_with_villager.container.sortChildren();
+            this.gameevents.level.container.sortChildren();
+
         }else{
             console.log("No one close by");
         }
@@ -76,10 +84,18 @@ class DialogHandler {
         this.finished = true;
     }
 
+    handle_bt_response(response){
+        console.log("DialogHandler handle_bt_response", response);
+        this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
+    }
+
     handle_input(input){
         console.log("DialogHandler handle_input", input);
-        let response = chatting_with_villager.handle_input(input);
-        this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
+        // let response = chatting_with_villager.handle_input(input);
+
+        BT.bt(chatting_with_villager.slug, input, 1, this.handle_bt_response.bind(this));
+
+        // this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
     }
 
     finalize(){
@@ -114,6 +130,8 @@ class EscapeHandler{
         this.gameevents.input_leave();
         if(chatting_with_villager){
             chatting_with_villager.endChatWithMainCharacter();
+            chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
+            this.gameevents.level.container.sortChildren();
             chatting_with_villager = null;
         }
 
@@ -131,31 +149,31 @@ function init(gameevents) {
 
     // Create a bunch of villagers 
     // TODO : Use an LLM to create the villagers and their names
-    let v = new VILLAGER.Villager("nancy", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
+    let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
     gameevents.level.addBeing(v);
     v.arrive(1000, 400);
 
-    let v2 = new VILLAGER.Villager("jane", gameevents.level.spritesheet_map.get("villager3"), gameevents.level);
+    let v2 = new VILLAGER.Villager("jane", "jane-first-a5e8", gameevents.level.spritesheet_map.get("villager3"), gameevents.level);
     gameevents.level.addBeing(v2);
     v2.arrive(800, 800);
 
-    let v3 = new VILLAGER.Villager("bob", gameevents.level.spritesheet_map.get("villager4"), gameevents.level);
+    let v3 = new VILLAGER.Villager("bob",  "bob-first-521e", gameevents.level.spritesheet_map.get("villager4"), gameevents.level);
     gameevents.level.addBeing(v3);
     v3.arrive(400, 400);
 
-    let v4 = new VILLAGER.Villager("bill", gameevents.level.spritesheet_map.get("villager5"), gameevents.level);
+    let v4 = new VILLAGER.Villager("bill", "bill-first-3a38", gameevents.level.spritesheet_map.get("villager5"), gameevents.level);
     gameevents.level.addBeing(v4);
     v4.arrive(400, 800);
 
-    let v5 = new VILLAGER.Villager("alice", gameevents.level.spritesheet_map.get("villager6"), gameevents.level);
+    let v5 = new VILLAGER.Villager("alice", "alice-first-218e", gameevents.level.spritesheet_map.get("villager6"), gameevents.level);
     gameevents.level.addBeing(v5);
     v5.arrive(800, 400);
 
-    let v6 = new VILLAGER.Villager("gordy", gameevents.level.spritesheet_map.get("villager7"), gameevents.level);
+    let v6 = new VILLAGER.Villager("gordy", "gordy-first-16e8", gameevents.level.spritesheet_map.get("villager7"), gameevents.level);
     gameevents.level.addBeing(v6);
     v6.arrive(1200, 400);
 
-    let v7 = new VILLAGER.Villager("jill", gameevents.level.spritesheet_map.get("villager8"), gameevents.level);
+    let v7 = new VILLAGER.Villager("jill", "jill-first-4720", gameevents.level.spritesheet_map.get("villager8"), gameevents.level);
     gameevents.level.addBeing(v7);
     v7.arrive(1200, 800);
 

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-
+import * as GLOBALS from './globals.js';
 import * as SCREEN from './screen.js';
 
 export const Dir = {};
@@ -24,6 +24,7 @@ export class Being {
         this.sprites = {};
         this.focus = false;
         this.container = new PIXI.Container();
+        this.container.zIndex = GLOBALS.ZINDEX.BEING;
 
         if (this.sheet != null) {
             this.sprites['DOWN'] = new PIXI.AnimatedSprite(this.sheet.animations.row0);
@@ -121,9 +122,9 @@ export class Being {
             this.curanim.stop();
             this.container.addChild(this.curanim);
             if(this.focus){
-                this.app.stage.addChild(this.container);
+                this.app.stage.addChildAt(this.container);
             }else{
-                this.level.container.addChild(this.container);
+                this.level.container.addChildAt(this.container, GLOBALS.ZINDEX.BEING);
             }
         }
 
@@ -193,11 +194,15 @@ export class Being {
 
             this.curanim.animationSpeed = 0.1666;
             if (this.sprites != null) {
+                this.curanim.zIndex = GLOBALS.ZINDEX.BEING;
                 this.container.addChild(this.curanim);
                 if(this.focus){
                     this.app.stage.addChild(this.container);
                 }else{
-                    this.level.container.addChild(this.container);
+                    this.level.container.addChildAt(this.container, GLOBALS.ZINDEX.BEING);
+
+                    console.log("Level container sortable: ", this.level.container.sortableChildren);
+                    console.log("Being container zIndex: ", this.container.zIndex);
                 }
                 this.curanim.play();
             }

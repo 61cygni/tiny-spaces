@@ -2,6 +2,7 @@
 // To add a prompt:
 //  
 // https://www.braintrust.dev/app/casado/p/spaces/prompts
+// https://www.braintrust.dev/app/casado/p/pentacity/prompts
 //  
 // -----
 
@@ -18,11 +19,21 @@ window.Buffer = Buffer;
 const BRAINTRUST_API_KEY = import.meta.env.VITE_BRAINTRUST_API_KEY;
 const url = 'https://api.braintrust.dev/function/invoke';
 
-const logger = initLogger({
-  projectName: "spaces",
-  apiKey: BRAINTRUST_API_KEY 
-});
-let logdata = await logger.export();
+let projectname = null;
+let logdata = null;
+
+export async function initBT(project){
+    if(logdata){
+        console.log("logdata already initialized");
+        return;
+    }
+    projectname = project;
+    const logger = initLogger({
+    projectName: projectname,
+    apiKey: BRAINTRUST_API_KEY 
+    });
+    logdata = await logger.export();
+}
 
 export function bt(slugin, msgin, visits, callme) {
     const data = {
@@ -32,7 +43,7 @@ export function bt(slugin, msgin, visits, callme) {
     },
     parent: logdata, 
     stream: false,
-    project_name: "spaces",
+    project_name: projectname,
     slug: slugin 
     };
 
@@ -72,7 +83,7 @@ export async function asyncbt(slugin, msgin, visits) {
     },
     parent: logdata, 
     stream: false,
-    project_name: "spaces",
+    project_name: projectname,
     slug: slugin 
     };
 
@@ -105,7 +116,7 @@ export async function asyncbtStream(slugin, systeminput) {
     },
     parent: logdata, 
     stream: true,
-    project_name: "spaces",
+    project_name: projectname,
     slug: slugin 
     };
 
