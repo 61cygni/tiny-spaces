@@ -81,6 +81,7 @@ export class TextInput {
         if(this.location == 'mainchar'){
             console.log("Adding text input mainchar");
             this.gevents.mainchar.container.addChild(this.input);
+            this.gevents.mainchar.container.input = this;
         }else{
             this.gevents.level.app.stage.addChild(this.input);
         }
@@ -91,6 +92,7 @@ export class TextInput {
         if(this.location == 'mainchar'){
             console.log("Leaving text input mainchar");
             this.gevents.mainchar.container.removeChild(this.input);
+            this.gevents.mainchar.container.input = null;
         }else{
             this.gevents.level.app.stage.removeChild(this.input);
         }

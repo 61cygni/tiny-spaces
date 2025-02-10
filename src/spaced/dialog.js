@@ -1,15 +1,7 @@
 import * as PIXI from 'pixi.js'
+
 import * as GLOBALS from './globals.js';
-
-
-const DWIDTH = 256
-const DHEIGHT = 96
-const DPAD = 16
-const TEXTPAUSE = .25
-const MAXTHEIGHT = DHEIGHT - (2*DPAD)
-const MAXTWIDTH  = DWIDTH  - (2*DPAD)
-
-const DEFAULTFONTSIZE = 10;
+import * as UIConfig from './uiconfig.js';
 
 export class Dialog{
 
@@ -17,11 +9,11 @@ export class Dialog{
     // tw = textwidth
     // pw = page width
     constructor(ge, msg, pinned=false, place = 'bottom', callme = null,options = null){
-        this.ge = ge;
+        this.gameevents = ge;
         this.level = ge.level
 
-        this.frontsize = DEFAULTFONTSIZE;
-        this.pad = DPAD;
+        this.frontsize = UIConfig.DIALOG_DEFAULT_FONTSIZE;
+        this.pad = UIConfig.DIALOG_PADDING;
 
         if(options && Object.hasOwn(options,'fontsize')){
             console.log("setting fontsize to "+options.fontsize);
@@ -34,6 +26,14 @@ export class Dialog{
         if(options && Object.hasOwn(options,'character')){
             console.log("setting character to "+options.character);
             this.character = options.character;
+        }
+        if(options && Object.hasOwn(options,'gameevents')){
+            console.log("setting gameevents to "+options.gameevents);
+            this.gameevents = options.gameevents;
+        }
+        if(options && Object.hasOwn(options,'place')){
+            console.log("setting place to "+options.place);
+            this.place = options.place;
         }
 
         this.msg = msg;
@@ -49,7 +49,7 @@ export class Dialog{
             fill: "#ffffff",
             fontWeight: "bold",
             wordWrap: true,
-            wordWrapWidth: MAXTWIDTH
+            wordWrapWidth: UIConfig.DIALOG_MAX_WIDTH
         });
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.DIALOG;
@@ -60,7 +60,7 @@ export class Dialog{
         
         this.pagepause = false;
         this.elapsed = 0;
-        this.waitperiod = TEXTPAUSE;
+        this.waitperiod = UIConfig.DIALOG_TEXT_PAUSE;
 
         // 
         this.appendcallback = null;
@@ -79,7 +79,7 @@ export class Dialog{
                 this.pagepause = false;
         }else{
             while (this.endindex++ < this.msg.length) {
-                if (this.msgHeight() >= MAXTHEIGHT) { 
+                if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) { 
                     this.endindex--;// roll back to lasst character
                     this.displayText();
                     this.pagepause = true;
@@ -104,34 +104,55 @@ export class Dialog{
     arrive() {
 
         let topleftx = (640/2) - 120;
-        let toplefty = 480 - (DHEIGHT + 4);
+        let toplefty = 480 - (UIConfig.DIALOG_HEIGHT + 4);
         if(this.place == 'top'){
-            toplefty = DPAD;
+            toplefty = UIConfig.DIALOG_PADDING;
         }
         else if(this.place == 'topleft'){
-            topleftx = DPAD;
-            toplefty = DPAD;
+            topleftx = UIConfig.DIALOG_PADDING;
+            toplefty = UIConfig.DIALOG_PADDING;
         }
         else if(this.place == 'left'){
-            topleftx = DPAD;
-            toplefty = (480/2) - (DHEIGHT/2);
+            topleftx = UIConfig.DIALOG_PADDING;
+            toplefty = (480/2) - (UIConfig.DIALOG_HEIGHT/2);
         }
         else if(this.place == 'inputbottom'){
-            toplefty = (480) - (DHEIGHT+64);// FIXME should get input height from input.js
+            toplefty = (480) - (UIConfig.DIALOG_HEIGHT+64);// FIXME should get input height from input.js
         }else if(this.place == 'character'){
-            // topleftx = this.character.container.x - 48;
-            // toplefty = this.character.container.y + 48;
-            toplefty =  -48; // add to character container
-            topleftx =  48;   // fixme magix number
+
+            // Check first if input is active
+            if(this.gameevents.mainchar.container.input){
+                //convert to level coords
+                let level_cx = this.character.container.x;
+                let level_cy = this.character.container.y;
+                let level_mx = this.gameevents.mainchar.worldx;
+                let level_my = this.gameevents.mainchar.worldy;
+                
+                // print out all coords
+                console.log("level_cx: ", level_cx);
+                console.log("level_cy: ", level_cy);
+                console.log("level_mx: ", level_mx);
+                console.log("level_my: ", level_my);
+
+                let level_newx = level_mx; // snap to maincharacter location
+                let level_newy = level_my - 64; // position above input bar 
+
+                // snap back to character coords
+                topleftx = level_newx - level_cx;
+                toplefty = level_newy - level_cy;
+            }else{
+                toplefty =  -48; // add to character container
+                topleftx =  48;   // fixme magix number
+            }
         }
         
-        this.rrect.roundRect(topleftx, toplefty, DWIDTH, DHEIGHT, 10);
+        this.rrect.roundRect(topleftx, toplefty, UIConfig.DIALOG_WIDTH, UIConfig.DIALOG_HEIGHT, 10);
         this.rrect.setStrokeStyle(2, 0xffd900, 1);
         this.rrect.fill(0x0)
             .stroke({ width: 2, color: 'white' });
         this.text = new PIXI.Text({text: "", style: this.style});
-        this.text.x = topleftx + DPAD;
-        this.text.y = toplefty + DPAD;
+        this.text.x = topleftx + UIConfig.DIALOG_PADDING;
+        this.text.y = toplefty + UIConfig.DIALOG_PADDING;
         this.text.zIndex = GLOBALS.ZINDEX.DIALOG+1;
 
         this.container.addChild(this.text);
@@ -220,7 +241,7 @@ export class Dialog{
         
         if ((this.endindex - this.startindex) <= this.msg.length) {
             this.endindex++;
-            if (this.msgHeight() >= MAXTHEIGHT) {
+            if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) {
                 this.endindex--;// roll back to last character
                 this.pagepause = true;
                 this.displayText();
