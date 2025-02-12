@@ -152,6 +152,10 @@ export class Dialog{
         this.container.sortChildren();
 
         if(this.place == 'character'){
+            if(!this.character){
+                console.log("character container not found");
+                return;
+            }
             this.character.container.addChild(this.container);
             this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
             this.charleftsprite.x = topleftx + UIConfig.DIALOG_MAX_WIDTH + 12 ;

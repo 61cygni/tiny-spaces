@@ -207,9 +207,6 @@ export class Being {
                     this.app.stage.addChild(this.container);
                 }else{
                     this.level.container.addChildAt(this.container, GLOBALS.ZINDEX.BEING);
-
-                    console.log("Level container sortable: ", this.level.container.sortableChildren);
-                    console.log("Being container zIndex: ", this.container.zIndex);
                 }
                 this.curanim.play();
             }

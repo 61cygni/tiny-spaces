@@ -91,14 +91,18 @@ class DialogHandler {
 
     handle_bt_response(response){
         console.log("DialogHandler handle_bt_response", response);
+        chatting_with_villager.addToConversationHistory(chatting_with_villager.name, response);
         this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
     }
 
     handle_input(input){
-        console.log("DialogHandler handle_input", input);
-        // let response = chatting_with_villager.handle_input(input);
+        if(!chatting_with_villager){
+            console.log("handle_input called after conversation ended. Bailing.");
+            return;
+        }
+        chatting_with_villager.addToConversationHistory(this.gameevents.mainchar.name, input);
 
-        BT.bt(chatting_with_villager.slug, input, 1, this.handle_bt_response.bind(this));
+        BT.bt(chatting_with_villager.slug, {msg: input, history: chatting_with_villager.conversationHistoryAsText()}, this.handle_bt_response.bind(this));
 
         // this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
     }

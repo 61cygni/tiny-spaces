@@ -21,6 +21,8 @@ export class Villager extends BEING.Being {
         this.timebetweenactions = 100;
         this.curactiontime = 0;
 
+        this.conversation_history = [];
+        this.conversation_history_max = 20; // includes both sides of the converstion 
 
         // create thinking bubble
         this.style = new PIXI.TextStyle({
@@ -31,6 +33,17 @@ export class Villager extends BEING.Being {
         });
         this.thinking = new PIXI.Text({text: "💭", style: this.style});
         this.reading = new PIXI.Text({text: "📖", style: this.style});
+    }
+
+    addToConversationHistory(name, message){
+        this.conversation_history.push(name + ": " + message);
+        if(this.conversation_history.length > this.conversation_history_max){
+            this.conversation_history.shift();
+        }
+    }
+
+    conversationHistoryAsText(){
+        return this.conversation_history.join("\n");
     }
 
     doWalk(delta){
@@ -69,7 +82,6 @@ export class Villager extends BEING.Being {
     }
 
     endChatWithMainCharacter(){
-        this.container.addChild(this.curanim);
         this.curactiontime = 0;
     }
 

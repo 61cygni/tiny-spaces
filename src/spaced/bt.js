@@ -35,12 +35,9 @@ export async function initBT(project){
     logdata = await logger.export();
 }
 
-export function bt(slugin, msgin, visits, callme) {
+export function bt(slugin, input, callme) {
     const data = {
-    input: {
-        visits: visits,
-        msg: msgin,
-    },
+    input: input,
     parent: logdata, 
     stream: false,
     project_name: projectname,
