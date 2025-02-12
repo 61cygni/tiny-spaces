@@ -1,12 +1,7 @@
 import * as PIXI from 'pixi.js'
+import * as UIConfig from './uiconfig.js';
 
 import { Input } from '@pixi/ui';
-
-const DWIDTH = 256
-const DHEIGHT = 48
-const DPAD = 2
-const MAXTHEIGHT = DHEIGHT - (2*DPAD)
-const MAXTWIDTH  = DWIDTH  - (2*DPAD)
 
 export class TextInput {
 
@@ -25,9 +20,9 @@ export class TextInput {
 
         this.input = new Input({
             bg: new PIXI.Graphics()
-            .roundRect(0, 0, DWIDTH, DHEIGHT, 11)
+            .roundRect(0, 0, UIConfig.TEXTINPUT_WIDTH, UIConfig.TEXTINPUT_HEIGHT, 11)
             .fill(0xDCB000)
-            .roundRect(0 +2, 0+2, DWIDTH - 4, DHEIGHT - 4, 11)
+            .roundRect(0 +2, 0+2, UIConfig.TEXTINPUT_WIDTH - 4, UIConfig.TEXTINPUT_HEIGHT - 4, 11)
             .fill(0xF1D583),
             textStyle: {
                 fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
@@ -35,7 +30,7 @@ export class TextInput {
                 fill: 0,
                 fontWeight: "bold",
                 wordWrap: true,
-                wordWrapWidth: DWIDTH - 8*DPAD 
+                wordWrapWidth: UIConfig.TEXTINPUT_MAX_WIDTH - 8*UIConfig.TEXTINPUT_PADDING 
             },
             placeholder: msg,
             value: '',
@@ -66,13 +61,13 @@ export class TextInput {
         }
 
         if(this.location == 'mainchar'){
-            this.input.x = 0;
+            this.input.x = UIConfig.DIALOG_TEXTINPUT_X_OFFSET;
             this.input.y = 64
             // this.input.x = (640/2) - (DWIDTH/2);
             // this.input.y = (480) - (DHEIGHT);
         }else{
-            this.input.x = (640/2) - (DWIDTH/2);
-            this.input.y = (480) - (DHEIGHT);
+            this.input.x = (640/2) - (UIConfig.TEXTINPUT_WIDTH/2);
+            this.input.y = (480) - (UIConfig.TEXTINPUT_HEIGHT);
         }
     }
 

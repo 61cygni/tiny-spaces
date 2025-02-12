@@ -134,6 +134,13 @@ export class Being {
         }
     }
 
+    // face a given direction
+    face(dir){
+        this.container.removeChild(this.curanim);
+        this.curanim = this.sprites[dir];
+        this.container.addChild(this.curanim);
+    }
+
     leave(){
         this.here = false;
         if(this.sprites != null){

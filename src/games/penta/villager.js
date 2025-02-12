@@ -69,6 +69,7 @@ export class Villager extends BEING.Being {
     }
 
     endChatWithMainCharacter(){
+        this.container.addChild(this.curanim);
         this.curactiontime = 0;
     }
 

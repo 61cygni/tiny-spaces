@@ -1,8 +1,11 @@
+import * as PIXI from 'pixi.js';
+
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
 import * as VILLAGER  from './villager.js';
 import * as BT from '@spaced/bt.js';
 import * as GLOBALS from '@spaced/globals.js';
+import * as SCREEN from '@spaced/screen.js';
 
 import { sound } from '@pixi/sound';
 
@@ -14,6 +17,7 @@ const MAPFILE = import.meta.env.DEV
 
 
 let chatting_with_villager = null;
+let shade_level = null;
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 function static_images(){
@@ -51,15 +55,18 @@ var oneShotInit = (function() {
 })();
 
 function initOnce(level){
-    console.log("Sprite sheet map ", level.spritesheet_map);
     let b = new BEING.Being();
-
 }
 
 class DialogHandler {
     constructor(gameevents){
         this.gameevents = gameevents;
         this.finished = false;
+
+        shade_level = new PIXI.Graphics();
+        shade_level.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
+        shade_level.fill({color: 0x000000, alpha: 0.5});
+        shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
     }
 
     init(){
@@ -71,9 +78,7 @@ class DialogHandler {
             v.chatWithMainCharacter(this.gameevents.mainchar);
             chatting_with_villager = v;
             chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.FOCUS;
-            chatting_with_villager.container.sortChildren();
-            this.gameevents.level.container.sortChildren();
-
+            this.gameevents.mainchar.face('RIGHT');
         }else{
             console.log("No one close by");
         }
@@ -100,7 +105,9 @@ class DialogHandler {
 
     finalize(){
         console.log("DialogHandler finalize");
+        this.gameevents.level.container.addChild(shade_level);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
+        this.gameevents.dialog_now("", 'character', null, true, {character: chatting_with_villager});
     //     console.log("DialogHandler finalize");
         this.finished = false;
         // this.gameevents.register_key_handler("Enter", this); 
@@ -128,6 +135,7 @@ class EscapeHandler{
         console.log("EscapeHandler finalize");
         this.finished = false;
         this.gameevents.input_leave();
+        this.gameevents.level.container.removeChild(shade_level);
         if(chatting_with_villager){
             chatting_with_villager.endChatWithMainCharacter();
             chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;

@@ -5,7 +5,6 @@ import * as UIConfig from './uiconfig.js';
 
 export class Dialog{
 
-
     // tw = textwidth
     // pw = page width
     constructor(ge, msg, pinned=false, place = 'bottom', callme = null,options = null){
@@ -128,14 +127,8 @@ export class Dialog{
                 let level_mx = this.gameevents.mainchar.worldx;
                 let level_my = this.gameevents.mainchar.worldy;
                 
-                // print out all coords
-                console.log("level_cx: ", level_cx);
-                console.log("level_cy: ", level_cy);
-                console.log("level_mx: ", level_mx);
-                console.log("level_my: ", level_my);
-
-                let level_newx = level_mx; // snap to maincharacter location
-                let level_newy = level_my - 64; // position above input bar 
+                let level_newx = level_mx + UIConfig.DIALOG_TEXTINPUT_X_OFFSET; // snap to maincharacter location
+                let level_newy = level_my - UIConfig.DIALOG_TEXTINPUT_Y_OFFSET; // position above input bar 
 
                 // snap back to character coords
                 topleftx = level_newx - level_cx;
@@ -160,6 +153,11 @@ export class Dialog{
 
         if(this.place == 'character'){
             this.character.container.addChild(this.container);
+            this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
+            this.charleftsprite.x = topleftx + UIConfig.DIALOG_MAX_WIDTH + 12 ;
+            this.charleftsprite.y = toplefty + 48;
+            this.charleftsprite.zIndex = GLOBALS.ZINDEX.DIALOG+1;
+            this.character.container.addChild(this.charleftsprite);
         }else{
             this.level.app.stage.addChild(this.container);
         }
@@ -187,6 +185,9 @@ export class Dialog{
     leave() {
         if(this.place == 'character'){
             this.character.container.removeChild(this.container);
+            this.character.container.removeChild(this.charleftsprite);
+            this.charleftsprite.destroy();
+            this.charleftsprite = null;
         }else{
             this.level.app.stage.removeChild(this.container);
         }
