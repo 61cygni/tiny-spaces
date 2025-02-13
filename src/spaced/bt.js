@@ -3,7 +3,12 @@
 //  
 // https://www.braintrust.dev/app/casado/p/spaces/prompts
 // https://www.braintrust.dev/app/casado/p/pentacity/prompts
-//  
+//
+// To pull prompts from Braintrust:
+// on the CLI:
+// export BRAINTRUST_API_KEY="..."
+// npx braintrust pull --project-name "pentacity"
+//
 // -----
 
 

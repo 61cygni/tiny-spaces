@@ -137,7 +137,10 @@ export const nancyFirst_27c7 = project.prompts.create({
         '\n' +
         'He says "{{input}}"\n' +
         '\n' +
-        'Please reply with only your response.',
+        'Please reply with only your response.' +
+        '\n' +
+        "Below is the history of the conversation you've had. Please refer to this when talking. \n" +
+        '"{{history}}""',
       role: 'user'
     }
   ],

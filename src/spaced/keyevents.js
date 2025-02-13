@@ -42,6 +42,7 @@ window.addEventListener(
         }
 
         if (gameevents && gameevents.pauseevents){
+            console.log("pauseevents");
             return;
         }
 
@@ -51,11 +52,13 @@ window.addEventListener(
 
         if(gameevents){
             if(gameevents.handle_event(event)){
+                console.log("handled by gameevents");
                 return; // handled by gameevents
             }
         }
 
         if(!gameevents.mainchar){
+            console.log("No mainchar");
             return;
         }
 

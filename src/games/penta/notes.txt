@@ -28,3 +28,12 @@ netlify deploy --dir=dist --prod
 
 Current test site:
 Website URL:        https://tiny-spaces-penta.netlify.app
+
+--------------------------------
+
+To pull prompts from Braintrust:
+export BRAINTRUST_API_KEY="..."
+npx braintrust pull --project-name "pentacity"
+To push prompts from Braintrust:
+npx braintrust push braintrust/pentacity.ts  --if-exists replace
+

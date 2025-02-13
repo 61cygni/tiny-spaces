@@ -48,6 +48,7 @@ export class TextInput {
             console.log("Text input"+val);
             if(val == ""){
                 console.log("Text input empty. Bailing");
+                this.gevents.pauseevents = false;
                 return;
             }
             if(this.callme){

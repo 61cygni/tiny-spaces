@@ -148,7 +148,6 @@ class EscapeHandler{
         }
 
         this.gameevents.clear_dialogs();
-
         this.gameevents.register_key_handler("Enter", new DialogHandler(this.gameevents)); 
     }
 
