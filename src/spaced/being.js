@@ -138,6 +138,7 @@ export class Being {
     face(dir){
         this.container.removeChild(this.curanim);
         this.curanim = this.sprites[dir];
+        this.curanim.gotoAndStop(1);
         this.container.addChild(this.curanim);
     }
 

@@ -48,8 +48,6 @@ var oneShotInit = (function() {
             sound.add('windandfire', './audio/windandfire.m4a');
 
             sound.volumeAll = 0.05;
-
-            // FIXME : This is all test code. 
         }
     };
 })();
@@ -59,10 +57,12 @@ function initOnce(level){
 }
 
 class DialogHandler {
+
     constructor(gameevents){
         this.gameevents = gameevents;
         this.finished = false;
 
+        // Use a rectangle with alpha to dim the level during dialogs
         shade_level = new PIXI.Graphics();
         shade_level.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
         shade_level.fill({color: 0x000000, alpha: 0.5});
@@ -70,14 +70,14 @@ class DialogHandler {
     }
 
     init(){
-        console.log("DialogHandler init");
-        // let's see if there is someone close by
+
         let v = this.gameevents.level.get_closest_being(this.gameevents.mainchar, 200);
         if(v){
             console.log("Talking to ", v.name);
             v.chatWithMainCharacter(this.gameevents.mainchar);
             chatting_with_villager = v;
             chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.FOCUS;
+            this.gameevents.mainchar.stop();
             this.gameevents.mainchar.face('RIGHT');
         }else{
             console.log("No one close by");
@@ -100,11 +100,13 @@ class DialogHandler {
             console.log("handle_input called after conversation ended. Bailing.");
             return;
         }
+        if(input == ""){
+            console.log("handle_input called with empty input. Bailing.");
+            return;
+        }
         chatting_with_villager.addToConversationHistory(this.gameevents.mainchar.name, input);
 
         BT.bt(chatting_with_villager.slug, {msg: input, history: chatting_with_villager.conversationHistoryAsText()}, this.handle_bt_response.bind(this));
-
-        // this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
     }
 
     finalize(){
@@ -188,15 +190,10 @@ function init(gameevents) {
     gameevents.level.addBeing(v7);
     v7.arrive(1200, 800);
 
-
-
     gameevents.register_esc_handler(new EscapeHandler(gameevents));
     gameevents.register_key_handler("Enter", new DialogHandler(gameevents));
 
-
-
     SCENE.setbgmusic('windandfire');
-
 } // init
 
 
