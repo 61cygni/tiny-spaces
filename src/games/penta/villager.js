@@ -3,11 +3,102 @@ import * as GLOBALS from '@spaced/globals.js';
 
 import * as BEING from '../../spaced/being.js';
 
-const Action = {};
-Action[Action[0] = 'READ']    = 1;
-Action[Action[1] = 'WALK']    = 2;
-Action[Action[2] = 'THINK']   = 4;
-Action[Action[3] = 'TALK']    = 8;
+
+// Super class for actions
+
+class VillagerActions{
+    constructor(name, icon){
+        // create thinking bubble
+        this.style = new PIXI.TextStyle({
+            fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
+            fontSize: 14, 
+            fill: "#ffffff",
+            fontWeight: "bold"
+        });
+        this.name = name;
+        this.icon = new PIXI.Text({text: icon, style: this.style});
+
+        this.curactiontime = 0;
+        this.villager = null;
+
+        // position action icon slightly above the villager
+        this.icon.x = 0;
+        this.icon.y = -20;
+    }
+
+    doActionFor(time, villager){
+        this.curactiontime = time;
+        this.villager= villager;
+    }
+
+    timeLeft(){
+        return this.curactiontime;
+    }
+
+    // by default just add the icon to the villager
+    tick(delta){
+        this.curactiontime-=delta;
+        if (!this.icon.parent) {
+            this.villager.container.addChild(this.icon);
+        }
+        if(this.curactiontime <= 0){
+            this.villager.container.removeChild(this.icon);
+        }
+    }
+
+    done(){
+        return this.curactiontime < 0;
+    }
+}
+
+class WalkAction extends VillagerActions{
+    constructor(){
+        super("walk", "");
+        this.walk = 0;
+    }
+
+    tick(delta){
+        this.curactiontime-=delta;
+        if(this.walk <= 0){
+            let direction = Math.floor(Math.random() * 4);
+            let dir = BEING.Dir[''+direction];
+            this.villager.goDir(dir);
+            this.walk = Math.floor(Math.random() * 30) + 1;
+        }else{
+            if(this.villager.timeToMove(delta)){
+                this.walk--;
+            }
+        }
+    }
+}
+
+class ThinkAction extends VillagerActions{
+    constructor(){
+        super("think", "💭");
+    }
+}
+
+class ReadAction extends VillagerActions{
+    constructor(){
+        super("read", "📖");
+    }
+}
+
+class BloodAction extends VillagerActions{
+    constructor(){
+        super("blood", "🩸");
+    }
+}
+
+class TalkAction extends VillagerActions{
+    constructor(){
+        super("talk", "");
+    }
+    tick(delta){
+    }
+}
+
+
 
 export class Villager extends BEING.Being {
     constructor(name, slug, spritesheet, level) {
@@ -19,20 +110,20 @@ export class Villager extends BEING.Being {
         this.movedelta = .2;
         this.action = 'WALK';
         this.timebetweenactions = 100;
-        this.curactiontime = 0;
+
+        this.curaction = null;
 
         this.conversation_history = [];
         this.conversation_history_max = 20; // includes both sides of the converstion 
 
-        // create thinking bubble
-        this.style = new PIXI.TextStyle({
-            fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-            fontSize: 14, 
-            fill: "#ffffff",
-            fontWeight: "bold"
-        });
-        this.thinking = new PIXI.Text({text: "💭", style: this.style});
-        this.reading = new PIXI.Text({text: "📖", style: this.style});
+        this.Action = {
+            'WALK': new WalkAction(),
+            'THINK': new ThinkAction(),
+            'READ': new ReadAction(),
+            'BLOOD': new BloodAction()
+        };
+        this.numActions = Object.keys(this.Action).length;
+
     }
 
     addToConversationHistory(name, message){
@@ -46,93 +137,44 @@ export class Villager extends BEING.Being {
         return this.conversation_history.join("\n");
     }
 
-    doWalk(delta){
-        this.curactiontime-=delta;
-        if(this.walk <= 0){
-            let direction = Math.floor(Math.random() * 4);
-            let dir = BEING.Dir[''+direction];
-            this.goDir(dir);
-            this.walk = Math.floor(Math.random() * 30) + 1;
-        }else{
-            if(this.timeToMove(delta)){
-                this.walk--;
-            }
-        }
-    }
-
-    doThink(delta){
-        this.curactiontime-=delta;
-        if (!this.thinking.parent) {
-            this.thinking.x = 0;
-            this.thinking.y = -20;
-            this.container.addChild(this.thinking);
-        }
-        if(this.curactiontime <= 0){
-            this.container.removeChild(this.thinking);
-        }
-    }
-
     chatWithMainCharacter(char){
-        this.action = 'TALK';
-        this.curactiontime = 100000;
+        this.curaction = new TalkAction();
+        this.curaction.doActionFor(100000, this);
         this.stop();
-        // HACK: remove thinking and reading bubbles
-        this.container.removeChild(this.thinking);
-        this.container.removeChild(this.reading);
     }
 
     endChatWithMainCharacter(){
         this.curactiontime = 0;
     }
 
-
-    doTalk(delta){
-        // do nothing
-    }
-
+    // This should not be called and is a stub for testing. 
     handle_input(input){
         console.log("Villager handle_input", input);
         return "I don't know what to say";
     }
 
-    doRead(delta){
-        this.curactiontime-=delta;
-        if (!this.reading.parent) {
-            this.reading.x = 0;
-            this.reading.y = -20;
-            this.container.addChild(this.reading);
-        }
-        if(this.curactiontime <= 0){
-            this.container.removeChild(this.reading);
-        }
-    }
-
     chooseAction(){
         this.stop();
-        this.action = Action[Math.floor(Math.random() * 3)];
-        this.curactiontime = Math.floor(Math.random() * this.timebetweenactions) + 1;
-        console.log(this.name + ' Action: ' + this.action + ' Time: ' + this.curactiontime);
+        const randomKey = Object.keys(this.Action)[Math.floor(Math.random() * this.numActions)];
+        this.curaction = this.Action[randomKey];
+        this.curaction.doActionFor(Math.floor(Math.random() * this.timebetweenactions) + 1, this);
+        console.log(this.name + ' Action: ' + randomKey + ' time: ' + this.curaction.timeLeft());
     }
 
     tick(delta){
         if(!this.here){
             return;
         }
-        if(this.curactiontime <=0 ){
-            this.chooseAction();;
+        if(!this.curaction){
+            this.chooseAction();
         }
 
-        if(this.action == 'WALK'){
-            this.doWalk(delta);
-        }else if(this.action == 'THINK'){
-            this.doThink(delta);
-        }else if(this.action == 'READ'){
-            this.doRead(delta);
-        }else if(this.action == 'TALK'){
-            this.doTalk(delta);
-        }else{
-            console.log('Unknown action: ' + this.action);
+        this.curaction.tick(delta);
+
+        if(this.curaction.done()){
+            this.curaction = null;
         }
+
         super.tick(delta);
     }
 } // class Villager

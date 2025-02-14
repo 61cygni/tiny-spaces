@@ -56,7 +56,10 @@ function initOnce(level){
     let b = new BEING.Being();
 }
 
-class DialogHandler {
+// --
+// Start a conversation with the closest villager
+// --
+class EnterChatHandler {
 
     constructor(gameevents){
         this.gameevents = gameevents;
@@ -85,12 +88,11 @@ class DialogHandler {
     }
 
     tick(){
-        console.log("DialogHandler tick");
         this.finished = true;
     }
 
     handle_bt_response(response){
-        console.log("DialogHandler handle_bt_response", response);
+        console.log("EnterChatHandler handle_bt_response", response);
         chatting_with_villager.addToConversationHistory(chatting_with_villager.name, response);
         this.gameevents.dialog_now(response, 'character', null, true, {character: chatting_with_villager});
     }
@@ -110,35 +112,33 @@ class DialogHandler {
     }
 
     finalize(){
-        console.log("DialogHandler finalize");
+        console.log("EnterChatHandler finalize");
         this.gameevents.level.container.addChild(shade_level);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
         this.gameevents.dialog_now("", 'character', null, true, {character: chatting_with_villager});
-    //     console.log("DialogHandler finalize");
         this.finished = false;
-        // this.gameevents.register_key_handler("Enter", this); 
     }
 }
 
-class EscapeHandler{
+class LeaveChatHandler{
     constructor(gameevents){
         this.gameevents = gameevents;
         this.finished = false;
     }
 
     init(){
-        console.log("EscapeHandler init");
+        console.log("LeaveChatHandler init");
         this.finished = true;
         this.gameevents.register_esc_handler(this); 
     }
 
     tick(){
-        console.log("EscapeHandler tick");
+        console.log("LeaveChatHandler tick");
         this.finished = true;
     }
 
     finalize(){
-        console.log("EscapeHandler finalize");
+        console.log("LeaveChatHandler finalize");
         this.finished = false;
         this.gameevents.input_leave();
         this.gameevents.level.container.removeChild(shade_level);
@@ -150,7 +150,7 @@ class EscapeHandler{
         }
 
         this.gameevents.clear_dialogs();
-        this.gameevents.register_key_handler("Enter", new DialogHandler(this.gameevents)); 
+        this.gameevents.register_key_handler("Enter", new EnterChatHandler(this.gameevents)); 
     }
 
 }
@@ -161,7 +161,6 @@ function init(gameevents) {
     oneShotInit(gameevents);
 
     // Create a bunch of villagers 
-    // TODO : Use an LLM to create the villagers and their names
     let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
     gameevents.level.addBeing(v);
     v.arrive(1000, 400);
@@ -190,8 +189,8 @@ function init(gameevents) {
     gameevents.level.addBeing(v7);
     v7.arrive(1200, 800);
 
-    gameevents.register_esc_handler(new EscapeHandler(gameevents));
-    gameevents.register_key_handler("Enter", new DialogHandler(gameevents));
+    gameevents.register_key_handler("Enter", new EnterChatHandler(gameevents));
+    gameevents.register_esc_handler(new LeaveChatHandler(gameevents));
 
     SCENE.setbgmusic('windandfire');
 } // init
