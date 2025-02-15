@@ -1,3 +1,12 @@
+// --
+// TODO:
+// - add streaming support to stranger canvas
+// - add keybinding to show / remove text canvas
+// -- fix wordwrap in text canvas
+// DONE
+// - add colors etc. to text canvas (fix)
+// --
+
 import * as PIXI from 'pixi.js';
 
 import * as LEVEL  from '@spaced/level.js';
@@ -59,7 +68,7 @@ class PentaImpl{
     constructor(gameevents){
         this.gameevents = gameevents;
         this.chatting_with_villager = null;
-        this.streaming = true;
+        this.streaming = false;
         this.shade_level = null;
         this.is_chatting = false;
         
@@ -72,6 +81,24 @@ class PentaImpl{
 
 }
 
+class ConversationCanvasToggleHandler {
+    constructor(impl){
+        this.impl = impl;
+        this.finished = false;
+    }
+
+    init(){
+    }
+
+    tick(){
+        this.finished = true;
+    }
+
+    finalize(){
+        this.impl.gameevents.mainchar.conversationCanvas.toggle();
+        this.impl.gameevents.register_key_handler("Backquote", new ConversationCanvasToggleHandler(this.impl));
+    }
+}
 
 // --
 // Start a conversation with the closest villager
@@ -82,7 +109,6 @@ class EnterChatHandler {
         this.impl = impl;
         this.gameevents = impl.gameevents;
         this.finished = false;
-
     }
 
     init(){
@@ -109,6 +135,7 @@ class EnterChatHandler {
         console.log("EnterChatHandler handle_bt_response", response);
         impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
         this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
+        this.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, response);
     }
 
     handle_input(input){
@@ -120,6 +147,7 @@ class EnterChatHandler {
             console.log("handle_input called with empty input. Bailing.");
             return;
         }
+        this.gameevents.mainchar.conversationCanvas.addDialog(this.gameevents.mainchar.name, input);
         impl.chatting_with_villager.addToConversationHistory(this.gameevents.mainchar.name, input);
 
         const sysinput = {
@@ -137,6 +165,7 @@ class EnterChatHandler {
     finalize(){
         console.log("EnterChatHandler finalize");
         this.gameevents.level.container.addChild(impl.shade_level);
+        // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
         this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
         this.finished = false;
@@ -175,8 +204,8 @@ class LeaveChatHandler{
 
         this.gameevents.clear_dialogs();
         this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
+
         this.impl.is_chatting = false;
-        
     }
 }
 
@@ -214,10 +243,14 @@ PentaImpl.prototype.init = function(gameevents) {
     this.gameevents.level.addBeing(v7);
     v7.arrive(1200, 800);
 
+    this.gameevents.register_key_handler("Backquote", new ConversationCanvasToggleHandler(this));
     this.gameevents.register_key_handler("Enter", new EnterChatHandler(this));
     this.gameevents.register_esc_handler(new LeaveChatHandler(this));
 
     SCENE.setbgmusic('windandfire');
+
+    console.log(this.gameevents.mainchar);
+    this.gameevents.level.container.addChild( this.gameevents.mainchar.conversationCanvas.container);
 } // init
 
 

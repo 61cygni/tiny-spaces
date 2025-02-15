@@ -1,8 +1,8 @@
 import { Assets } from 'pixi.js';
 
 import * as SPACED from '@spaced/mainloop.js';
-import * as BEING from '@spaced/being.js';
 import * as SCREEN from '@spaced/screen.js';
+import * as STRANGER from './stranger.js';
 
 import * as PENTA from './pentacity.js';
 
@@ -11,7 +11,7 @@ SPACED.initApp(2496, 2000, 'spacecanvas');
 
 const sheet = await Assets.load("./spritesheets/villagers.json");
 
-let mainchar = new BEING.Being(sheet, SCREEN.instance().app);
+let mainchar = new STRANGER.Stranger(sheet, SCREEN.instance().app);
 mainchar.setFocus(true);
 
 const levels = [
