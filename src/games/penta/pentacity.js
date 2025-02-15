@@ -1,10 +1,11 @@
 // --
 // TODO:
+// -- add item support
+// DONE
+// -- fix wordwrap in text canvas
+// - add colors etc. to text canvas (fix)
 // - add streaming support to stranger canvas
 // - add keybinding to show / remove text canvas
-// -- fix wordwrap in text canvas
-// DONE
-// - add colors etc. to text canvas (fix)
 // --
 
 import * as PIXI from 'pixi.js';
@@ -15,6 +16,7 @@ import * as VILLAGER  from './villager.js';
 import * as BT from '@spaced/bt.js';
 import * as GLOBALS from '@spaced/globals.js';
 import * as SCREEN from '@spaced/screen.js';
+import * as GAME from '@spaced/gameevents.js';
 import * as PENTA_STREAM from './penta_stream.js';
 
 import { sound } from '@pixi/sound';
@@ -68,7 +70,7 @@ class PentaImpl{
     constructor(gameevents){
         this.gameevents = gameevents;
         this.chatting_with_villager = null;
-        this.streaming = false;
+        this.streaming = true;
         this.shade_level = null;
         this.is_chatting = false;
         
@@ -81,17 +83,21 @@ class PentaImpl{
 
 }
 
-class ConversationCanvasToggleHandler {
+class CheckForItemsHandler extends GAME.RawHandler {
     constructor(impl){
+        super(impl.gameevents);
         this.impl = impl;
-        this.finished = false;
     }
-
-    init(){
+    finalize(){
+        this.impl.gameevents.mainchar.conversationCanvas.addAction(this.impl.gameevents.mainchar.getItemString());
+        this.impl.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this.impl));
     }
+}
 
-    tick(){
-        this.finished = true;
+class ConversationCanvasToggleHandler extends GAME.RawHandler {
+    constructor(impl){
+        super(impl.gameevents);
+        this.impl = impl;
     }
 
     finalize(){
@@ -152,6 +158,7 @@ class EnterChatHandler {
 
         const sysinput = {
             history: impl.chatting_with_villager.conversationHistoryAsText(),
+            items: impl.chatting_with_villager.getItemNames(),
             msg: input,
         };
         if (impl.streaming) {
@@ -232,6 +239,8 @@ PentaImpl.prototype.init = function(gameevents) {
     v4.arrive(400, 800);
 
     let v5 = new VILLAGER.Villager("alice", "alice-first-218e", this.gameevents.level.spritesheet_map.get("villager6"), this.gameevents.level);
+    v5.addItem("Medallion", "A small, old medallion.");
+    v5.addItem("Bible", "A tattered, old bible.");
     this.gameevents.level.addBeing(v5);
     v5.arrive(800, 400);
 
@@ -244,6 +253,7 @@ PentaImpl.prototype.init = function(gameevents) {
     v7.arrive(1200, 800);
 
     this.gameevents.register_key_handler("Backquote", new ConversationCanvasToggleHandler(this));
+    this.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this));
     this.gameevents.register_key_handler("Enter", new EnterChatHandler(this));
     this.gameevents.register_esc_handler(new LeaveChatHandler(this));
 

@@ -116,6 +116,8 @@ export class Villager extends BEING.Being {
         this.conversation_history = [];
         this.conversation_history_max = 20; // includes both sides of the converstion 
 
+        this.items = new Map();
+
         this.Action = {
             'WALK': new WalkAction(),
             'THINK': new ThinkAction(),
@@ -124,6 +126,30 @@ export class Villager extends BEING.Being {
         };
         this.numActions = Object.keys(this.Action).length;
 
+    }
+
+    addItem(name, decsription){
+        this.items.set(name, decsription);
+    }
+
+    getItem(name){
+        return this.items.get(name);
+    }
+
+    hasItem(name){
+        return this.items.has(name);
+    }
+
+    removeItem(name){
+        this.items.delete(name);
+    }
+
+    getItems(){
+        return Array.from(this.items.values());
+    }
+
+    getItemNames(){
+        return Array.from(this.items.keys());
     }
 
     addToConversationHistory(name, message){

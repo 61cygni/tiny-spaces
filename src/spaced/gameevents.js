@@ -4,6 +4,29 @@ import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 import * as SCREEN from './screen.js'
 
+// --
+// Most basic handler stub
+// --  
+
+export class RawHandler{
+    constructor(gevents){
+        this.gevents = gevents;
+        this.finished = true; // default to finished
+    }
+
+    init(){
+        // empty
+    }
+
+    tick(delta){
+        // empty
+    }
+
+    finalize(){
+        // empty
+    }
+}
+
 // -- 
 // -- 
 export class ChangeLevel {
@@ -300,6 +323,9 @@ export class GameEvents {
     dialogs_finished(){
         return this.dqueue.length == 0 || (this.dqueue.length == 1 && this.dqueue[0].finished);
     }
+
+
+
 
     // --
     // Display a dialog on the screen. Uses a stack to manage multiple dialog requests

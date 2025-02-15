@@ -49,6 +49,9 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput){
     // and written in JSON
     console.log("Session: "+session);
     let actions = session.split("###");
+
+    impl.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, actions[0]);
+
     if(actions.length > 1){
         // TODO! Try / catch block here
         let act = JSON.parse(actions[actions.length - 1]);
