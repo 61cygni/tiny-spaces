@@ -39,7 +39,7 @@ export class Dialog{
         }else{
             this.streaming = false;
         }
-        console.log("Streaming set to "+options.streaming);
+        // console.log("Streaming set to "+options.streaming);
 
         this.msg = msg;
         this.finished = false;
@@ -79,30 +79,36 @@ export class Dialog{
 
     nextpage() {
 
-        if (this.pagepause == true){
-                console.log("nextpage: pagepause true");
+        if (this.pagepause == true && !this.finished && this.endindex < this.msg.length - 2){
+                // console.log("nextpage: pagepause true");
+                // console.log("nextpage: endindex: "+this.endindex);
+                // console.log("nextpage: msg.length: "+this.msg.length);
                 this.startindex = this.endindex;
                 this.pagepause = false;
         }else{
-            console.log("nextpage: pagepause false");
-            //print endindex
-            console.log("endindex: "+this.endindex);    
-            console.log("msg.length: "+this.msg.length);
+            // console.log("nextpage: pagepause false");
+            // print endindex
+            // console.log("endindex: "+this.endindex);    
+            // console.log("msg.length: "+this.msg.length);
             while (this.endindex++ < this.msg.length) {
-                if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) { 
+                if (this.msgHeight() >= (UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING))) { 
                     console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                     this.endindex--;// roll back to lasst character
-                    this.displayText();
                     this.pagepause = true;
+                    this.displayText();
                     break;
                 }
             }
             this.displayText();
 
+            // console.log("this.streaming: "+this.streaming);
+            // console.log("nextpage: endindex: "+this.endindex);
+            // console.log("nextpage: msg.length: "+this.msg.length);  
+
             // if streaming, then we're still waiting for more of the message to show up
             if (!this.streaming && (this.endindex >= this.msg.length)) {
-                console.log("nextpage: endindex >= msg.length. Message finished");
-                console.log("streaming: "+this.streaming);
+                // console.log("nextpage: endindex >= msg.length. Message finished");
+                // console.log("streaming: "+this.streaming);
                 this.finished = true;
                 if(this.appendcallback){
                     console.log("firing appendcallback");
@@ -229,9 +235,13 @@ export class Dialog{
         newtext.destroy();
         return ret; 
     }
+
     displayText() {
         let appendme = "";
-        if(this.pagepause && this.endindex != this.msg.length){
+        // The reason we check length -2 is 
+        // endindex is an index, so starts at 0
+        // we decrement it by 1 in the previous call in case we created a new line
+        if(this.pagepause && this.endindex < this.msg.length - 2){
             // console.log("pagepause: "+this.pagepause);
             // console.log("endindex: "+this.endindex);
             // console.log("msg.length: "+this.msg.length);
@@ -250,6 +260,7 @@ export class Dialog{
     }
 
     stream_done(){
+        // called by client when the stream is complete
         this.streaming = false;
     }
 
@@ -269,10 +280,10 @@ export class Dialog{
         
         if ((this.endindex - this.startindex) < this.msg.length) {
             this.endindex++;
-            if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) {
-                // console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
-                // console.log("TICK: msgHeight(): "+this.msgHeight());
-                // console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
+            if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING)) {
+                console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
+                console.log("TICK: msgHeight(): "+this.msgHeight());
+                console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
                 this.endindex--;// roll back to last character
                 this.pagepause = true;
                 this.displayText();
@@ -283,7 +294,7 @@ export class Dialog{
                 // console.log("TICK: msg.length: "+this.msg.length);
                 this.displayText();
             }
-            if (this.endindex >= this.msg.length) {
+            if (!this.streaming && (this.endindex >= this.msg.length)) {
                 this.finished = true;
                 if(this.appendcallback){
                     console.log("firing appendcallback");

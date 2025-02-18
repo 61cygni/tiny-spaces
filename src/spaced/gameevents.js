@@ -388,7 +388,7 @@ export class GameEvents {
             console.log("dialog_stream_done called with no active dialog. Bailing");
             return;
         }
-        this.dqueue[0].streaming = false;
+        this.dqueue[0].stream_done();
     }
 
     dialog_stream_done() {
