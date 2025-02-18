@@ -1,5 +1,6 @@
 // --
 // TODO:
+// -- destroy dialog objects when they're done
 // -- add item support
 // DONE
 // -- fix wordwrap in text canvas
@@ -18,6 +19,7 @@ import * as GLOBALS from '@spaced/globals.js';
 import * as SCREEN from '@spaced/screen.js';
 import * as GAME from '@spaced/gameevents.js';
 import * as PENTA_STREAM from './penta_stream.js';
+import { PopupDialog } from '@spaced/popup.js';
 
 import { sound } from '@pixi/sound';
 
@@ -81,6 +83,65 @@ class PentaImpl{
         this.shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
     }
 
+    dispatch_action(action){
+
+        console.log("dispatch_action", action);
+
+        if (action.action == "end conversation"){
+            this.gameevents.dialog_stream_done();
+            this.gameevents.input_leave();
+            this.gameevents.level.container.removeChild(impl.shade_level);
+            if(this.chatting_with_villager){
+                this.chatting_with_villager.endChatWithMainCharacter();
+                this.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
+                this.gameevents.level.container.sortChildren();
+                this.chatting_with_villager = null;
+            }
+            this.gameevents.clear_dialogs();
+            this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
+            this.is_chatting = false;
+        }else if(action.action == "barter"){
+            // let myitem = null; // villager's item
+            // let hisitem = null; // mainchar's item
+            // if(action.myitem){  
+            //     myitem = action.myitem;
+            // }
+            // if(action.hisitem){
+            //     hisitem = action.hisitem;
+            // }
+            // if(myitem && hisitem){
+            //     this.showTradePopup(myitem, hisitem);
+            //     this.gameevents.mainchar.conversationCanvas.addAction(JSON.stringify(action));
+            // }
+        }else{
+            console.log("Unknown action: ", action);
+        }
+    }
+
+    showTradePopup(myitem, hisitem) {
+        const popup = new PopupDialog("Would you like to trade " + myitem + " for " + hisitem + "?", {
+            width: 300,
+            height: 150
+        });
+        
+        this.gameevents.level.container.addChild(popup.show((value) => {
+            if (value) {
+                // User clicked Yes
+                console.log("User wants to trade");
+                // if(!this.gameevents.mainchar.hasItem(hisitem)){
+                //     this.gameevents.mainchar.conversationCanvas.addAction(JSON.stringify(action));
+                // }
+                // if(!this.chatting_with_villager.hasItem(myitem)){
+                //     this.chatting_with_villager.addItem(hisitem);
+                // }
+                // Add your trade logic here
+            } else {
+                // User clicked No or pressed Escape
+                console.log("User declined trade");
+            }
+        }));
+    }
+
 }
 
 class CheckForItemsHandler extends GAME.RawHandler {
@@ -89,7 +150,7 @@ class CheckForItemsHandler extends GAME.RawHandler {
         this.impl = impl;
     }
     finalize(){
-        this.impl.gameevents.mainchar.conversationCanvas.addAction(this.impl.gameevents.mainchar.getItemString());
+        this.impl.gameevents.mainchar.conversationCanvas.addItems(this.impl.gameevents.mainchar.getItemString());
         this.impl.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this.impl));
     }
 }
@@ -140,11 +201,16 @@ class EnterChatHandler {
     handle_bt_response(response){
         console.log("EnterChatHandler handle_bt_response", response);
         impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
-        this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
+        if(impl.streaming){
+            this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager});
+        }else{
+            this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
+        }
         this.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, response);
     }
 
     handle_input(input){
+        input = input.trim();
         if(!impl.chatting_with_villager){
             console.log("handle_input called after conversation ended. Bailing.");
             return;
@@ -162,6 +228,10 @@ class EnterChatHandler {
             msg: input,
         };
         if (impl.streaming) {
+            // force end of dialog if the user inputs something new. 
+            if(this.impl.gameevents.dqueue.length > 0){
+                this.impl.gameevents.dqueue[0].finished = true;
+            }
             PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput)
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
@@ -174,7 +244,11 @@ class EnterChatHandler {
         this.gameevents.level.container.addChild(impl.shade_level);
         // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
-        this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
+        if(impl.streaming){
+            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager});
+        }else{
+            this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
+        }
         this.finished = false;
     }
 }

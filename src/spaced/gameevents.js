@@ -335,6 +335,7 @@ export class GameEvents {
         if (this.dqueue.length > 0 && this.dqueue[0].finished) {
             this.dqueue[0].leave();
             this.dqueue.shift();
+            // TODO destroy the dialog object
         }
 
         // if an existing dialog is up and pinned, append to that dialog
@@ -354,25 +355,40 @@ export class GameEvents {
     dialog_stream(text = "", place = 'bottom', options = null) {
         // if an existing dialog is up and finished, clean it up
         if (this.dqueue.length > 0 && this.dqueue[0].finished) {
+            console.log("dialog_stream: dialog finished. Leaving");
             this.dqueue[0].leave();
             this.dqueue.shift();
         }
 
         let cb = null;
-        console.log("dialog_stream options", options);
+        // console.log("dialog_stream options", options);
         if(options && Object.hasOwn(options, 'appendcb')){
             cb = options.appendcb;
         }
 
         // if an existing dialog is up and pinned, append to that dialog
         if (this.dqueue.length > 0 && this.dqueue[0].pinned) {
-            console.log("dialog_stream cb", cb);
+            //console.log("dialog_stream cb", cb);
+            // console.log("dialog_stream appending to dialog "+text);
             this.dqueue[0].append(text, cb);
         } else {
+            if(options){
+                options.streaming = true;
+            }else{
+                options = {streaming: true};
+            }
             let d = new DIALOG.Dialog(this, text, true, place, cb, options);
             this.dqueue.push(d);
             d.arrive();
         }
+    }
+
+    dialog_stream_msg_end() {
+        if (this.dqueue.length < 1 || !this.dqueue[0].pinned) {
+            console.log("dialog_stream_done called with no active dialog. Bailing");
+            return;
+        }
+        this.dqueue[0].streaming = false;
     }
 
     dialog_stream_done() {

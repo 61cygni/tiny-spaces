@@ -14,6 +14,7 @@ const sheet = await Assets.load("./spritesheets/villagers.json");
 let mainchar = new STRANGER.Stranger(sheet, SCREEN.instance().app);
 mainchar.addItem("Leather Pouch", "A small, old leather pouch.");
 mainchar.addItem("Old Key", "A small, old key.");
+mainchar.addItem("Necklace", "A beautiful necklace.");
 
 mainchar.setFocus(true);
 

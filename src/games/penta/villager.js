@@ -184,7 +184,7 @@ export class Villager extends BEING.Being {
         const randomKey = Object.keys(this.Action)[Math.floor(Math.random() * this.numActions)];
         this.curaction = this.Action[randomKey];
         this.curaction.doActionFor(Math.floor(Math.random() * this.timebetweenactions) + 1, this);
-        console.log(this.name + ' Action: ' + randomKey + ' time: ' + this.curaction.timeLeft());
+        // console.log(this.name + ' Action: ' + randomKey + ' time: ' + this.curaction.timeLeft());
     }
 
     tick(delta){

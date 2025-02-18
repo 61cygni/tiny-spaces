@@ -5,4 +5,5 @@ export const ZINDEX = {
     DIALOG: 130,
     UI: 140,
     FOCUS: 150,
+    POPUP: 1000,
 };

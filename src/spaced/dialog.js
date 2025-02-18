@@ -23,7 +23,7 @@ export class Dialog{
             this.pad = options.pad;
         }
         if(options && Object.hasOwn(options,'character')){
-            console.log("setting character to "+options.character);
+            //console.log("setting character to "+options.character);
             this.character = options.character;
         }
         if(options && Object.hasOwn(options,'gameevents')){
@@ -34,6 +34,12 @@ export class Dialog{
             console.log("setting place to "+options.place);
             this.place = options.place;
         }
+        if(options && Object.hasOwn(options,'streaming')){
+            this.streaming = options.streaming;
+        }else{
+            this.streaming = false;
+        }
+        console.log("Streaming set to "+options.streaming);
 
         this.msg = msg;
         this.finished = false;
@@ -74,11 +80,17 @@ export class Dialog{
     nextpage() {
 
         if (this.pagepause == true){
+                console.log("nextpage: pagepause true");
                 this.startindex = this.endindex;
                 this.pagepause = false;
         }else{
+            console.log("nextpage: pagepause false");
+            //print endindex
+            console.log("endindex: "+this.endindex);    
+            console.log("msg.length: "+this.msg.length);
             while (this.endindex++ < this.msg.length) {
                 if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) { 
+                    console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                     this.endindex--;// roll back to lasst character
                     this.displayText();
                     this.pagepause = true;
@@ -86,7 +98,11 @@ export class Dialog{
                 }
             }
             this.displayText();
-            if (this.endindex >= this.msg.length) {
+
+            // if streaming, then we're still waiting for more of the message to show up
+            if (!this.streaming && (this.endindex >= this.msg.length)) {
+                console.log("nextpage: endindex >= msg.length. Message finished");
+                console.log("streaming: "+this.streaming);
                 this.finished = true;
                 if(this.appendcallback){
                     console.log("firing appendcallback");
@@ -153,8 +169,8 @@ export class Dialog{
 
         if(this.place == 'character'){
             if(!this.character){
-                console.log("character container not found");
-                return;
+                    console.log("character container not found");
+                    return;
             }
             this.character.container.addChild(this.container);
             this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
@@ -216,6 +232,9 @@ export class Dialog{
     displayText() {
         let appendme = "";
         if(this.pagepause && this.endindex != this.msg.length){
+            // console.log("pagepause: "+this.pagepause);
+            // console.log("endindex: "+this.endindex);
+            // console.log("msg.length: "+this.msg.length);
             appendme = "\n                <cont...>"
 
         }
@@ -228,6 +247,10 @@ export class Dialog{
         this.container.removeChild(oldtext);
         this.container.addChild(this.text);
         oldtext.destroy();
+    }
+
+    stream_done(){
+        this.streaming = false;
     }
 
     tick(delta) {
@@ -244,13 +267,20 @@ export class Dialog{
 
         this.elapsed = 0;
         
-        if ((this.endindex - this.startindex) <= this.msg.length) {
+        if ((this.endindex - this.startindex) < this.msg.length) {
             this.endindex++;
             if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT) {
+                // console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
+                // console.log("TICK: msgHeight(): "+this.msgHeight());
+                // console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
                 this.endindex--;// roll back to last character
                 this.pagepause = true;
                 this.displayText();
             } else {
+                // log endindex and message length
+                // console.log("TICK: startindex: "+this.startindex);
+                // console.log("TICK: endindex: "+this.endindex);
+                // console.log("TICK: msg.length: "+this.msg.length);
                 this.displayText();
             }
             if (this.endindex >= this.msg.length) {
