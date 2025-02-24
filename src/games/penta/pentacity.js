@@ -1,8 +1,10 @@
 // --
 // TODO:
-// -- destroy dialog objects when they're done
+// -- keep dialog up after conversation ends, and remove with SPACE. Use append callback in dialog to 
+//    
 // -- add item support
 // DONE
+// -- destroy dialog objects when they're done
 // -- fix wordwrap in text canvas
 // - add colors etc. to text canvas (fix)
 // - add streaming support to stranger canvas
@@ -88,18 +90,21 @@ class PentaImpl{
         console.log("dispatch_action", action);
 
         if (action.action == "end conversation"){
-            this.gameevents.dialog_stream_done();
             this.gameevents.input_leave();
-            this.gameevents.level.container.removeChild(impl.shade_level);
-            if(this.chatting_with_villager){
-                this.chatting_with_villager.endChatWithMainCharacter();
-                this.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
-                this.gameevents.level.container.sortChildren();
-                this.chatting_with_villager = null;
-            }
-            this.gameevents.clear_dialogs();
-            this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
             this.is_chatting = false;
+
+            // this.gameevents.dialog_stream_done();
+            // this.gameevents.input_leave();
+            // this.gameevents.level.container.removeChild(impl.shade_level);
+            // if(this.chatting_with_villager){
+            //     this.chatting_with_villager.endChatWithMainCharacter();
+            //     this.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
+            //     this.gameevents.level.container.sortChildren();
+            //     this.chatting_with_villager = null;
+            // }
+            // this.gameevents.clear_dialogs();
+            // this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
+            // this.is_chatting = false;
         }else if(action.action == "barter"){
             // let myitem = null; // villager's item
             // let hisitem = null; // mainchar's item
@@ -198,11 +203,28 @@ class EnterChatHandler {
         this.finished = true;
     }
 
+    append_callback() {
+        console.log("append_callback", this.impl.is_chatting);
+        if (!this.impl.is_chatting) {
+            this.gameevents.dialog_stream_done();
+            this.gameevents.level.container.removeChild(impl.shade_level);
+            if (this.chatting_with_villager) {
+                this.chatting_with_villager.endChatWithMainCharacter();
+                this.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
+                this.gameevents.level.container.sortChildren();
+                this.chatting_with_villager = null;
+            }
+            this.gameevents.clear_dialogs();
+            this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl));
+        }
+    }
+
+
     handle_bt_response(response){
         console.log("EnterChatHandler handle_bt_response", response);
         impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
         if(impl.streaming){
-            this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager});
+            this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this)});
         }else{
             this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
         }
@@ -232,7 +254,7 @@ class EnterChatHandler {
             if(this.impl.gameevents.dqueue.length > 0){
                 this.impl.gameevents.dqueue[0].finished = true;
             }
-            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput)
+            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.append_callback.bind(this))
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
         }
@@ -245,7 +267,7 @@ class EnterChatHandler {
         // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
         if(impl.streaming){
-            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager});
+            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this)});
         }else{
             this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
         }

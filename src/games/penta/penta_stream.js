@@ -8,7 +8,7 @@
 import * as BT  from '@spaced/bt.js';
 
 
-export async function invoke_prompt_input_stream(impl, slug, sysinput){
+export async function invoke_prompt_input_stream(impl, slug, sysinput, append_callback){
 
     // const sysinput = {
     //     history: this.history,
@@ -29,7 +29,7 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput){
     let afterstopword = false;
     if (impl.is_chatting) {
     
-        impl.gameevents.dialog_stream(preamble, 'character', {character: impl.chatting_with_villager});
+        impl.gameevents.dialog_stream(preamble, 'character', {character: impl.chatting_with_villager, appendcb: append_callback});
         for await (const chunk of result) {
             if (!impl.is_chatting){
                 break;
@@ -39,12 +39,12 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput){
                 let msg = chunk.data.split("###")[0].trim();
                 if(msg.length > 0){
                     console.log("Msg: \'"+msg+"\'");
-                    impl.gameevents.dialog_stream(msg, 'character', {character: impl.chatting_with_villager});
+                    impl.gameevents.dialog_stream(msg, 'character', {character: impl.chatting_with_villager, appendcb: append_callback});
                 }
                 afterstopword = true;
             }
             if(!afterstopword){
-                impl.gameevents.dialog_stream(chunk.data, 'character', {character: impl.chatting_with_villager});
+                impl.gameevents.dialog_stream(chunk.data, 'character', {character: impl.chatting_with_villager, appendcb: append_callback});
             }
             session = session + chunk.data;
         }

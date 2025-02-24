@@ -34,6 +34,10 @@ export class Dialog{
             console.log("setting place to "+options.place);
             this.place = options.place;
         }
+        if(options && Object.hasOwn(options,'appendcb')){
+            console.log("setting appendcb to "+options.appendcb);
+            this.appendcallback = options.appendcb;
+        }
         if(options && Object.hasOwn(options,'streaming')){
             this.streaming = options.streaming;
         }else{
@@ -73,8 +77,9 @@ export class Dialog{
 
     append(text, callback = null){
         this.msg = this.msg + text;
-        this.callme = callback;
-        //this.appendcallback = callback;
+        // this.callme = callback;
+        this.appendcallback = callback;
+        console.log("Console.log(this.appendcallback);", this.appendcallback);
     }
 
     nextpage() {
@@ -90,6 +95,7 @@ export class Dialog{
             // print endindex
             // console.log("endindex: "+this.endindex);    
             // console.log("msg.length: "+this.msg.length);
+            let startindex = this.endindex;
             while (this.endindex++ < this.msg.length) {
                 if (this.msgHeight() >= (UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING))) { 
                     console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
@@ -99,19 +105,18 @@ export class Dialog{
                     break;
                 }
             }
+
             this.displayText();
 
             // console.log("this.streaming: "+this.streaming);
-            // console.log("nextpage: endindex: "+this.endindex);
+            // console.log("nextpage: startindex: "+startindex);
             // console.log("nextpage: msg.length: "+this.msg.length);  
 
             // if streaming, then we're still waiting for more of the message to show up
-            if (!this.streaming && (this.endindex >= this.msg.length)) {
-                // console.log("nextpage: endindex >= msg.length. Message finished");
-                // console.log("streaming: "+this.streaming);
+            if (!this.streaming && (startindex >= this.msg.length - 2)) {
                 this.finished = true;
                 if(this.appendcallback){
-                    console.log("firing appendcallback");
+                    // console.log("firing appendcallback");
                     this.appendcallback();
                     this.appendcallback = null;
                 }

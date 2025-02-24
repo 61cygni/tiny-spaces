@@ -1,3 +1,6 @@
+// --
+// This was largely written by Cursor
+// -- 
 import * as PIXI from 'pixi.js';
 import * as GLOBALS from '@spaced/globals.js';
 

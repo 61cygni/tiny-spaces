@@ -377,7 +377,8 @@ export class GameEvents {
             }else{
                 options = {streaming: true};
             }
-            let d = new DIALOG.Dialog(this, text, true, place, cb, options);
+            // console.log("OPTIONS ", options);
+            let d = new DIALOG.Dialog(this, text, true, place, null, options);
             this.dqueue.push(d);
             d.arrive();
         }
@@ -420,6 +421,7 @@ export class GameEvents {
     input_leave(){
         if (this.input) {
             this.input.leave();
+            this.input = null;
         }
     }
 
@@ -457,6 +459,9 @@ export class GameEvents {
                         this.dqueue[0].arrive();
                     }   
                     this.last_key = null; // gobble event 
+                }else{
+                    // if it is pinned, let the dialog handle the event
+                    this.dqueue[0].nextpage();
                 }
             } else {
                 this.dqueue[0].nextpage();
