@@ -359,6 +359,7 @@ class LeaveChatHandler{
         this.gameevents.clear_dialogs();
         this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
 
+        this.impl.gameevents.pauseevents = false;
         this.impl.is_chatting = false;
     }
 }
