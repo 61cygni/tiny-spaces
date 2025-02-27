@@ -446,7 +446,6 @@ export class GameEvents {
         }
 
         if (event.code == 'Space') {
-            event.preventDefault();
 
             if (this.dqueue.length == 0){
                 return;

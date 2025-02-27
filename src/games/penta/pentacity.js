@@ -85,6 +85,10 @@ class PentaImpl{
         this.shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
     }
 
+    // --
+    // NPCs return actions during conversations. This is the primary dispatch method to handle them.
+    // --
+
     dispatch_action(action){
 
         console.log("dispatch_action", action);
@@ -92,32 +96,40 @@ class PentaImpl{
         if (action.action == "end conversation"){
             this.gameevents.input_leave();
             this.is_chatting = false;
-
-            // this.gameevents.dialog_stream_done();
-            // this.gameevents.input_leave();
-            // this.gameevents.level.container.removeChild(impl.shade_level);
-            // if(this.chatting_with_villager){
-            //     this.chatting_with_villager.endChatWithMainCharacter();
-            //     this.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.BEING;
-            //     this.gameevents.level.container.sortChildren();
-            //     this.chatting_with_villager = null;
-            // }
-            // this.gameevents.clear_dialogs();
-            // this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl)); 
-            // this.is_chatting = false;
+            // cleanup handled by append_callback in EnterChatHandler
+        }else if(action.action == "give"){
+            let myitem = null; // villager's item
+            if (action.myitem) {
+                myitem = action.myitem;
+                if (!this.chatting_with_villager.hasItem(myitem)) {
+                    console.log("Error: villager does not have item: ", myitem);
+                    return;
+                }
+            }
+            let str = "Villager " + this.chatting_with_villager.name + " wants to give you " + myitem;
+            this.gameevents.mainchar.conversationCanvas.addAction(str);
+            this.showGivePopup(myitem);
         }else if(action.action == "barter"){
-            // let myitem = null; // villager's item
-            // let hisitem = null; // mainchar's item
-            // if(action.myitem){  
-            //     myitem = action.myitem;
-            // }
-            // if(action.hisitem){
-            //     hisitem = action.hisitem;
-            // }
-            // if(myitem && hisitem){
-            //     this.showTradePopup(myitem, hisitem);
-            //     this.gameevents.mainchar.conversationCanvas.addAction(JSON.stringify(action));
-            // }
+            let myitem = null; // villager's item
+            let hisitem = null; // mainchar's item
+            if(action.myitem){  
+                myitem = action.myitem;
+                if(!this.chatting_with_villager.hasItem(myitem)){
+                    console.log("villager does not have item: ", myitem);
+                    return;
+                }
+            }
+            if(action.hisitem){
+                hisitem = action.hisitem;
+                if(!this.gameevents.mainchar.hasItem(hisitem)){
+                    console.log("mainchar does not have item: ", hisitem);
+                    return;
+                }
+            }
+            if(myitem && hisitem){
+                this.showTradePopup(myitem, hisitem);
+                this.gameevents.mainchar.conversationCanvas.addAction(JSON.stringify(action));
+            }
         }else{
             console.log("Unknown action: ", action);
         }
@@ -133,19 +145,44 @@ class PentaImpl{
             if (value) {
                 // User clicked Yes
                 console.log("User wants to trade");
-                // if(!this.gameevents.mainchar.hasItem(hisitem)){
-                //     this.gameevents.mainchar.conversationCanvas.addAction(JSON.stringify(action));
-                // }
-                // if(!this.chatting_with_villager.hasItem(myitem)){
-                //     this.chatting_with_villager.addItem(hisitem);
-                // }
-                // Add your trade logic here
+                this.gameevents.mainchar.removeItem(hisitem);
+                this.chatting_with_villager.addItem(hisitem);
+                this.chatting_with_villager.removeItem(myitem);
+                this.gameevents.mainchar.addItem(myitem);
+                let str = "you traded " + hisitem + " for " + myitem + " with " + this.chatting_with_villager.name;
+                
+                this.gameevents.mainchar.conversationCanvas.addAction(str);
             } else {
                 // User clicked No or pressed Escape
                 console.log("User declined trade");
             }
         }));
     }
+
+    showGivePopup(myitem) {
+        const popup = new PopupDialog("Would you like to take " + myitem + "?", {
+            width: 300,
+            height: 150
+        });
+        
+        this.gameevents.level.container.addChild(popup.show((value) => {
+            if (value) {
+                // User clicked Yes
+                console.log("User wants to give");
+                this.chatting_with_villager.removeItem(myitem);
+                this.gameevents.mainchar.addItem(myitem);
+                let str = "you got " + myitem + " from " + this.chatting_with_villager.name;
+                this.gameevents.mainchar.conversationCanvas.addAction(str);
+            } else {
+                let str = "you declined to take " + myitem + " from " + this.chatting_with_villager.name;
+                this.gameevents.mainchar.conversationCanvas.addAction(str);
+                // User clicked No or pressed Escape
+                console.log("User declined to take item");
+            }
+        }));
+    }
+
+
 
 }
 
@@ -199,7 +236,7 @@ class EnterChatHandler {
         }
     }
 
-    tick(){
+    tick(){ // go directly to finalize
         this.finished = true;
     }
 
@@ -247,6 +284,7 @@ class EnterChatHandler {
         const sysinput = {
             history: impl.chatting_with_villager.conversationHistoryAsText(),
             items: impl.chatting_with_villager.getItemNames(),
+            strangeritems: impl.gameevents.mainchar.getItemNames(),
             msg: input,
         };
         if (impl.streaming) {
@@ -273,7 +311,7 @@ class EnterChatHandler {
         }
         this.finished = false;
     }
-}
+} // Class EnterChatHandler
 
 class LeaveChatHandler{
     constructor(impl){
@@ -319,6 +357,7 @@ PentaImpl.prototype.init = function(gameevents) {
 
     // Create a bunch of villagers 
     let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", this.gameevents.level.spritesheet_map.get("villager2"), this.gameevents.level);
+    v.addItem("Black mask", "A black mask with a red eye.");
     this.gameevents.level.addBeing(v);
     v.arrive(1000, 400);
 
@@ -341,6 +380,9 @@ PentaImpl.prototype.init = function(gameevents) {
     v5.arrive(800, 400);
 
     let v6 = new VILLAGER.Villager("gordy", "gordy-first-16e8", this.gameevents.level.spritesheet_map.get("villager7"), this.gameevents.level);
+    v6.addItem("Gold medal", "For winners");
+    v6.addItem("Silver medal", "For almost winners");
+    v6.addItem("Cupie doll", "For everyone");
     this.gameevents.level.addBeing(v6);
     v6.arrive(1200, 400);
 

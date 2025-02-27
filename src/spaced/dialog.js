@@ -79,7 +79,6 @@ export class Dialog{
         this.msg = this.msg + text;
         // this.callme = callback;
         this.appendcallback = callback;
-        console.log("Console.log(this.appendcallback);", this.appendcallback);
     }
 
     nextpage() {
