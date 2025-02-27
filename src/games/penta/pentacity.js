@@ -13,6 +13,7 @@
 
 import * as PIXI from 'pixi.js';
 
+import * as KEYEVENTS from '@spaced/keyevents.js';
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
 import * as VILLAGER  from './villager.js';
@@ -192,7 +193,9 @@ class CheckForItemsHandler extends GAME.RawHandler {
         this.impl = impl;
     }
     finalize(){
-        this.impl.gameevents.mainchar.conversationCanvas.addItems(this.impl.gameevents.mainchar.getItemString());
+        if (!KEYEVENTS.get_input_visible()) {
+            this.impl.gameevents.mainchar.conversationCanvas.addItems(this.impl.gameevents.mainchar.getItemString());
+        }
         this.impl.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this.impl));
     }
 }
@@ -258,14 +261,24 @@ class EnterChatHandler {
 
 
     handle_bt_response(response){
-        console.log("EnterChatHandler handle_bt_response", response);
-        impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
         if(impl.streaming){
-            this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this)});
-        }else{
-            this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
+            console.log("Error: handle_bt_response called while streaming");
+            return;
         }
+        // console.log("EnterChatHandler handle_bt_response", response);
+        // impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
+        // if(impl.streaming){
+        //     this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), fontsize: 14, width: 256*2, height: 96*2});
+        // }else{
+            this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
+        // }
         this.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, response);
+    }
+
+    send_to_dialog(msg) {
+        this.gameevents.dialog_stream(msg, 'character', 
+            { character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), 
+                fontsize: 14, width: 256 * 1.5, height: 96 * 1.5 });
     }
 
     handle_input(input){
@@ -292,7 +305,7 @@ class EnterChatHandler {
             if(this.impl.gameevents.dqueue.length > 0){
                 this.impl.gameevents.dqueue[0].finished = true;
             }
-            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.append_callback.bind(this))
+            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.append_callback.bind(this), this.send_to_dialog.bind(this))
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
         }
@@ -305,7 +318,7 @@ class EnterChatHandler {
         // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
         if(impl.streaming){
-            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this)});
+            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), fontsize: 14, width: 256*1.5, height: 96*1.5});
         }else{
             this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
         }

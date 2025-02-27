@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
 
+import * as KEYEVENTS from './keyevents.js';
 import * as GLOBALS from './globals.js';
 import * as UIConfig from './uiconfig.js';
 
@@ -11,16 +12,27 @@ export class Dialog{
         this.gameevents = ge;
         this.level = ge.level
 
-        this.frontsize = UIConfig.DIALOG_DEFAULT_FONTSIZE;
+        this.fontsize = UIConfig.DIALOG_DEFAULT_FONTSIZE;
         this.pad = UIConfig.DIALOG_PADDING;
+
+        this.width = UIConfig.DIALOG_WIDTH;
+        this.height = UIConfig.DIALOG_HEIGHT;
 
         if(options && Object.hasOwn(options,'fontsize')){
             console.log("setting fontsize to "+options.fontsize);
-            this.frontsize = options.fontsize;
+            this.fontsize = options.fontsize;
         }
         if(options && Object.hasOwn(options,'pad')){
             console.log("setting padding to "+options.pad);
             this.pad = options.pad;
+        }
+        if(options && Object.hasOwn(options,'width')){
+            console.log("setting width to "+options.width);
+            this.width = options.width;
+        }
+        if(options && Object.hasOwn(options,'height')){
+            console.log("setting height to "+options.height);
+            this.height = options.height;
         }
         if(options && Object.hasOwn(options,'character')){
             //console.log("setting character to "+options.character);
@@ -45,6 +57,8 @@ export class Dialog{
         }
         // console.log("Streaming set to "+options.streaming);
 
+        console.log("Dialog fontsize: "+this.fontsize);
+
         this.msg = msg;
         this.finished = false;
         this.startindex = 0;
@@ -54,12 +68,13 @@ export class Dialog{
         this.callme = callme;
         this.style = new PIXI.TextStyle({
             fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-            fontSize: this.frontsize,
+            fontSize: this.fontsize,
             fill: "#ffffff",
             fontWeight: "bold",
             wordWrap: true,
-            wordWrapWidth: UIConfig.DIALOG_MAX_WIDTH
+            wordWrapWidth: this.width - (2*this.pad)
         });
+        console.log("Dialog fontsize: "+this.style.fontSize);
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.DIALOG;
         this.container.sortableChildren = true;
@@ -144,28 +159,11 @@ export class Dialog{
         else if(this.place == 'inputbottom'){
             toplefty = (480) - (UIConfig.DIALOG_HEIGHT+64);// FIXME should get input height from input.js
         }else if(this.place == 'character'){
-
-            // Check first if input is active
-            if(this.gameevents.mainchar.container.input){
-                //convert to level coords
-                let level_cx = this.character.container.x;
-                let level_cy = this.character.container.y;
-                let level_mx = this.gameevents.mainchar.worldx;
-                let level_my = this.gameevents.mainchar.worldy;
-                
-                let level_newx = level_mx + UIConfig.DIALOG_TEXTINPUT_X_OFFSET; // snap to maincharacter location
-                let level_newy = level_my - UIConfig.DIALOG_TEXTINPUT_Y_OFFSET; // position above input bar 
-
-                // snap back to character coords
-                topleftx = level_newx - level_cx;
-                toplefty = level_newy - level_cy;
-            }else{
-                toplefty =  -48; // add to character container
-                topleftx =  48;   // fixme magix number
-            }
+            topleftx = 16;
+            toplefty = -this.height/2;
         }
         
-        this.rrect.roundRect(topleftx, toplefty, UIConfig.DIALOG_WIDTH, UIConfig.DIALOG_HEIGHT, 10);
+        this.rrect.roundRect(topleftx, toplefty, this.width, this.height, 10);
         this.rrect.setStrokeStyle(2, 0xffd900, 1);
         this.rrect.fill(0x0)
             .stroke({ width: 2, color: 'white' });
@@ -182,12 +180,14 @@ export class Dialog{
                     console.log("character container not found");
                     return;
             }
-            this.character.container.addChild(this.container);
+            this.gameevents.mainchar.container.addChild(this.container);
             this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
-            this.charleftsprite.x = topleftx + UIConfig.DIALOG_MAX_WIDTH + 12 ;
-            this.charleftsprite.y = toplefty + 48;
+            this.charleftsprite.x = this.width;
+            this.charleftsprite.y = 0; 
             this.charleftsprite.zIndex = GLOBALS.ZINDEX.DIALOG+1;
-            this.character.container.addChild(this.charleftsprite);
+            this.gameevents.mainchar.container.addChild(this.charleftsprite);
+            this.gameevents.mainchar.curanim.zIndex = GLOBALS.ZINDEX.DIALOG+1;
+            this.gameevents.mainchar.container.sortChildren();
         }else{
             this.level.app.stage.addChild(this.container);
         }

@@ -17,6 +17,10 @@ export function set_input_visible(flag){
     inputvisible = flag;
 }
 
+export function get_input_visible(){
+    return inputvisible;
+}
+
 export function register_input_handler(callme){
     textinputhandler = callme;
 }
