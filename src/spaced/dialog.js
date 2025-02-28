@@ -112,7 +112,7 @@ export class Dialog{
             let startindex = this.endindex;
             while (this.endindex++ < this.msg.length) {
                 if (this.msgHeight() >= (UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING))) { 
-                    console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
+                    // console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                     this.endindex--;// roll back to lasst character
                     this.pagepause = true;
                     this.displayText();
@@ -205,7 +205,7 @@ export class Dialog{
         this.rrect.setStrokeStyle(2, 0xffd900, 1);
         this.rrect.fill(0x0)
             .stroke({ width: 2, color: 'white' });
-        console.log("newcontainer: ", newcontainer.width, newcontainer.height);
+        // console.log("newcontainer: ", newcontainer.width, newcontainer.height);
         newcontainer.removeChild(this.text);
         this.container.addChild(this.text);
         this.container.x = topleftx;
@@ -285,9 +285,9 @@ export class Dialog{
         if ((this.endindex - this.startindex) < this.msg.length) {
             this.endindex++;
             if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING)) {
-                console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
-                console.log("TICK: msgHeight(): "+this.msgHeight());
-                console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
+                // console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
+                // console.log("TICK: msgHeight(): "+this.msgHeight());
+                // console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
                 this.endindex--;// roll back to last character
                 this.pagepause = true;
                 this.displayText();
@@ -301,7 +301,7 @@ export class Dialog{
             if (!this.streaming && (this.endindex >= this.msg.length)) {
                 this.finished = true;
                 if(this.appendcallback){
-                    console.log("firing appendcallback");
+                    // console.log("firing appendcallback");
                     this.appendcallback();
                     this.appendcallback = null;
                 }

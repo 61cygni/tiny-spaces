@@ -104,7 +104,6 @@ window.addEventListener(
     "keyup", (event) => {
 
         if(textfocus){
-            console.log(event.code);
             if (event.code == "Enter") {
                 if(textinputhandler){
                     textinputhandler(event.target);
