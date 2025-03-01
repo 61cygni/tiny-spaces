@@ -6,6 +6,76 @@
         border-radius: 10px;
     }
 
+    /* Tab styling */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+
+    /* Show the default tab */
+    #gameTab {
+        display: block;
+    }
+
+    /* Log box styling */
+    #logBox {
+        width: 100%;
+        height: 480px;
+        overflow-y: auto;
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: 10px;
+        font-family: monospace;
+        white-space: pre-wrap;
+    }
+
+    /* Different log styles */
+    .log-info {
+        color: #333;
+    }
+    
+    .log-warning {
+        color: #ff9900;
+        font-weight: bold;
+    }
+    
+    .log-error {
+        color: #ff0000;
+        font-weight: bold;
+    }
+    
+    .log-debug {
+        color: #0066cc;
+        font-style: italic;
+    }
+
 .form-group {
   position: relative;
 }
@@ -30,16 +100,104 @@ label {
   pointer-events: none;
   transition: 0.2s ease all;
 }
- </style>
+</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <script src="main.js" type="module"></script>
 
-<div id="space" class="tabcontent">
-        <canvas id="spacecanvas" height="480px" width="640px" >
-        </canvas>
-</div>
+    <!-- Tab buttons -->
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'gameTab')">Game</button>
+        <button class="tablinks" onclick="openTab(event, 'logTab')">Event Log</button>
+    </div>
+
+    <!-- Game tab -->
+    <div id="gameTab" class="tabcontent">
+        <canvas id="spacecanvas" height="480px" width="640px"></canvas>
+    </div>
+
+    <!-- Log tab -->
+    <div id="logTab" class="tabcontent">
+        <div id="logBox"></div>
+    </div>
+
+    <!-- Tab switching script -->
+    <script>
+        // Keep track of the active input element
+        let activeInputElement = null;
+        let inputWasVisible = false;
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            // Hide all tab content
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            // Remove active class from all tab buttons
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and add active class to the button
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            
+            // Handle input visibility based on tab
+            if (tabName === 'logTab') {
+                // Switching to log tab - hide input if it exists
+                const inputs = document.querySelectorAll('input[type="text"]');
+                for (let input of inputs) {
+                    if (input.style.display !== 'none' && input.parentNode === document.body) {
+                        activeInputElement = input;
+                        inputWasVisible = true;
+                        input.style.display = 'none';
+                        if (window.gameLog) {
+                            window.gameLog.debug("Input hidden while viewing logs");
+                        }
+                    }
+                }
+            } else if (tabName === 'gameTab' && inputWasVisible && activeInputElement) {
+                // Switching back to game tab - restore input if it was visible
+                activeInputElement.style.display = '';
+                if (window.gameLog) {
+                    window.gameLog.debug("Input restored when returning to game");
+                }
+            }
+        }
+
+        // Logging utility functions
+        window.gameLog = {
+            info: function(message) {
+                logMessage(message, 'log-info');
+            },
+            warning: function(message) {
+                logMessage(message, 'log-warning');
+            },
+            error: function(message) {
+                logMessage(message, 'log-error');
+            },
+            debug: function(message) {
+                logMessage(message, 'log-debug');
+            }
+        };
+
+        function logMessage(message, className) {
+            const logBox = document.getElementById('logBox');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = className;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logBox.appendChild(logEntry);
+            
+            // Auto-scroll to bottom
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+    </script>
 
 <!--
 <div class="form-group">

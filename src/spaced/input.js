@@ -14,6 +14,7 @@ export class TextInput {
         this.input.type = 'text';
         this.input.placeholder = msg;
         this.input.value = '';
+        this.input.className = 'game-input'; // Add a class for easier selection
         
         // Style the input to match the previous design
         this.input.style.position = 'fixed';
@@ -74,6 +75,26 @@ export class TextInput {
         });
     }
 
+    // Show the input element
+    show() {
+        if (this.input) {
+            this.input.style.display = '';
+            if (window.gameLog) {
+                window.gameLog.debug("Input shown");
+            }
+        }
+    }
+
+    // Hide the input element
+    hide() {
+        if (this.input) {
+            this.input.style.display = 'none';
+            if (window.gameLog) {
+                window.gameLog.debug("Input hidden");
+            }
+        }
+    }
+
     arrive() {
         console.log("Adding text input");
         document.body.appendChild(this.input);
@@ -81,6 +102,12 @@ export class TextInput {
         KeyEvents.set_input_visible(true);
         KeyEvents.set_text_input_focus(true);
         this.focus = true;
+        
+        // Check if we're currently in the log tab and hide if so
+        const gameTab = document.getElementById('gameTab');
+        if (gameTab && gameTab.style.display === 'none') {
+            this.hide();
+        }
     }
 
     leave() {

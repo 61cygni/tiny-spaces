@@ -128,6 +128,11 @@ class PentaImpl{
         this.shade_level.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
         this.shade_level.fill({color: 0x000000, alpha: 0.5});
         this.shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
+        
+        // Log game initialization
+        if (window.gameLog) {
+            window.gameLog.info("PentaCity game initialized");
+        }
     }
 
     // --
@@ -135,12 +140,17 @@ class PentaImpl{
     // --
 
     dispatch_action(action){
-
         console.log("dispatch_action", action);
+        if (window.gameLog) {
+            window.gameLog.debug(`Action dispatched: ${JSON.stringify(action)}`);
+        }
 
         if (action.action == "end conversation"){
             this.gameevents.input_leave();
             this.is_chatting = false;
+            if (window.gameLog) {
+                window.gameLog.info("Conversation ended");
+            }
             // cleanup handled by append_callback in EnterChatHandler
         }else if(action.action == "give"){
             let myitem = null; // villager's item
@@ -148,11 +158,17 @@ class PentaImpl{
                 myitem = action.myitem;
                 if (!this.chatting_with_villager.hasItem(myitem)) {
                     console.log("Error: villager does not have item: ", myitem);
+                    if (window.gameLog) {
+                        window.gameLog.error(`Villager ${this.chatting_with_villager.name} doesn't have item: ${myitem}`);
+                    }
                     return;
                 }
             }
             let str = "Villager " + this.chatting_with_villager.name + " wants to give you " + myitem;
             this.gameevents.mainchar.conversationCanvas.addAction(str);
+            if (window.gameLog) {
+                window.gameLog.info(`Item offer: ${this.chatting_with_villager.name} offers ${myitem}`);
+            }
             this.showGivePopup(myitem);
         }else if(action.action == "barter"){
             let myitem = null; // villager's item
@@ -188,6 +204,10 @@ class PentaImpl{
             y: this.gameevents.mainchar.worldy
         });
         
+        if (window.gameLog) {
+            window.gameLog.info(`Trade proposed: ${myitem} for ${hisitem}`);
+        }
+        
         this.gameevents.level.container.addChild(popup.show((value) => {
             if (value) {
                 // User clicked Yes
@@ -199,9 +219,15 @@ class PentaImpl{
                 let str = "you traded " + hisitem + " for " + myitem + " with " + this.chatting_with_villager.name;
                 
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
+                if (window.gameLog) {
+                    window.gameLog.info(`Trade completed: ${hisitem} for ${myitem}`);
+                }
             } else {
                 // User clicked No or pressed Escape
                 console.log("User declined trade");
+                if (window.gameLog) {
+                    window.gameLog.info("Trade declined");
+                }
             }
         }));
     }
@@ -329,20 +355,35 @@ class EnterChatHandler {
 
     log_response(villager_name, msg) {
         this.impl.gameevents.mainchar.conversationCanvas.addDialog(villager_name, msg);
+        // Log the villager's response to the event log
+        if (window.gameLog) {
+            window.gameLog.info(`${villager_name}: ${msg.substring(0, 50)}${msg.length > 50 ? '...' : ''}`);
+        }
     }
 
     handle_input(input){
         input = input.trim();
         if(!impl.chatting_with_villager){
             console.log("handle_input called after conversation ended. Bailing.");
+            if (window.gameLog) {
+                window.gameLog.error("Input received after conversation ended");
+            }
             return;
         }
         if(input == ""){
             console.log("handle_input called with empty input. Bailing.");
+            if (window.gameLog) {
+                window.gameLog.warning("Empty input received");
+            }
             return;
         }
         this.gameevents.mainchar.conversationCanvas.addDialog(this.gameevents.mainchar.name, input);
         impl.chatting_with_villager.addToConversationHistory(this.gameevents.mainchar.name, input);
+        
+        // Log the player's input to the event log
+        if (window.gameLog) {
+            window.gameLog.info(`${this.gameevents.mainchar.name}: ${input}`);
+        }
 
         const sysinput = {
             history: impl.chatting_with_villager.conversationHistoryAsText(),
@@ -426,6 +467,9 @@ PentaImpl.prototype.init = function(gameevents) {
     nancy.addItem("Black mask", "A black mask with a red eye.");
     this.gameevents.level.addBeing(nancy);
     nancy.arrive(1000, 400);
+    if (window.gameLog) {
+        window.gameLog.debug("Nancy added to the game at position (1000, 400)");
+    }
 
     let jane = new Jane(this.gameevents);
     jane.addItem("locket", "A locket with a picture of a young woman.");
@@ -466,9 +510,15 @@ PentaImpl.prototype.init = function(gameevents) {
     this.gameevents.register_esc_handler(new LeaveChatHandler(this));
 
     SCENE.setbgmusic('windandfire');
+    if (window.gameLog) {
+        window.gameLog.info("Background music 'windandfire' started");
+    }
 
     console.log(this.gameevents.mainchar);
     this.gameevents.level.container.addChild( this.gameevents.mainchar.conversationCanvas.container);
+    if (window.gameLog) {
+        window.gameLog.info("Game initialization complete");
+    }
 } // init
 
 
