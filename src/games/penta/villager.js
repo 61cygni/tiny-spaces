@@ -173,6 +173,13 @@ export class Villager extends BEING.Being {
         this.curactiontime = 0;
     }
 
+    add_options(options){
+        if(this.name == "jane"){
+            options.haslocket = this.hasItem("locket");
+        }
+        return options;
+    }
+
     // This should not be called and is a stub for testing. 
     handle_input(input){
         console.log("Villager handle_input", input);

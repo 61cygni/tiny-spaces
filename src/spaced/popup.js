@@ -40,6 +40,13 @@ export class PopupDialog {
         // Center the popup
         this.background.x = (window.innerWidth - this.width) / 2;
         this.background.y = (window.innerHeight - this.height) / 2;
+        // check options for x and y
+        if(this.options.x){
+            this.background.x = this.options.x;
+        }
+        if(this.options.y){
+            this.background.y = this.options.y;
+        }
         this.container.addChild(this.background);
 
         // Add message text

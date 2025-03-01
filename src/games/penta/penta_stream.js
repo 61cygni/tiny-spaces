@@ -8,7 +8,7 @@
 import * as BT  from '@spaced/bt.js';
 
 
-export async function invoke_prompt_input_stream(impl, slug, sysinput, append_callback, send_to_dialog){
+export async function invoke_prompt_input_stream(impl, slug, sysinput, send_to_dialog, log_response){
 
     // const sysinput = {
     //     history: this.history,
@@ -57,7 +57,7 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput, append_ca
     console.log("Session: "+session);
     let actions = session.split("###");
 
-    impl.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, actions[0].trim());
+    log_response(actions[0].trim());
 
     if(actions.length > 1){
         // TODO! Try / catch block here

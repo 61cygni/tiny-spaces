@@ -68,10 +68,54 @@ var oneShotInit = (function() {
     };
 })();
 
-// -- 
+class Nancy extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Nancy", "nancy-first-27c7", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
+    }
+
+    add_options(options){
+        options.haslocket = this.hasItem("locket");
+        return options;
+    }
+}
+
+class Jane extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Jane", "jane-first-a5e8", gameevents.level.spritesheet_map.get("villager3"), gameevents.level);
+    }
+}   
+
+class Bob extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Bob", "bob-first-521e", gameevents.level.spritesheet_map.get("villager4"), gameevents.level);
+    }
+}
+
+class Bill extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Bill", "bill-first-3a38", gameevents.level.spritesheet_map.get("villager5"), gameevents.level);
+    }
+}
+
+class Alice extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Alice", "alice-first-218e", gameevents.level.spritesheet_map.get("villager6"), gameevents.level);
+    }
+}
+
+class Gordy extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Gordy", "gordy-first-16e8", gameevents.level.spritesheet_map.get("villager7"), gameevents.level);
+    }
+}
+
+class Jill extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Jill", "jill-first-4720", gameevents.level.spritesheet_map.get("villager8"), gameevents.level);
+    }
+}
 
 class PentaImpl{
-
     constructor(gameevents){
         this.gameevents = gameevents;
         this.chatting_with_villager = null;
@@ -139,7 +183,9 @@ class PentaImpl{
     showTradePopup(myitem, hisitem) {
         const popup = new PopupDialog("Would you like to trade " + myitem + " for " + hisitem + "?", {
             width: 300,
-            height: 150
+            height: 150,
+            x: this.gameevents.mainchar.worldx,
+            y: this.gameevents.mainchar.worldy
         });
         
         this.gameevents.level.container.addChild(popup.show((value) => {
@@ -281,6 +327,10 @@ class EnterChatHandler {
                 fontsize: 14, width: 256 * 1.5, height: 96 * 1.5 });
     }
 
+    log_response(villager_name, msg) {
+        this.impl.gameevents.mainchar.conversationCanvas.addDialog(villager_name, msg);
+    }
+
     handle_input(input){
         input = input.trim();
         if(!impl.chatting_with_villager){
@@ -305,7 +355,8 @@ class EnterChatHandler {
             if(this.impl.gameevents.dqueue.length > 0){
                 this.impl.gameevents.dqueue[0].finished = true;
             }
-            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.append_callback.bind(this), this.send_to_dialog.bind(this))
+            impl.chatting_with_villager.add_options(sysinput);
+            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.send_to_dialog.bind(this), this.log_response.bind(this, this.impl.chatting_with_villager.name))
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
         }
@@ -370,39 +421,44 @@ PentaImpl.prototype.init = function(gameevents) {
     oneShotInit(this.gameevents);
 
     // Create a bunch of villagers 
-    let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", this.gameevents.level.spritesheet_map.get("villager2"), this.gameevents.level);
-    v.addItem("Black mask", "A black mask with a red eye.");
-    this.gameevents.level.addBeing(v);
-    v.arrive(1000, 400);
+    // let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", this.gameevents.level.spritesheet_map.get("villager2"), this.gameevents.level);
+    let nancy = new Nancy(this.gameevents);
+    nancy.addItem("Black mask", "A black mask with a red eye.");
+    this.gameevents.level.addBeing(nancy);
+    nancy.arrive(1000, 400);
 
-    let v2 = new VILLAGER.Villager("jane", "jane-first-a5e8", this.gameevents.level.spritesheet_map.get("villager3"), this.gameevents.level);
-    this.gameevents.level.addBeing(v2);
-    v2.arrive(800, 800);
+    let jane = new Jane(this.gameevents);
+    jane.addItem("locket", "A locket with a picture of a young woman.");
+    this.gameevents.level.addBeing(jane);
+    jane.arrive(800, 800);
 
-    let v3 = new VILLAGER.Villager("bob",  "bob-first-521e", this.gameevents.level.spritesheet_map.get("villager4"), this.gameevents.level);
-    this.gameevents.level.addBeing(v3);
-    v3.arrive(400, 400);
+    let bob = new Bob(this.gameevents);
+    bob.addItem("black book", "An unadorned, black book.");
+    this.gameevents.level.addBeing(bob);
+    bob.arrive(400, 400);
 
-    let v4 = new VILLAGER.Villager("bill", "bill-first-3a38", this.gameevents.level.spritesheet_map.get("villager5"), this.gameevents.level);
-    this.gameevents.level.addBeing(v4);
-    v4.arrive(400, 800);
+    let bill = new Bill(this.gameevents);
+    bill.addItem("rock", "A smooth, round rock.");
+    this.gameevents.level.addBeing(bill);
+    bill.arrive(400, 800);
 
-    let v5 = new VILLAGER.Villager("alice", "alice-first-218e", this.gameevents.level.spritesheet_map.get("villager6"), this.gameevents.level);
-    v5.addItem("Medallion", "A small, old medallion.");
-    v5.addItem("Bible", "A tattered, old bible.");
-    this.gameevents.level.addBeing(v5);
-    v5.arrive(800, 400);
+    let alice = new Alice(this.gameevents);
+    alice.addItem("Medallion", "A small, old medallion.");
+    alice.addItem("Bible", "A tattered, old bible.");
+    this.gameevents.level.addBeing(alice);
+    alice.arrive(800, 400);
 
-    let v6 = new VILLAGER.Villager("gordy", "gordy-first-16e8", this.gameevents.level.spritesheet_map.get("villager7"), this.gameevents.level);
-    v6.addItem("Gold medal", "For winners");
-    v6.addItem("Silver medal", "For almost winners");
-    v6.addItem("Cupie doll", "For everyone");
-    this.gameevents.level.addBeing(v6);
-    v6.arrive(1200, 400);
+    let gordy = new Gordy(this.gameevents);
+    gordy.addItem("Gold medal", "For winners");
+    gordy.addItem("Silver medal", "For almost winners");
+    gordy.addItem("Cupie doll", "For everyone");
+    this.gameevents.level.addBeing(gordy);
+    gordy.arrive(1200, 400);
 
-    let v7 = new VILLAGER.Villager("jill", "jill-first-4720", this.gameevents.level.spritesheet_map.get("villager8"), this.gameevents.level);
-    this.gameevents.level.addBeing(v7);
-    v7.arrive(1200, 800);
+    let jill = new Jill(this.gameevents);
+    jill.addItem("key", "A small, old key.");
+    this.gameevents.level.addBeing(jill);
+    jill.arrive(1200, 800);
 
     this.gameevents.register_key_handler("Backquote", new ConversationCanvasToggleHandler(this));
     this.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this));

@@ -24,7 +24,8 @@ export class TextInput {
         this.input.style.borderRadius = '11px';
         this.input.style.padding = '11px';
         this.input.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
-        this.input.style.fontSize = '10px';
+        this.input.style.fontSize = '16px !important';
+        this.input.style.lineHeight = '16px';
         this.input.style.fontWeight = 'bold';
         this.input.style.color = '#000';
         this.input.style.outline = 'none';
