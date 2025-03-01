@@ -180,6 +180,13 @@ export class Villager extends BEING.Being {
         return options;
     }
 
+    arrive(x, y){
+        super.arrive(x, y);
+        if (window.gameLog) {
+            window.gameLog.npcinfo(this.name,"added to the game at position ("+x+", "+y+")");
+        }
+    }
+
     // This should not be called and is a stub for testing. 
     handle_input(input){
         console.log("Villager handle_input", input);

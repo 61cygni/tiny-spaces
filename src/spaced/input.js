@@ -79,9 +79,6 @@ export class TextInput {
     show() {
         if (this.input) {
             this.input.style.display = '';
-            if (window.gameLog) {
-                window.gameLog.debug("Input shown");
-            }
         }
     }
 
@@ -89,9 +86,6 @@ export class TextInput {
     hide() {
         if (this.input) {
             this.input.style.display = 'none';
-            if (window.gameLog) {
-                window.gameLog.debug("Input hidden");
-            }
         }
     }
 

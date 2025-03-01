@@ -75,6 +75,21 @@
         color: #0066cc;
         font-style: italic;
     }
+    
+    /* NPC log styling */
+    .log-npcinfo {
+        color: #333;
+    }
+    
+    .log-npcinfo .npc-name {
+        color: #2e8b57; /* Sea green color for NPC names */
+        font-weight: bold;
+    }
+
+    .log-maininfo .main-name {
+        color: #ff1221; /* Soft red color for NPC names */
+        font-weight: bold;
+    }
 
 .form-group {
   position: relative;
@@ -156,9 +171,6 @@ label {
                         activeInputElement = input;
                         inputWasVisible = true;
                         input.style.display = 'none';
-                        if (window.gameLog) {
-                            window.gameLog.debug("Input hidden while viewing logs");
-                        }
                     }
                 }
             } else if (tabName === 'gameTab' && inputWasVisible && activeInputElement) {
@@ -172,6 +184,14 @@ label {
 
         // Logging utility functions
         window.gameLog = {
+            maininfo: function(name, message) {
+                const formattedMessage = `<span class="main-name">${name}</span>: ${message}`;
+                logMessage(formattedMessage, 'log-maininfo');
+            },
+            npcinfo: function(name, message) {
+                const formattedMessage = `<span class="npc-name">${name}</span>: ${message}`;
+                logMessage(formattedMessage, 'log-npcinfo');
+            },
             info: function(message) {
                 logMessage(message, 'log-info');
             },

@@ -22,5 +22,8 @@ const levels = [
     PENTA.Instance,
 ];
 
+if(window.gameLog){
+    window.gameLog.info("Game start : Loading levels and all assets");
+}
 await SPACED.initAndLoadLevels(mainchar, levels);
 SPACED.initMainLoop("Penta-start1");

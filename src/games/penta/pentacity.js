@@ -128,11 +128,6 @@ class PentaImpl{
         this.shade_level.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
         this.shade_level.fill({color: 0x000000, alpha: 0.5});
         this.shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
-        
-        // Log game initialization
-        if (window.gameLog) {
-            window.gameLog.info("PentaCity game initialized");
-        }
     }
 
     // --
@@ -142,7 +137,7 @@ class PentaImpl{
     dispatch_action(action){
         console.log("dispatch_action", action);
         if (window.gameLog) {
-            window.gameLog.debug(`Action dispatched: ${JSON.stringify(action)}`);
+            window.gameLog.debug(`Action from ${this.chatting_with_villager.name} : ${JSON.stringify(action)}`);
         }
 
         if (action.action == "end conversation"){
@@ -355,9 +350,9 @@ class EnterChatHandler {
 
     log_response(villager_name, msg) {
         this.impl.gameevents.mainchar.conversationCanvas.addDialog(villager_name, msg);
-        // Log the villager's response to the event log
+        // Log the villager's response to the event log using npcinfo
         if (window.gameLog) {
-            window.gameLog.info(`${villager_name}: ${msg.substring(0, 50)}${msg.length > 50 ? '...' : ''}`);
+            window.gameLog.npcinfo(villager_name, msg);
         }
     }
 
@@ -365,16 +360,10 @@ class EnterChatHandler {
         input = input.trim();
         if(!impl.chatting_with_villager){
             console.log("handle_input called after conversation ended. Bailing.");
-            if (window.gameLog) {
-                window.gameLog.error("Input received after conversation ended");
-            }
             return;
         }
         if(input == ""){
             console.log("handle_input called with empty input. Bailing.");
-            if (window.gameLog) {
-                window.gameLog.warning("Empty input received");
-            }
             return;
         }
         this.gameevents.mainchar.conversationCanvas.addDialog(this.gameevents.mainchar.name, input);
@@ -382,7 +371,7 @@ class EnterChatHandler {
         
         // Log the player's input to the event log
         if (window.gameLog) {
-            window.gameLog.info(`${this.gameevents.mainchar.name}: ${input}`);
+            window.gameLog.maininfo(this.gameevents.mainchar.name, input);
         }
 
         const sysinput = {
@@ -467,9 +456,6 @@ PentaImpl.prototype.init = function(gameevents) {
     nancy.addItem("Black mask", "A black mask with a red eye.");
     this.gameevents.level.addBeing(nancy);
     nancy.arrive(1000, 400);
-    if (window.gameLog) {
-        window.gameLog.debug("Nancy added to the game at position (1000, 400)");
-    }
 
     let jane = new Jane(this.gameevents);
     jane.addItem("locket", "A locket with a picture of a young woman.");
@@ -510,9 +496,6 @@ PentaImpl.prototype.init = function(gameevents) {
     this.gameevents.register_esc_handler(new LeaveChatHandler(this));
 
     SCENE.setbgmusic('windandfire');
-    if (window.gameLog) {
-        window.gameLog.info("Background music 'windandfire' started");
-    }
 
     console.log(this.gameevents.mainchar);
     this.gameevents.level.container.addChild( this.gameevents.mainchar.conversationCanvas.container);
