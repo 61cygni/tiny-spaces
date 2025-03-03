@@ -1,9 +1,10 @@
 // --
 // TODO:
-// -- keep dialog up after conversation ends, and remove with SPACE. Use append callback in dialog to 
-//    
-// -- add item support
+// - basic testing framework where you can exercise certain parts of the system (e.g. NPC dialog)
+// 
 // DONE
+// -- keep dialog up after conversation ends, and remove with SPACE. Use append callback in dialog to 
+// -- add item support
 // -- destroy dialog objects when they're done
 // -- fix wordwrap in text canvas
 // - add colors etc. to text canvas (fix)
@@ -194,16 +195,14 @@ class PentaImpl{
     showTradePopup(myitem, hisitem) {
         const popup = new PopupDialog("Would you like to trade " + myitem + " for " + hisitem + "?", {
             width: 300,
-            height: 150,
-            x: this.gameevents.mainchar.worldx,
-            y: this.gameevents.mainchar.worldy
+            height: 150
         });
         
         if (window.gameLog) {
             window.gameLog.info(`Trade proposed: ${myitem} for ${hisitem}`);
         }
         
-        this.gameevents.level.container.addChild(popup.show((value) => {
+        this.gameevents.mainchar.container.addChild(popup.show((value) => {
             if (value) {
                 // User clicked Yes
                 console.log("User wants to trade");
@@ -225,6 +224,7 @@ class PentaImpl{
                 }
             }
         }));
+        this.gameevents.mainchar.container.sortChildren();
     }
 
     showGivePopup(myitem) {
@@ -233,7 +233,7 @@ class PentaImpl{
             height: 150
         });
         
-        this.gameevents.level.container.addChild(popup.show((value) => {
+        this.gameevents.mainchar.container.addChild(popup.show((value) => {
             if (value) {
                 // User clicked Yes
                 console.log("User wants to give");
@@ -248,6 +248,7 @@ class PentaImpl{
                 console.log("User declined to take item");
             }
         }));
+        this.gameevents.mainchar.container.sortChildren();
     }
 
 
@@ -311,7 +312,6 @@ class EnterChatHandler {
     }
 
     append_callback() {
-        console.log("append_callback", this.impl.is_chatting);
         if (!this.impl.is_chatting) {
             this.gameevents.dialog_stream_done();
             this.gameevents.level.container.removeChild(impl.shade_level);

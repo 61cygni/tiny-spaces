@@ -1,103 +1,12 @@
 import * as PIXI from 'pixi.js';
 import * as GLOBALS from '@spaced/globals.js';
+import * as ACTIONS from './npc_actions.js';
 
 import * as BEING from '../../spaced/being.js';
 
 
-// Super class for actions
-
-class VillagerActions{
-    constructor(name, icon){
-        // create thinking bubble
-        this.style = new PIXI.TextStyle({
-            fontFamily: "\"Trebuchet MS\", Helvetica, sans-serif",
-            fontSize: 14, 
-            fill: "#ffffff",
-            fontWeight: "bold"
-        });
-        this.name = name;
-        this.icon = new PIXI.Text({text: icon, style: this.style});
-
-        this.curactiontime = 0;
-        this.villager = null;
-
-        // position action icon slightly above the villager
-        this.icon.x = 0;
-        this.icon.y = -20;
-    }
-
-    doActionFor(time, villager){
-        this.curactiontime = time;
-        this.villager= villager;
-    }
-
-    timeLeft(){
-        return this.curactiontime;
-    }
-
-    // by default just add the icon to the villager
-    tick(delta){
-        this.curactiontime-=delta;
-        if (!this.icon.parent) {
-            this.villager.container.addChild(this.icon);
-        }
-        if(this.curactiontime <= 0){
-            this.villager.container.removeChild(this.icon);
-        }
-    }
-
-    done(){
-        return this.curactiontime < 0;
-    }
-}
-
-class WalkAction extends VillagerActions{
-    constructor(){
-        super("walk", "");
-        this.walk = 0;
-    }
-
-    tick(delta){
-        this.curactiontime-=delta;
-        if(this.walk <= 0){
-            let direction = Math.floor(Math.random() * 4);
-            let dir = BEING.Dir[''+direction];
-            this.villager.goDir(dir);
-            this.walk = Math.floor(Math.random() * 30) + 1;
-        }else{
-            if(this.villager.timeToMove(delta)){
-                this.walk--;
-            }
-        }
-    }
-}
-
-class ThinkAction extends VillagerActions{
-    constructor(){
-        super("think", "💭");
-    }
-}
-
-class ReadAction extends VillagerActions{
-    constructor(){
-        super("read", "📖");
-    }
-}
-
-class BloodAction extends VillagerActions{
-    constructor(){
-        super("blood", "🩸");
-    }
-}
-
-class TalkAction extends VillagerActions{
-    constructor(){
-        super("talk", "");
-    }
-    tick(delta){
-    }
-}
-
+const NPC_CHAT = true; // can burn a lot of AI credits 
+const TIME_BETWEEN_CHAT_SESSIONS = 500; // 10 seconds
 
 
 export class Villager extends BEING.Being {
@@ -109,9 +18,13 @@ export class Villager extends BEING.Being {
         this.walk = 0;
         this.movedelta = .2;
         this.action = 'WALK';
-        this.timebetweenactions = 100;
+        this.timebetweenactions = TIME_BETWEEN_CHAT_SESSIONS;
+        this.talking = false;
 
         this.curaction = null;
+
+        this.chatting_with_npc = null;
+        this.skip_chat = 0; // used to skip a chat session
 
         this.conversation_history = [];
         this.conversation_history_max = 20; // includes both sides of the converstion 
@@ -119,11 +32,13 @@ export class Villager extends BEING.Being {
         this.items = new Map();
 
         this.Action = {
-            'WALK': new WalkAction(),
-            'THINK': new ThinkAction(),
-            'READ': new ReadAction(),
-            'BLOOD': new BloodAction()
+            'WALK': new ACTIONS.WalkAction(),
+            'THINK': new ACTIONS.ThinkAction(),
+            'READ': new ACTIONS.ReadAction()
         };
+        if(NPC_CHAT){
+            this.Action['CHAT'] = new ACTIONS.ChatAction();
+        }
         this.numActions = Object.keys(this.Action).length;
 
     }
@@ -164,13 +79,41 @@ export class Villager extends BEING.Being {
     }
 
     chatWithMainCharacter(char){
-        this.curaction = new TalkAction();
+        this.curaction = new ACTIONS.TalkAction();
         this.curaction.doActionFor(100000, this);
+        this.talking = true;
         this.stop();
     }
 
+    // chatWithNPC(npc){
+    //     this.curaction = new ACTIONS.TalkAction();
+    //     this.curaction.doActionFor(100000, this);
+    //     this.talking = true;
+    //     this.stop();
+    //     this.chatting_with_npc = npc;
+    //     npc.chatting_with_npc = this;
+    // }
+
     endChatWithMainCharacter(){
         this.curactiontime = 0;
+        this.talking = false;
+    }
+
+    endChatWithNPC(){
+        if(this.chatting_with_npc){
+            this.chatting_with_npc.talking = false;
+            this.chatting_with_npc.curactiontime = -1;
+            this.chatting_with_npc.curaction.removeIcon();
+            this.chatting_with_npc.curaction = null;
+            this.chatting_with_npc.chatting_with_npc = null;
+            this.chatting_with_npc.skip_chat = 1;
+            this.chatting_with_npc = null;
+        }
+        this.talking = false;
+        this.curactiontime = -1;
+        this.curaction.removeIcon();
+        this.curaction = null;
+        this.skip_chat = 1;
     }
 
     add_options(options){
@@ -195,7 +138,11 @@ export class Villager extends BEING.Being {
 
     chooseAction(){
         this.stop();
-        const randomKey = Object.keys(this.Action)[Math.floor(Math.random() * this.numActions)];
+        let randomKey = Object.keys(this.Action)[Math.floor(Math.random() * this.numActions)];
+        if(randomKey == 'CHAT' && this.skip_chat > 0){
+            this.skip_chat--;
+            randomKey = 'WALK'; // force a walk if skipping chat
+        }
         this.curaction = this.Action[randomKey];
         this.curaction.doActionFor(Math.floor(Math.random() * this.timebetweenactions) + 1, this);
         // console.log(this.name + ' Action: ' + randomKey + ' time: ' + this.curaction.timeLeft());

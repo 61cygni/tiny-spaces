@@ -75,17 +75,22 @@ export class Being {
 
 
     distance(being){
-        if(this.focus){
-            console.log("Error, right now can only calculate from non focused beings");
-            return;
+        if(this.name === being.name){
+            console.log("Error, cant call distance on self");
+            return -1;
         }
-        if(!being.focus){
-            console.log("Error, can't calculate distance to focused being");
-            return;
+        if(this.focus){
+            console.log("Error, shouldn't be calling distance from main character");
+            return -1;
         }
 
-        let ret = Math.sqrt(Math.pow(being.worldx - this.container.x, 2) + Math.pow(being.worldy - this.container.y, 2));
-        // console.log("Distance to being ", this.container.x, this.container.y, " is ", ret);
+        let ret = -1;
+        if(being.focus){
+            // distance to main character
+            ret = Math.sqrt(Math.pow(being.worldx - this.container.x, 2) + Math.pow(being.worldy - this.container.y, 2));
+        }else{
+            ret = Math.sqrt(Math.pow(being.container.x - this.container.x, 2) + Math.pow(being.container.y - this.container.y, 2));
+        }
         return ret;
     }
 

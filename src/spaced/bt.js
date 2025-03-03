@@ -63,11 +63,11 @@ export function bt(slugin, input, callme) {
         return response.text();  // Get the raw text instead of parsing JSON
     })
     .then(text => {
-        console.log('Response:', text);
+        // console.log('Response:', text);
         // Try to parse as JSON if possible
         try {
             const data = JSON.parse(text);
-            console.log('Parsed data:', data);
+            //console.log('Parsed data:', data);
             callme(data);
         } catch (e) {
             console.log(e);

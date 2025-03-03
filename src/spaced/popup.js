@@ -23,12 +23,6 @@ export class PopupDialog {
             ...options
         };
 
-        // Create semi-transparent background that covers the whole screen
-        this.shade = new PIXI.Graphics();
-        this.shade.rect(0, 0, window.innerWidth, window.innerHeight);
-        this.shade.fill({ color: 0x000000, alpha: 0.5 });
-        this.container.addChild(this.shade);
-
         // Create popup background
         this.background = new PIXI.Graphics();
         this.background.rect(0, 0, this.width, this.height);
@@ -38,8 +32,8 @@ export class PopupDialog {
         });
         
         // Center the popup
-        this.background.x = (window.innerWidth - this.width) / 2;
-        this.background.y = (window.innerHeight - this.height) / 2;
+        this.background.x = 0; 
+        this.background.y = 0;
         // check options for x and y
         if(this.options.x){
             this.background.x = this.options.x;

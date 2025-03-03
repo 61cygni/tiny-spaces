@@ -146,7 +146,13 @@ export class LevelContext {
         let closest = null;
         let mindist = distance;
         for(let b of this.beings){
+            if(b.name === being.name){
+                continue;
+            }
             let d = b.distance(being);
+            if(d < 0){
+                continue;
+            }
             if(d < mindist){
                 mindist = d;
                 closest = b;
