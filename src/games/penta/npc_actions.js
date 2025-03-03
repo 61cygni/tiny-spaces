@@ -168,7 +168,7 @@ export class ChatAction extends VillagerActions{
         // console.log("ChatAction: doing action for ", time, villager);
         let v = villager.level.get_closest_being(villager, 200);
         if(!v){
-            console.log(villager.name, " has noone close to talk to");
+            // console.log(villager.name, " has noone close to talk to");
             this.curactiontime = -1;
             return;
         }

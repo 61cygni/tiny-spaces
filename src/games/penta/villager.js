@@ -6,7 +6,7 @@ import * as BEING from '../../spaced/being.js';
 
 
 const NPC_CHAT = true; // can burn a lot of AI credits 
-const TIME_BETWEEN_CHAT_SESSIONS = 500; // 10 seconds
+const TIME_BETWEEN_CHAT_SESSIONS = 500; // 50 seconds
 
 
 export class Villager extends BEING.Being {
@@ -41,6 +41,14 @@ export class Villager extends BEING.Being {
         }
         this.numActions = Object.keys(this.Action).length;
 
+    }
+
+    // for each item, add a field to the options object which will be sent as prompt input
+    add_options(options){
+        for(let key of this.items.keys()){
+            options["has"+key] = true; 
+        }
+        return options;
     }
 
     addItem(name, decsription){
@@ -79,6 +87,10 @@ export class Villager extends BEING.Being {
     }
 
     chatWithMainCharacter(char){
+        if(this.talking && this.chatting_with_npc){
+            console.log("Villager talking to NPC. Forcing end of chat ");
+            this.endChatWithNPC();
+        }
         this.curaction = new ACTIONS.TalkAction();
         this.curaction.doActionFor(100000, this);
         this.talking = true;
@@ -114,13 +126,6 @@ export class Villager extends BEING.Being {
         this.curaction.removeIcon();
         this.curaction = null;
         this.skip_chat = 1;
-    }
-
-    add_options(options){
-        if(this.name == "jane"){
-            options.haslocket = this.hasItem("locket");
-        }
-        return options;
     }
 
     arrive(x, y){

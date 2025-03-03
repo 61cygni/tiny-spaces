@@ -71,7 +71,7 @@ window.addEventListener(
 
         if(gameevents){
             if(gameevents.handle_event(event)){
-                console.log("handled by gameevents");
+                // console.log("handled by gameevents");
                 return; // handled by gameevents
             }
         }

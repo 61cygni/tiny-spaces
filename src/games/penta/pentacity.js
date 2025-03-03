@@ -1,6 +1,7 @@
 // --
 // TODO:
 // - basic testing framework where you can exercise certain parts of the system (e.g. NPC dialog)
+// - add memory for NPC conversations (clear memory after each encounter_)
 // 
 // DONE
 // -- keep dialog up after conversation ends, and remove with SPACE. Use append callback in dialog to 
@@ -72,11 +73,6 @@ var oneShotInit = (function() {
 class Nancy extends VILLAGER.Villager {
     constructor(gameevents){
         super("Nancy", "nancy-first-27c7", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
-    }
-
-    add_options(options){
-        options.haslocket = this.hasItem("locket");
-        return options;
     }
 }
 
@@ -374,7 +370,7 @@ class EnterChatHandler {
             window.gameLog.maininfo(this.gameevents.mainchar.name, input);
         }
 
-        const sysinput = {
+        let sysinput = {
             history: impl.chatting_with_villager.conversationHistoryAsText(),
             items: impl.chatting_with_villager.getItemNames(),
             strangeritems: impl.gameevents.mainchar.getItemNames(),
@@ -385,7 +381,8 @@ class EnterChatHandler {
             if(this.impl.gameevents.dqueue.length > 0){
                 this.impl.gameevents.dqueue[0].finished = true;
             }
-            impl.chatting_with_villager.add_options(sysinput);
+            sysinput = impl.chatting_with_villager.add_options(sysinput);
+            console.log("EnterChatHandler: sysinput", sysinput);
             PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.send_to_dialog.bind(this), this.log_response.bind(this, this.impl.chatting_with_villager.name))
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));

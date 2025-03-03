@@ -486,7 +486,7 @@ export class GameEvents {
         let coordsy = Math.floor((y+20) / this.level.tiledimy); // FIXME MAGIC #
         let ret = this.level.labeldict.get(""+coordsx+":"+coordsy);
         if (ret) {
-            console.log("Found label "+ ret.label+ " x:"+coordsx+" y:"+coordsy);
+            //console.log("Found label "+ ret.label+ " x:"+coordsx+" y:"+coordsy);
             return ret.label;
         }
         return null;
