@@ -6,6 +6,7 @@
 // --
 
 import * as BT  from '@spaced/bt.js';
+import * as PROTO from './pentaproto.js';
 
 
 export async function invoke_prompt_input_stream(impl, slug, sysinput, send_to_dialog, log_response){
@@ -52,32 +53,24 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput, send_to_d
     console.log("penta_stream.js: dialog_stream_msg_end");
     impl.gameevents.dialog_stream_msg_end();
 
-    // detect any actions. They should be the end of the message, delimintated by '###'
-    // and written in JSON
-    console.log("Session: "+session);
-    let actions = session.split("###");
+    let parsed = PROTO.parse_response(session);
 
-    log_response(actions[0].trim());
+    log_response(parsed.msg);
 
-    if(actions.length > 1){
+    if(parsed.action){
         // TODO! Try / catch block here
-        let act = JSON.parse(actions[actions.length - 1]);
-        console.log("Action: ");
-        impl.gameevents.mainchar.conversationCanvas.addAction(act.action.trim());
-        console.log(act);
-        if(Object.prototype.hasOwnProperty.call(act, 'action')){
-            if(act.action.trim() == "keep talking"){
-                return;
-            }
-            console.log("Dispatching action: "+act.action);
-            impl.dispatch_action(act);
+        // let act = JSON.parse(actions[actions.length - 1]);
+        console.log("Action: "+parsed.action);
+        impl.gameevents.mainchar.conversationCanvas.addAction(parsed.action.trim());
+        if(parsed.action.trim() == "keep talking"){
+            return;
         }else{
-            console.log("No action found in JSON object");
+            console.log("Dispatching action: "+parsed);
+            impl.dispatch_action(parsed);
         }
+    }else{
+        console.log("No action found in JSON object");
     }
-
-    // TODO add to history
-    // this.history = this.history + "\n" + preamble + this.session;
 
     if (!impl.is_chatting){
       impl.gameevents.dialog_stream_done();

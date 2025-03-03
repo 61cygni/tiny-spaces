@@ -15,7 +15,7 @@ export function parse_response(response) {
     if(actions.length > 1){
         // TODO! Try / catch block here
         act = JSON.parse(actions[actions.length - 1]);
-        console.log(act);
+        // console.log("Action: "+JSON.stringify(act));
     }
 
     let result = {

@@ -375,18 +375,12 @@ class EnterChatHandler {
     }
 
 
-    handle_bt_response(response){
-        if(impl.streaming){
+    handle_bt_response(response) {
+        if (impl.streaming) {
             console.log("Error: handle_bt_response called while streaming");
             return;
         }
-        // console.log("EnterChatHandler handle_bt_response", response);
-        // impl.chatting_with_villager.addToConversationHistory(impl.chatting_with_villager.name, response);
-        // if(impl.streaming){
-        //     this.gameevents.dialog_stream(response, 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), fontsize: 14, width: 256*2, height: 96*2});
-        // }else{
-            this.gameevents.dialog_now(response, 'character', null, true, {character: impl.chatting_with_villager});
-        // }
+        this.gameevents.dialog_now(response, 'character', null, true, { character: impl.chatting_with_villager });
         this.gameevents.mainchar.conversationCanvas.addDialog(impl.chatting_with_villager.name, response);
     }
 
