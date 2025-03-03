@@ -70,6 +70,12 @@ var oneShotInit = (function() {
     };
 })();
 
+// --
+// NPCs
+// Probably don't need to be classes, but in the future could extend the functions to change behavior. 
+// Right now behavior changes is all done via prompting. 
+// --
+
 class Nancy extends VILLAGER.Villager {
     constructor(gameevents){
         super("Nancy", "nancy-first-27c7", gameevents.level.spritesheet_map.get("villager2"), gameevents.level);
@@ -112,10 +118,15 @@ class Jill extends VILLAGER.Villager {
     }
 }
 
+// --
+// Primary game class 
+// --
+
 class PentaImpl{
+
     constructor(gameevents){
         this.gameevents = gameevents;
-        this.chatting_with_villager = null;
+        this.chatting_with_villager = null; 
         this.streaming = true;
         this.shade_level = null;
         this.is_chatting = false;
@@ -162,6 +173,24 @@ class PentaImpl{
                 window.gameLog.info(`Item offer: ${this.chatting_with_villager.name} offers ${myitem}`);
             }
             this.showGivePopup(myitem);
+        }else if(action.action == "take"){
+            let item = null; // villager's item
+            if (action.item) {
+                item = action.item;
+                if (!this.gameevents.mainchar.hasItem(item)) {
+                    console.log("Error: mainchar does not have item: ", item);
+                    if (window.gameLog) {
+                        window.gameLog.error(`Mainchar doesn't have item: ${item}`);
+                    }
+                    return;
+                }
+            }
+            let str = "Villager " + this.chatting_with_villager.name + " wants to take " + item;
+            this.gameevents.mainchar.conversationCanvas.addAction(str);
+            if (window.gameLog) {
+                window.gameLog.info(`Item request: ${this.chatting_with_villager.name} wants to take ${item}`);
+            }
+            this.showTakePopup(item);
         }else if(action.action == "barter"){
             let myitem = null; // villager's item
             let hisitem = null; // mainchar's item
@@ -242,6 +271,29 @@ class PentaImpl{
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
                 // User clicked No or pressed Escape
                 console.log("User declined to take item");
+            }
+        }));
+        this.gameevents.mainchar.container.sortChildren();
+    }
+
+    showTakePopup(item) {
+        const popup = new PopupDialog("Would you like to give " + item + "?", {
+            width: 300,
+            height: 150
+        });
+
+        console.log("showTakePopup", item);
+        
+        this.gameevents.mainchar.container.addChild(popup.show((value) => {
+            if (value) {
+                // User clicked Yes
+                this.chatting_with_villager.removeItem(item);
+                this.gameevents.mainchar.addItem(item);
+                let str = "you gave " + item + " to " + this.chatting_with_villager.name;
+                console.log(str);
+                this.gameevents.mainchar.conversationCanvas.addAction(str);
+            } else {
+                // fired when user clicks no or presses escape
             }
         }));
         this.gameevents.mainchar.container.sortChildren();
@@ -460,7 +512,7 @@ PentaImpl.prototype.init = function(gameevents) {
     jane.arrive(800, 800);
 
     let bob = new Bob(this.gameevents);
-    bob.addItem("black book", "An unadorned, black book.");
+    bob.addItem("blackbook", "An unadorned, black book.");
     this.gameevents.level.addBeing(bob);
     bob.arrive(400, 400);
 

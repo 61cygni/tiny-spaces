@@ -15,6 +15,7 @@ let mainchar = new STRANGER.Stranger(sheet, SCREEN.instance().app);
 mainchar.addItem("Leather Pouch", "A small, old leather pouch.");
 mainchar.addItem("Old Key", "A small, old key.");
 mainchar.addItem("Necklace", "A beautiful necklace.");
+mainchar.addItem("blackbook", "Cursed black book.");
 
 mainchar.setFocus(true);
 

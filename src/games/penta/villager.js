@@ -5,7 +5,7 @@ import * as ACTIONS from './npc_actions.js';
 import * as BEING from '../../spaced/being.js';
 
 
-const NPC_CHAT = true; // can burn a lot of AI credits 
+const NPC_CHAT = false; // can burn a lot of AI credits 
 const TIME_BETWEEN_CHAT_SESSIONS = 500; // 50 seconds
 
 
