@@ -135,6 +135,7 @@ export function initMainLoop(startlocation) {
             console.log("Leaving " + getLevelName(nextlevel));
             mainchar.leave();
             level.leave();
+            level.reset();
 
             level = maincharEnterLevel(nextlevel, gameevents);
             ticker.start();

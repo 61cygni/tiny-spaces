@@ -114,10 +114,16 @@ export class LevelContext {
         this.maplabels = mod.maplabels;
         this.animatedsprites = mod.animatedsprites;
 
+        this.fire_on_reset = null;
+
         this.levelxpixels = this.screenxtiles * this.tiledimx;
         this.levelypixels = this.screenytiles * this.tiledimy;
 
         this.beings = [];
+    }
+
+    addFireOnReset(func){
+        this.fire_on_reset = func;
     }
 
     addBeing(being){
@@ -139,6 +145,17 @@ export class LevelContext {
 
     leave(){
         this.app.stage.removeChild(this.container)
+    }
+
+    reset(){
+        for(let b of this.beings){
+            b.leave();
+            b.destroy();
+        }
+        this.beings = [];
+        if (this.fire_on_reset) {
+            this.fire_on_reset();
+        }
     }
 
     // find the closes being with a distance less than the given distance

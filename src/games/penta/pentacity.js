@@ -15,6 +15,7 @@
 
 import * as PIXI from 'pixi.js';
 
+import * as STRANGER from './stranger.js';
 import * as KEYEVENTS from '@spaced/keyevents.js';
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
@@ -34,13 +35,54 @@ const MAPFILE = import.meta.env.DEV
   ? '../games/penta/maps/penta.js'  // Dev path
   : '/maps/penta.js';  // Production path
 
-let impl = null;
+
+let impl = null; // singleton for level implementation
+let stranger = null; // singleton for stranger
+
+// --
+// Initialize main character and return singleton.
+// -- 
+export async function static_init() {
+    
+    if(stranger){
+        return stranger;
+    }
+
+    // Sound for camineet
+    sound.add('windandfire', './audio/windandfire.m4a');
+    sound.add('gameover', './audio/gameover.mp3');
+
+    sound.volumeAll = 0.05;
+
+    const sheet = await PIXI.Assets.load("./spritesheets/villagers.json");
+
+    stranger = new STRANGER.Stranger(sheet, SCREEN.instance().app);
+    return reset_stranger();
+}
+
+function reset_stranger(){
+    if(!stranger){
+        console.log("Error: stranger not initialized");
+        return;
+    }
+    stranger.reset();
+    stranger.setFocus(true);
+
+    stranger.addItem("Leather Pouch", "A small, old leather pouch.");
+    stranger.addItem("Old Key", "A small, old key.");
+    stranger.addItem("Necklace", "A beautiful necklace.");
+
+    stranger.setFocus(true);
+
+    return stranger;
+}
 
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 function static_images(){
     // all static images to load;
     let static_img = [];
+    static_img.push(new LEVEL.StaticImage("failure", "./img/failed.png", 2048/1.7, 1536/1.7, 0, 0));  
 
     return static_img;
 }
@@ -55,20 +97,6 @@ function spritesheets(){
         new LEVEL.Sprite("villager8", "./spritesheets/villager8.json"),
     ];
 }
-
-var oneShotInit = (function() {
-    var executed = false;
-    return function(gameevents) {
-        if (!executed) {
-            executed = true;
-
-            // Sound for camineet
-            sound.add('windandfire', './audio/windandfire.m4a');
-
-            sound.volumeAll = 0.05;
-        }
-    };
-})();
 
 // --
 // NPCs
@@ -136,6 +164,54 @@ class PentaImpl{
         this.shade_level.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
         this.shade_level.fill({color: 0x000000, alpha: 0.5});
         this.shade_level.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
+    }
+
+    // Function to control canvas scroll position
+    setCanvasScroll(x, y) {
+        const canvasContainer = document.getElementById('canvasContainer');
+        if (canvasContainer) {
+            canvasContainer.scrollLeft = x;
+            canvasContainer.scrollTop = y;
+        }
+    }
+
+    gameOver(str){
+        this.gameevents.input_leave();
+        this.gameevents.clear_dialogs();
+
+        // this just reinitializes the main character. It's a bit too magical. 
+        // But it'll work for now. 
+        this.gameevents.mainchar.leave();
+        this.gameevents.mainchar = reset_stranger();
+
+
+        let failure_splash = new GAME.StaticBackground(new Failure(this.gameevents, this, str), this.gameevents, -1, -1);
+        failure_splash.chain(new GAME.ChangeLevel("Penta-start1", this.gameevents));
+        this.gameevents.add_to_tick_event_queue(failure_splash); 
+    }
+
+    gameOverTest(){
+        let failure_splash = new GAME.StaticBackground(new Failure(this.gameevents, this), this.gameevents, -1, -1);
+        failure_splash.chain(new GAME.ChangeLevel("Penta-start1", this.gameevents));
+        // this.gameevents.add_to_tick_event_queue(failure_splash); 
+
+        return failure_splash;
+    }
+
+    check_game_logic(){
+        console.log("check_game_logic");
+        // if the character has the black book but not the locket, then the character becomes cursed
+        if(this.gameevents.mainchar.hasItem("blackbook") && !this.gameevents.mainchar.hasItem("locket")){
+            let str = "You grab the black book and immediately feel confusion and rage take over. " +
+                      "Your vision dims, tunneling through black static that pours in from all sides." +
+                      "There is something with you, whose claw is scraping at your heart. " +
+                      "You feel the book's words, written in blood, seeping into your skin.\n " +
+                      "You are cursed.\n " +
+                      "You are doomed.\n " +
+                      "Game over.";
+            this.gameOver(str);
+        }
+
     }
 
     // --
@@ -217,6 +293,28 @@ class PentaImpl{
         }
     }
 
+    handleTrade(myitem, hisitem, popup, value) {
+        console.log("Trade popup callback", value);
+        if (value) {
+            // User clicked Yes
+            console.log("User wants to trade");
+            this.gameevents.mainchar.removeItem(hisitem);
+            this.chatting_with_villager.addItem(hisitem);
+            this.chatting_with_villager.removeItem(myitem);
+            this.gameevents.mainchar.addItem(myitem);
+            let str = "you traded " + hisitem + " for " + myitem + " with " + this.chatting_with_villager.name;
+
+            this.gameevents.mainchar.conversationCanvas.addAction(str);
+            if (window.gameLog) {
+                window.gameLog.info(`Trade completed: ${hisitem} for ${myitem}`);
+            }
+            this.check_game_logic();
+        } else {
+            // fired when user clicks no or presses escape
+        }
+        popup.close();
+    }
+
     showTradePopup(myitem, hisitem) {
         const popup = new PopupDialog("Would you like to trade " + myitem + " for " + hisitem + "?", {
             width: 300,
@@ -226,29 +324,35 @@ class PentaImpl{
         if (window.gameLog) {
             window.gameLog.info(`Trade proposed: ${myitem} for ${hisitem}`);
         }
+
+        console.log("Trade propsed: ", myitem, hisitem);
         
-        this.gameevents.mainchar.container.addChild(popup.show((value) => {
-            if (value) {
-                // User clicked Yes
-                console.log("User wants to trade");
-                this.gameevents.mainchar.removeItem(hisitem);
-                this.chatting_with_villager.addItem(hisitem);
-                this.chatting_with_villager.removeItem(myitem);
-                this.gameevents.mainchar.addItem(myitem);
-                let str = "you traded " + hisitem + " for " + myitem + " with " + this.chatting_with_villager.name;
-                
-                this.gameevents.mainchar.conversationCanvas.addAction(str);
-                if (window.gameLog) {
-                    window.gameLog.info(`Trade completed: ${hisitem} for ${myitem}`);
-                }
-            } else {
-                // User clicked No or pressed Escape
-                console.log("User declined trade");
-                if (window.gameLog) {
-                    window.gameLog.info("Trade declined");
-                }
-            }
-        }));
+        this.gameevents.mainchar.container.addChild(
+            popup.show(this.handleTrade.bind(this, myitem, hisitem, popup)));
+        //     popup.show((value) => {
+        //     console.log("Trade popup callback", value);
+        //     if (value) {
+        //         // User clicked Yes
+        //         console.log("User wants to trade");
+        //         this.gameevents.mainchar.removeItem(hisitem);
+        //         this.chatting_with_villager.addItem(hisitem);
+        //         this.chatting_with_villager.removeItem(myitem);
+        //         this.gameevents.mainchar.addItem(myitem);
+        //         let str = "you traded " + hisitem + " for " + myitem + " with " + this.chatting_with_villager.name;
+        //         
+        //         this.gameevents.mainchar.conversationCanvas.addAction(str);
+        //         if (window.gameLog) {
+        //             window.gameLog.info(`Trade completed: ${hisitem} for ${myitem}`);
+        //         }
+        //         this.check_game_logic();
+        //     } else {
+        //         // User clicked No or pressed Escape
+        //         console.log("User declined trade");
+        //         if (window.gameLog) {
+        //             window.gameLog.info("Trade declined");
+        //         }
+        //     }
+        // }));
         this.gameevents.mainchar.container.sortChildren();
     }
 
@@ -266,11 +370,9 @@ class PentaImpl{
                 this.gameevents.mainchar.addItem(myitem);
                 let str = "you got " + myitem + " from " + this.chatting_with_villager.name;
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
+                this.check_game_logic();
             } else {
-                let str = "you declined to take " + myitem + " from " + this.chatting_with_villager.name;
-                this.gameevents.mainchar.conversationCanvas.addAction(str);
-                // User clicked No or pressed Escape
-                console.log("User declined to take item");
+                // fired when user clicks no or presses escape
             }
         }));
         this.gameevents.mainchar.container.sortChildren();
@@ -285,6 +387,7 @@ class PentaImpl{
         console.log("showTakePopup", item);
         
         this.gameevents.mainchar.container.addChild(popup.show((value) => {
+            console.trace("showTakePopup callback");
             if (value) {
                 // User clicked Yes
                 this.chatting_with_villager.removeItem(item);
@@ -292,6 +395,8 @@ class PentaImpl{
                 let str = "you gave " + item + " to " + this.chatting_with_villager.name;
                 console.log(str);
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
+
+                this.check_game_logic();
             } else {
                 // fired when user clicks no or presses escape
             }
@@ -299,8 +404,13 @@ class PentaImpl{
         this.gameevents.mainchar.container.sortChildren();
     }
 
-
-
+    reset() {
+        if(this.shade_level.parent){
+            this.gameevents.level.container.removeChild(this.shade_level);
+        }
+        this.gameevents.mainchar.leave();
+        this.gameevents.mainchar = reset_stranger();
+    }
 }
 
 class CheckForItemsHandler extends GAME.RawHandler {
@@ -491,8 +601,6 @@ class LeaveChatHandler{
 
 PentaImpl.prototype.init = function(gameevents) {
 
-    oneShotInit(this.gameevents);
-
     // Create a bunch of villagers 
     // let v = new VILLAGER.Villager("nancy", "nancy-first-27c7", this.gameevents.level.spritesheet_map.get("villager2"), this.gameevents.level);
     let nancy = new Nancy(this.gameevents);
@@ -533,20 +641,93 @@ PentaImpl.prototype.init = function(gameevents) {
     this.gameevents.level.addBeing(jill);
     jill.arrive(1200, 800);
 
+    console.log("------ Registering key handlers");
     this.gameevents.register_key_handler("Backquote", new ConversationCanvasToggleHandler(this));
     this.gameevents.register_key_handler("KeyI", new CheckForItemsHandler(this));
     this.gameevents.register_key_handler("Enter", new EnterChatHandler(this));
+
+
+    // FIXME : used to test game over sequence
+    this.gameevents.register_key_handler("Equal", this.gameOverTest());
+
     this.gameevents.register_esc_handler(new LeaveChatHandler(this));
 
     SCENE.setbgmusic('windandfire');
 
-    console.log(this.gameevents.mainchar);
     this.gameevents.level.container.addChild( this.gameevents.mainchar.conversationCanvas.container);
+    this.setCanvasScroll(this.gameevents.mainchar.worldx, this.gameevents.mainchar.worldy+300);
+
+    this.gameevents.level.addFireOnReset(this.reset.bind(this));
+
     if (window.gameLog) {
         window.gameLog.info("Game initialization complete");
     }
+
+    let str = "You've just arrived in Penta City. You're a bit tired and want to find a place to stay. " +
+    "You look around and see a few people milling about. You can talk to them for information." +
+    "Try it out by hitting <enter> and talking to the people around you.";
+    this.gameevents.dialog_now(str, 'character', null, true, { character: null, fontsize: 14, width: 521, height: 192 });
+    
 } // init
 
+
+class Failure {
+
+    constructor(gevents, impl, str){
+        this.gevents = gevents;
+        this.impl = impl;
+        this.str = str;
+        if(!this.str || this.str == ""){
+            this.str = "Game over.";
+        }
+        this.dialog_up = false;
+
+        this.bg = new PIXI.Container();
+        this.rect = new PIXI.Graphics();
+        this.rect.rect(0, 0, 2048, 1536);
+        this.rect.fill({color: 0x000000});
+        this.bg.addChild(this.rect);
+        this.img = gevents.level.static_assets.get("failure");
+        this.img.x = this.gevents.level.container.x + this.gevents.mainchar.worldx - this.img.width/2;
+        this.img.y = this.gevents.level.container.y + this.gevents.mainchar.worldy - this.img.height/2;
+        this.bg.addChild(this.img);
+        this.bg.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
+    }
+
+    init(gevents){
+        SCENE.setbgmusic("gameover");
+    }
+
+    add_start_scene() {
+    }
+
+    tick(delta) {
+
+        if (!this.dialog_up) {
+            this.dialog_up = true;
+            let topleftx = this.img.x + this.img.width/2 - 120;
+            let toplefty = this.img.y + this.img.height/2 - 60;
+
+            this.gevents.dialog_now(this.str, 'custom', null, true, {fontsize: 14, width: 512, height: 192, topleftx: topleftx, toplefty: toplefty});
+        }
+
+        if (this.gevents.esc || this.gevents.last_key == 'Space') {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+
+            this.gevents.level.reset();
+            
+            return false; // finished
+        }
+        return true;
+    }
+
+    remove_scene() {
+        console.log("Failure remove_scene");
+        this.gevents.level.app.stage.removeChild(this.bg);
+    }
+};
 
 class Penta extends LEVEL.Level {
     constructor(){

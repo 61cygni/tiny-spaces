@@ -18,6 +18,9 @@ export class Dialog{
         this.width = UIConfig.DIALOG_WIDTH;
         this.height = UIConfig.DIALOG_HEIGHT;
 
+        this.topleftx = -1;
+        this.toplefty = -1;
+
         if(options && Object.hasOwn(options,'fontsize')){
             console.log("setting fontsize to "+options.fontsize);
             this.fontsize = options.fontsize;
@@ -45,6 +48,14 @@ export class Dialog{
         if(options && Object.hasOwn(options,'place')){
             console.log("setting place to "+options.place);
             this.place = options.place;
+        }
+        if(options && Object.hasOwn(options,'topleftx')){
+            console.log("setting topleftx to "+options.topleftx);
+            this.topleftx = options.topleftx;
+        }
+        if(options && Object.hasOwn(options,'toplefty')){
+            console.log("setting toplefty to "+options.toplefty);
+            this.toplefty = options.toplefty;
         }
         if(options && Object.hasOwn(options,'appendcb')){
             console.log("setting appendcb to "+options.appendcb);
@@ -111,7 +122,7 @@ export class Dialog{
             // console.log("msg.length: "+this.msg.length);
             let startindex = this.endindex;
             while (this.endindex++ < this.msg.length) {
-                if (this.msgHeight() >= (UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING))) { 
+                if (this.msgHeight() >= (this.height - (UIConfig.DIALOG_PADDING))) { 
                     // console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                     this.endindex--;// roll back to lasst character
                     this.pagepause = true;
@@ -145,6 +156,16 @@ export class Dialog{
 
         let topleftx = (640/2) - 120;
         let toplefty = 480 - (UIConfig.DIALOG_HEIGHT + 4);
+
+        if(this.place === "custom"){
+            if(this.topleftx == -1 || this.toplefty == -1){
+                console.log("Error: if using custom you must specify topleftx and toplefty");
+            } else {
+                topleftx = this.topleftx;
+                toplefty = this.toplefty;
+            }
+        }
+
         if(this.place == 'top'){
             toplefty = UIConfig.DIALOG_PADDING;
         }
@@ -170,26 +191,31 @@ export class Dialog{
         this.text = new PIXI.Text({text: "", style: this.style});
         this.text.x = topleftx + UIConfig.DIALOG_PADDING;
         this.text.y = toplefty + UIConfig.DIALOG_PADDING;
-        this.text.zIndex = GLOBALS.ZINDEX.DIALOG+1;
 
         this.container.addChild(this.text);
         this.container.sortChildren();
+        this.container.zIndex = GLOBALS.ZINDEX.DIALOG;
 
         if(this.place == 'character'){
-            if(!this.character){
-                    console.log("character container not found");
-                    return;
-            }
+            // if(!this.character){
+            //         console.log("character container not found");
+            //         return;
+            // }
+            console.log("adding container to character");
             this.gameevents.mainchar.container.addChild(this.container);
-            this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
-            this.charleftsprite.x = this.width;
-            this.charleftsprite.y = 0; 
-            this.charleftsprite.zIndex = GLOBALS.ZINDEX.DIALOG+1;
-            this.gameevents.mainchar.container.addChild(this.charleftsprite);
+            if(this.character != null){
+                this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);
+                this.charleftsprite.x = this.width;
+                this.charleftsprite.y = 0; 
+                this.charleftsprite.zIndex = GLOBALS.ZINDEX.DIALOG+1;
+                this.gameevents.mainchar.container.addChild(this.charleftsprite);
+            }
             this.gameevents.mainchar.curanim.zIndex = GLOBALS.ZINDEX.DIALOG+1;
             this.gameevents.mainchar.container.sortChildren();
         }else{
+            console.log("adding container to stage");
             this.level.app.stage.addChild(this.container);
+            this.level.app.stage.sortChildren();
         }
     }
 
@@ -214,10 +240,12 @@ export class Dialog{
 
     leave() {
         if(this.place == 'character'){
-            this.character.container.removeChild(this.container);
-            this.character.container.removeChild(this.charleftsprite);
-            this.charleftsprite.destroy();
-            this.charleftsprite = null;
+            if (this.character != null) {
+                this.character.container.removeChild(this.container);
+                this.character.container.removeChild(this.charleftsprite);
+                this.charleftsprite.destroy();
+                this.charleftsprite = null;
+            }
         }else{
             this.level.app.stage.removeChild(this.container);
         }

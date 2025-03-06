@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-
+import * as GLOBAL from './globals.js'
 import * as DIALOG from './dialog.js'
 import * as INPUT from './input.js'
 import * as SCREEN from './screen.js'
@@ -105,6 +105,7 @@ export class StaticBackground {
             if(this.state == 0){ // fade out main level
                 if(this.fade.finished){
                     this.fade.finalize();
+                    this.gevents.level.leave();
                     this.fade  = new FadeIn(this.gevents, this.logic.bg);
                     this.fade.init();
                     this.state = 1;
@@ -136,6 +137,7 @@ export class StaticBackground {
                     this.logic.remove_scene();
                     this.gevents.clear_dialogs();
                     this.fade  = new FadeIn(this.gevents, null);
+                    this.gevents.level.arrive();
                     this.fade.init();
                     this.state = 4;
                 }else{
@@ -191,6 +193,7 @@ class FadeOut{
             let newgfx = new PIXI.Graphics();
             newgfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
             newgfx.fill({color: 0x000000, alpha: this.alpha});
+            newgfx.zIndex = GLOBAL.ZINDEX.SYSTEM;
             this.gevents.level.app.stage.addChild(newgfx);
             if (this.gfx) {
                 this.gevents.level.app.stage.removeChild(this.gfx);
@@ -224,11 +227,13 @@ export class FadeIn{
         this.finished = false;
 
         this.container = new PIXI.Container();
+        this.container.zIndex = GLOBAL.ZINDEX.SYSTEM;
     }
 
     init() {
         if (this.bg) {
-            this.container.addChild(this.bg);
+            this.bg.zIndex = GLOBAL.ZINDEX.BACKGROUND;
+            this.gevents.level.app.stage.addChild(this.bg);
         }
         this.gfx = new PIXI.Graphics();
         this.gfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
@@ -244,6 +249,7 @@ export class FadeIn{
             let newgfx = new PIXI.Graphics();
             newgfx.rect(0, 0, SCREEN.instance().width, SCREEN.instance().height);
             newgfx.fill({color: 0x000000, alpha: this.alpha});
+            newgfx.zIndex = GLOBAL.ZINDEX.SYSTEM;
             this.container.addChild(newgfx);
             if (this.gfx) {
                 this.container.removeChild(this.gfx);

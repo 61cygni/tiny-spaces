@@ -1,5 +1,3 @@
-import * as PIXI from 'pixi.js';
-import * as GLOBALS from '@spaced/globals.js';
 import * as ACTIONS from './npc_actions.js';
 
 import * as BEING from '../../spaced/being.js';

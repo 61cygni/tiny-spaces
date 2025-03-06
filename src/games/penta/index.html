@@ -1,9 +1,36 @@
 <html>
 <head>
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Prevent page-level scrolling */
+    }
+
     table, th, td {
         border: 1px solid black;
         border-radius: 10px;
+    }
+
+    /* Canvas container styling */
+    #gameTab {
+        position: relative;
+        height: 1024px;
+        overflow: hidden; /* Hide overflow at container level */
+    }
+
+    #canvasContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* Enable scrolling here instead */
+    }
+
+    #spacecanvas {
+        position: relative; /* Change to relative */
+        display: block;
     }
 
     /* Tab styling */
@@ -138,7 +165,9 @@ label {
 
     <!-- Game tab -->
     <div id="gameTab" class="tabcontent">
-        <canvas id="spacecanvas" height="480px" width="640px"></canvas>
+        <div id="canvasContainer">
+            <canvas id="spacecanvas" height="1536px" width="2048"></canvas>
+        </div>
     </div>
 
     <!-- Log tab -->

@@ -67,7 +67,8 @@ export class PopupDialog {
         this.container.zIndex = GLOBALS.ZINDEX.POPUP;
 
         // Handle keyboard
-        window.addEventListener('keydown', this.handleKeyPress.bind(this));
+        this.boundHandleKeyPress = this.handleKeyPress.bind(this);
+        window.addEventListener('keydown', this.boundHandleKeyPress);
     }
 
     createButtons() {
@@ -129,6 +130,7 @@ export class PopupDialog {
     }
 
     handleKeyPress(e) {
+        console.log("handleKeyPress", e.key);
         if (e.key === 'Enter') {
             this.submit(true);
         } else if (e.key === 'Escape') {
@@ -149,7 +151,7 @@ export class PopupDialog {
     }
 
     close() {
-        window.removeEventListener('keydown', this.handleKeyPress.bind(this));
+        window.removeEventListener('keydown', this.boundHandleKeyPress);
         if (this.container.parent) {
             this.container.parent.removeChild(this.container);
         }

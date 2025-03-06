@@ -6,4 +6,5 @@ export const ZINDEX = {
     UI: 140,
     FOCUS: 150,
     POPUP: 1000,
+    SYSTEM: 10000, // highest level for changing levels, faing out etc. 
 };

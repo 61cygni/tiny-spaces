@@ -21,6 +21,10 @@ export class Being {
         this.here = false; // on level or not.
         this.sheet = spritesheet;
         this.level = level;
+        this.init();
+    }
+
+    init(){
         this.sprites = {};
         this.focus = false;
         this.container = new PIXI.Container();
@@ -156,6 +160,13 @@ export class Being {
             }else{
                 this.level.container.removeChild(this.container);
             }
+        }
+    }
+
+    // TODO: destroy sprites
+    destroy(){
+        for(let key in this.sprites){
+            this.sprites[key].destroy();
         }
     }
 

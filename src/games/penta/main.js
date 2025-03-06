@@ -1,23 +1,13 @@
-import { Assets } from 'pixi.js';
 
 import * as SPACED from '@spaced/mainloop.js';
-import * as SCREEN from '@spaced/screen.js';
-import * as STRANGER from './stranger.js';
 
 import * as PENTA from './pentacity.js';
 
-// Pixi init
+// Init pixi, use 'spacecanvas' from index.html as game canves and set the size
 SPACED.initApp(2496, 2000, 'spacecanvas');
 
-const sheet = await Assets.load("./spritesheets/villagers.json");
-
-let mainchar = new STRANGER.Stranger(sheet, SCREEN.instance().app);
-mainchar.addItem("Leather Pouch", "A small, old leather pouch.");
-mainchar.addItem("Old Key", "A small, old key.");
-mainchar.addItem("Necklace", "A beautiful necklace.");
-mainchar.addItem("blackbook", "Cursed black book.");
-
-mainchar.setFocus(true);
+// Initializes stranger and returns singleton
+let mainchar = await PENTA.static_init();
 
 const levels = [
     PENTA.Instance,
