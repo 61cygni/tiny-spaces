@@ -124,6 +124,7 @@ export class StaticBackground {
                 if (!this.logic.tick(delta)){
                     if (this.next_in_chain) {
                         // will handle fading out next scene
+                        this.logic.remove_scene();
                         this.gevents.add_to_tick_event_queue(this.next_in_chain);
                         this.state = 4;
                     } else {
