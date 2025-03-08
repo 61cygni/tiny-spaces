@@ -70,7 +70,6 @@ export class Being {
 
         this.screencenterx = SCREEN.instance().width/2;
         this.screencentery = SCREEN.instance().height/2;
-        console.log("Screen center ", this.screencenterx, this.screencentery);
     }
 
     setFocus(bool){

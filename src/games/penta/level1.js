@@ -1,4 +1,5 @@
 
+import * as LEVEL  from "@spaced/level.js";
 import * as VILLAGER from "./villager.js";
 import * as SCRIPT from "./script.js";
 
@@ -91,13 +92,42 @@ export function register_villagers(gameevents){
     jill.arrive(1200, 800);
 }
 
+export function spritesheets(){
+    return [new LEVEL.Sprite("villager2", "./spritesheets/villager2.json"),
+        new LEVEL.Sprite("villager3", "./spritesheets/villager3.json"),
+        new LEVEL.Sprite("villager4", "./spritesheets/villager4.json"),
+        new LEVEL.Sprite("villager5", "./spritesheets/villager5.json"),
+        new LEVEL.Sprite("villager6", "./spritesheets/villager6.json"),
+        new LEVEL.Sprite("villager7", "./spritesheets/villager7.json"),
+        new LEVEL.Sprite("villager8", "./spritesheets/villager8.json"),
+    ];
+}
+
+export function reset_stranger(stranger) {
+    stranger.reset();
+    stranger.setFocus(true);
+
+    stranger.addItem("Leather Pouch", "A small, old leather pouch.");
+    stranger.addItem("Old Key", "A small, old key.");
+    stranger.addItem("Necklace", "A beautiful necklace.");
+
+    stranger.setFocus(true);
+
+    return stranger;
+}
+
 // --
 // Primary game rules based on who has what 
 // --
-export function check_game_logic(impl){
-    console.log("check_game_logic");
+export function check_item_logic(impl){
+    console.log("check_item_logic");
     // if the character has the black book but not the locket, then the character becomes cursed
     if(impl.gameevents.mainchar.hasItem("blackbook") && !impl.gameevents.mainchar.hasItem("locket")){
         impl.gameOver(SCRIPT.GAME_OVER_BOOK_BLURB);
     }
+}
+
+export function attack_logic(impl, stranger){
+    console.log("attack_logic");
+    impl.gameOver(SCRIPT.GAME_OVER_ATTACK_BLURB);
 }

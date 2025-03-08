@@ -46,10 +46,10 @@ window.addEventListener(
 
         if(event.code == 'Space'){
             if(!inputvisible){
-                console.log("Space pressed while input not visible");
+                //console.log("Space pressed while input not visible");
                 event.preventDefault();
             }else if(gameevents.dqueue.length > 0 && !gameevents.dqueue[0].finished){
-                console.log("Space pressed while dialog is not finished");
+                // console.log("Space pressed while dialog is not finished");
                 event.preventDefault();
             }
         }

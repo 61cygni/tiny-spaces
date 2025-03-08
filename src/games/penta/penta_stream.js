@@ -50,7 +50,6 @@ export async function invoke_prompt_input_stream(impl, slug, sysinput, send_to_d
         }
     }
     // must let the dialog know the message is done
-    console.log("penta_stream.js: dialog_stream_msg_end");
     impl.gameevents.dialog_stream_msg_end();
 
     let parsed = PROTO.parse_response(session);

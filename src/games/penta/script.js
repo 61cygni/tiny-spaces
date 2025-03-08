@@ -15,3 +15,10 @@ export const GAME_OVER_BOOK_BLURB = "You grab the black book and immediately fee
                       "You are cursed.\n " +
                       "You are doomed.\n\n " +
                       "Game over.";
+
+
+export const GAME_OVER_ATTACK_BLURB = "You've been attacked by the villager with such suddeness and violence, " +
+                      "you stumble and fall in shock. In the periphery you see many of the other villagers rushing to join. " +
+                      "You try and get up, but realize you've been knifed in the gut and are bleeding out. " +
+                      "Your vision dims with your strength. And then darkness. \n\n " 
+                      "Game over.";

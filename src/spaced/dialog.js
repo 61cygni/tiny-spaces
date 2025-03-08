@@ -22,19 +22,19 @@ export class Dialog{
         this.toplefty = -1;
 
         if(options && Object.hasOwn(options,'fontsize')){
-            console.log("setting fontsize to "+options.fontsize);
+            // console.log("setting fontsize to "+options.fontsize);
             this.fontsize = options.fontsize;
         }
         if(options && Object.hasOwn(options,'pad')){
-            console.log("setting padding to "+options.pad);
+            //console.log("setting padding to "+options.pad);
             this.pad = options.pad;
         }
         if(options && Object.hasOwn(options,'width')){
-            console.log("setting width to "+options.width);
+            //console.log("setting width to "+options.width);
             this.width = options.width;
         }
         if(options && Object.hasOwn(options,'height')){
-            console.log("setting height to "+options.height);
+            //console.log("setting height to "+options.height);
             this.height = options.height;
         }
         if(options && Object.hasOwn(options,'character')){
@@ -42,23 +42,23 @@ export class Dialog{
             this.character = options.character;
         }
         if(options && Object.hasOwn(options,'gameevents')){
-            console.log("setting gameevents to "+options.gameevents);
+            // console.log("setting gameevents to "+options.gameevents);
             this.gameevents = options.gameevents;
         }
         if(options && Object.hasOwn(options,'place')){
-            console.log("setting place to "+options.place);
+            // console.log("setting place to "+options.place);
             this.place = options.place;
         }
         if(options && Object.hasOwn(options,'topleftx')){
-            console.log("setting topleftx to "+options.topleftx);
+            //console.log("setting topleftx to "+options.topleftx);
             this.topleftx = options.topleftx;
         }
         if(options && Object.hasOwn(options,'toplefty')){
-            console.log("setting toplefty to "+options.toplefty);
+            //console.log("setting toplefty to "+options.toplefty);
             this.toplefty = options.toplefty;
         }
         if(options && Object.hasOwn(options,'appendcb')){
-            console.log("setting appendcb to "+options.appendcb);
+            //console.log("setting appendcb to "+options.appendcb);
             this.appendcallback = options.appendcb;
         }
         if(options && Object.hasOwn(options,'streaming')){
@@ -67,8 +67,6 @@ export class Dialog{
             this.streaming = false;
         }
         // console.log("Streaming set to "+options.streaming);
-
-        console.log("Dialog fontsize: "+this.fontsize);
 
         this.msg = msg;
         this.finished = false;
@@ -85,7 +83,7 @@ export class Dialog{
             wordWrap: true,
             wordWrapWidth: this.width - (2*this.pad)
         });
-        console.log("Dialog fontsize: "+this.style.fontSize);
+
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.DIALOG;
         this.container.sortableChildren = true;
@@ -201,7 +199,7 @@ export class Dialog{
             //         console.log("character container not found");
             //         return;
             // }
-            console.log("adding container to character");
+
             this.gameevents.mainchar.container.addChild(this.container);
             if(this.character != null){
                 this.charleftsprite = new PIXI.Sprite(this.character.sprites['LEFT'].textures[1]);

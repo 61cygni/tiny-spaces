@@ -68,16 +68,7 @@ function reset_stranger(){
         console.log("Error: stranger not initialized");
         return;
     }
-    stranger.reset();
-    stranger.setFocus(true);
-
-    stranger.addItem("Leather Pouch", "A small, old leather pouch.");
-    stranger.addItem("Old Key", "A small, old key.");
-    stranger.addItem("Necklace", "A beautiful necklace.");
-
-    stranger.setFocus(true);
-
-    return stranger;
+    return LEVEL1.reset_stranger(stranger);
 }
 
 
@@ -91,14 +82,7 @@ function static_images(){
 }
 
 function spritesheets(){
-    return [new LEVEL.Sprite("villager2", "./spritesheets/villager2.json"),
-        new LEVEL.Sprite("villager3", "./spritesheets/villager3.json"),
-        new LEVEL.Sprite("villager4", "./spritesheets/villager4.json"),
-        new LEVEL.Sprite("villager5", "./spritesheets/villager5.json"),
-        new LEVEL.Sprite("villager6", "./spritesheets/villager6.json"),
-        new LEVEL.Sprite("villager7", "./spritesheets/villager7.json"),
-        new LEVEL.Sprite("villager8", "./spritesheets/villager8.json"),
-    ];
+    return LEVEL1.spritesheets();
 }
 
 
@@ -164,6 +148,13 @@ class PentaImpl{
                 window.gameLog.info("Conversation ended");
             }
             // cleanup handled by append_callback in EnterChatHandler
+        }else if (action.action == "attack"){
+            this.gameevents.input_leave();
+            this.is_chatting = false;
+            if (window.gameLog) {
+                window.gameLog.info("You were attacked by " + this.chatting_with_villager.name);
+            }
+            LEVEL1.attack_logic(this, this.chatting_with_villager);
         }else if(action.action == "give"){
             let myitem = null; // villager's item
             if (action.myitem) {
@@ -254,7 +245,7 @@ class PentaImpl{
                 if (window.gameLog) {
                     window.gameLog.info(`Trade completed: ${hisitem} for ${myitem}`);
                 }
-                LEVEL1.check_game_logic(this);
+                LEVEL1.check_item_logic(this);
             } else {
                 // User clicked No or pressed Escape
                 console.log("User declined trade");
@@ -280,7 +271,7 @@ class PentaImpl{
                 this.gameevents.mainchar.addItem(myitem);
                 let str = "you got " + myitem + " from " + this.chatting_with_villager.name;
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
-                LEVEL1.check_game_logic(this);
+                LEVEL1.check_item_logic(this);
             } else {
                 // fired when user clicks no or presses escape
             }
@@ -294,10 +285,9 @@ class PentaImpl{
             height: 150
         });
 
-        console.log("showTakePopup", item);
         
         this.gameevents.mainchar.container.addChild(popup.show((value) => {
-            console.trace("showTakePopup callback");
+
             if (value) {
                 // User clicked Yes
                 this.chatting_with_villager.removeItem(item);
@@ -306,7 +296,7 @@ class PentaImpl{
                 console.log(str);
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
 
-                LEVEL1.check_game_logic(this);
+                LEVEL1.check_item_logic(this);
             } else {
                 // fired when user clicks no or presses escape
             }
@@ -448,6 +438,7 @@ class EnterChatHandler {
             }
             sysinput = impl.chatting_with_villager.add_options(sysinput);
             console.log("EnterChatHandler: sysinput", sysinput);
+
             PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.send_to_dialog.bind(this), this.log_response.bind(this, this.impl.chatting_with_villager.name))
         } else {
             BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
@@ -456,7 +447,6 @@ class EnterChatHandler {
     }
 
     finalize(){
-        console.log("EnterChatHandler finalize");
         this.gameevents.level.container.addChild(impl.shade_level);
         // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
         this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
@@ -477,18 +467,15 @@ class LeaveChatHandler{
     }
 
     init(){
-        console.log("LeaveChatHandler init");
         this.finished = true;
         this.gameevents.register_esc_handler(this); 
     }
 
     tick(){
-        console.log("LeaveChatHandler tick");
         this.finished = true;
     }
 
     finalize(){
-        console.log("LeaveChatHandler finalize");
         this.finished = false;
         this.gameevents.input_leave();
         this.gameevents.level.container.removeChild(impl.shade_level);

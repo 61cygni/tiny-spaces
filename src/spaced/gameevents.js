@@ -362,7 +362,6 @@ export class GameEvents {
     dialog_stream(text = "", place = 'bottom', options = null) {
         // if an existing dialog is up and finished, clean it up
         if (this.dqueue.length > 0 && this.dqueue[0].finished) {
-            console.log("dialog_stream: dialog finished. Leaving");
             this.dqueue[0].leave();
             this.dqueue.shift();
         }

@@ -181,7 +181,7 @@ export class LevelContext {
     createLabelDic(){
         this.labeldict  = new Map()
         this.coordsdict = new Map()
-        console.log("Creating label dictionary");
+
         for(let l = 0; l < this.maplabels.length; l++){
             // console.log(this.maplabels);
             let label = this.maplabels[l];
@@ -436,7 +436,6 @@ function loadAssetsSync(levelcontext) {
         // size of g_ctx.tileset in px
         g_ctx.tilesetpxw = texture.width;
         g_ctx.tilesetpxh = texture.height;
-        console.log("Texture size w:", g_ctx.tilesetpxw, "h:", g_ctx.tilesetpxh);
         // size of g_ctx.tileset in tiles
         let tileandpad = g_ctx.tiledimx + CONFIG.tilesetpadding;
         let numtilesandpadw = Math.floor(g_ctx.tilesetpxw / tileandpad);

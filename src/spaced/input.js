@@ -39,7 +39,7 @@ export class TextInput {
 
         // Event handlers
         this.input.addEventListener('focus', () => {
-            console.log("TextInput focus");
+            // console.log("TextInput focus");
             this.gevents.pauseevents = true;
             KeyEvents.set_text_input_focus(true);
             this.focus = true;
@@ -47,7 +47,7 @@ export class TextInput {
         });
 
         this.input.addEventListener('blur', () => {
-            console.log("TextInput blur");
+            // console.log("TextInput blur");
             KeyEvents.set_text_input_focus(false);
             this.focus = false;
         });
@@ -90,7 +90,7 @@ export class TextInput {
     }
 
     arrive() {
-        console.log("Adding text input");
+        // console.log("Adding text input");
         document.body.appendChild(this.input);
         this.input.focus();
         KeyEvents.set_input_visible(true);
