@@ -1,4 +1,14 @@
 
+// --
+// Level logic:
+//   - Hit on Jane to get the locket. Do talk to her again or she'll attack you
+//   - Bill has a rock. Trade anything for the rock that isn't the locket 
+//   - Once you have the locket, talk to Bob and get the black book.
+//   - Trade Alice the rock for the bible  
+//    - Take all these things to Gordy
+// --
+
+
 import * as LEVEL  from "@spaced/level.js";
 import * as VILLAGER from "./villager.js";
 import * as SCRIPT from "./script.js";
@@ -54,7 +64,7 @@ class Jill extends VILLAGER.Villager {
 export function register_villagers(gameevents){
      // Create a bunch of villagers 
     let nancy = new Nancy(gameevents);
-    nancy.addItem("Black mask", "A black mask with a red eye.");
+    nancy.addItem("blackmask", "A black mask with a red eye.");
     gameevents.level.addBeing(nancy);
     nancy.arrive(1000, 400);
 
@@ -75,7 +85,7 @@ export function register_villagers(gameevents){
 
     let alice = new Alice(gameevents);
     alice.addItem("Medallion", "A small, old medallion.");
-    alice.addItem("Bible", "A tattered, old bible.");
+    alice.addItem("bible", "A tattered, old bible.");
     gameevents.level.addBeing(alice);
     alice.arrive(800, 400);
 
@@ -109,7 +119,11 @@ export function reset_stranger(stranger) {
 
     stranger.addItem("Leather Pouch", "A small, old leather pouch.");
     stranger.addItem("Old Key", "A small, old key.");
-    stranger.addItem("Necklace", "A beautiful necklace.");
+    stranger.addItem("necklace", "A beautiful necklace.");
+    
+    stranger.addItem("bible", "A tattered, old bible.");
+    stranger.addItem("blackbook", "An unadorned, black book.");
+    stranger.addItem("locket", "An unadorned, black book.");
 
     stranger.setFocus(true);
 
@@ -124,6 +138,15 @@ export function check_item_logic(impl){
     // if the character has the black book but not the locket, then the character becomes cursed
     if(impl.gameevents.mainchar.hasItem("blackbook") && !impl.gameevents.mainchar.hasItem("locket")){
         impl.gameOver(SCRIPT.GAME_OVER_BOOK_BLURB);
+    }
+    if(impl.gameevents.mainchar.hasItem("blackmask")){
+        impl.gameOver(SCRIPT.GAME_OVER_BLACKMASK_BLURB);
+    }
+
+    if(impl.chatting_with_villager.name == "Gordy" && 
+        impl.chatting_with_villager.hasItem("blackbook") && 
+        impl.chatting_with_villager.hasItem("bible")){ 
+        impl.victory(SCRIPT.GAME_VICTORY_BLURB);
     }
 }
 

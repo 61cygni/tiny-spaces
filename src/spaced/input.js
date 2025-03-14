@@ -53,6 +53,7 @@ export class TextInput {
         });
 
         this.input.addEventListener('keypress', (event) => {
+
             if (event.key === 'Enter') {
                 const val = this.input.value;
                 console.log("Text input: " + val);
@@ -105,7 +106,6 @@ export class TextInput {
     }
 
     leave() {
-        console.log("Leaving text input");
         document.body.removeChild(this.input);
         KeyEvents.set_text_input_focus(false);
         this.focus = false;

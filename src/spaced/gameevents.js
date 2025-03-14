@@ -332,7 +332,9 @@ export class GameEvents {
     }
 
 
-
+    dialog_up(){
+        return this.dqueue.length > 0;
+    }
 
     // --
     // Display a dialog on the screen. Uses a stack to manage multiple dialog requests

@@ -28,9 +28,16 @@ export function register_input_handler(callme){
 window.addEventListener(
     "keydown", (event) => {
 
+
         if(textfocus){
             // When text input has focus, don't prevent default behavior
-            // This allows space key and other keys to work in the input
+            // This allows space key and other keys to work in the input.
+            // Still support escape key
+            if(event.code == 'Escape'){
+                if(gameevents){
+                    gameevents.handle_escape();
+                }
+            }
             return;
         }
 

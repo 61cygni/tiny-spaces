@@ -54,6 +54,7 @@ export async function static_init() {
     // Sound for camineet
     sound.add('windandfire', './audio/windandfire.m4a');
     sound.add('gameover', './audio/gameover.mp3');
+    sound.add('victory', './audio/won.mp3');
 
     sound.volumeAll = 0.05;
 
@@ -77,6 +78,7 @@ function static_images(){
     // all static images to load;
     let static_img = [];
     static_img.push(new LEVEL.StaticImage("failure", "./img/failed.png", 2048/1.7, 1536/1.7, 0, 0));  
+    static_img.push(new LEVEL.StaticImage("victory", "./img/won.png", 2048/1.7, 1536/1.7, 0, 0));  
 
     return static_img;
 }
@@ -122,6 +124,18 @@ class PentaImpl{
         this.gameevents.mainchar.leave();
 
         let failure_splash = new GAME.StaticBackground(new Failure(this.gameevents, this, str, this.gameevents.mainchar.worldx, this.gameevents.mainchar.worldy), this.gameevents, -1, -1);
+        failure_splash.chain(new GAME.ChangeLevel("Penta-start1", this.gameevents));
+
+        this.gameevents.mainchar = reset_stranger();
+        this.gameevents.add_to_tick_event_queue(failure_splash); 
+    }
+
+    victory(str){
+        this.gameevents.input_leave();
+        this.gameevents.clear_dialogs();
+        this.gameevents.mainchar.leave();
+
+        let failure_splash = new GAME.StaticBackground(new Victory(this.gameevents, this, str, this.gameevents.mainchar.worldx, this.gameevents.mainchar.worldy), this.gameevents, -1, -1);
         failure_splash.chain(new GAME.ChangeLevel("Penta-start1", this.gameevents));
 
         this.gameevents.mainchar = reset_stranger();
@@ -290,9 +304,9 @@ class PentaImpl{
 
             if (value) {
                 // User clicked Yes
-                this.chatting_with_villager.removeItem(item);
-                this.gameevents.mainchar.addItem(item);
-                let str = "you gave " + item + " to " + this.chatting_with_villager.name;
+                this.gameevents.mainchar.removeItem(item);
+                this.chatting_with_villager.addItem(item);
+                let str = this.chatting_with_villager.name + " took " + item;
                 console.log(str);
                 this.gameevents.mainchar.conversationCanvas.addAction(str);
 
@@ -350,6 +364,13 @@ class EnterChatHandler {
 
     init(){
 
+        if(this.gameevents.dialog_up()){
+            console.log("Dialog is up. Bailing.");
+            this.finished = true;
+            this.gameevents.register_key_handler("Enter", new EnterChatHandler(impl));
+            return;
+        }
+
         let v = this.gameevents.level.get_closest_being(this.gameevents.mainchar, 200);
         if(v){
             console.log("Talking to ", v.name);
@@ -365,6 +386,14 @@ class EnterChatHandler {
     }
 
     tick(){ // go directly to finalize
+        this.gameevents.level.container.addChild(impl.shade_level);
+        // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
+        this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
+        if(impl.streaming){
+            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), fontsize: 14, width: 256*1.5, height: 96*1.5});
+        }else{
+            this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
+        }
         this.finished = true;
     }
 
@@ -447,15 +476,6 @@ class EnterChatHandler {
     }
 
     finalize(){
-        this.gameevents.level.container.addChild(impl.shade_level);
-        // this.gameevents.level.container.addChild(this.gameevents.mainchar.conversationCanvas.container);
-        this.gameevents.input_now("", this.handle_input.bind(this), {location: 'mainchar'});
-        if(impl.streaming){
-            this.gameevents.dialog_stream("", 'character', {character: impl.chatting_with_villager, appendcb: this.append_callback.bind(this), fontsize: 14, width: 256*1.5, height: 96*1.5});
-        }else{
-            this.gameevents.dialog_now("", 'character', null, true, {character: impl.chatting_with_villager});
-        }
-        this.finished = false;
     }
 } // Class EnterChatHandler
 
@@ -563,7 +583,7 @@ class Failure {
             this.gevents.dialog_now(this.str, 'custom', null, true, {fontsize: 14, width: 512, height: 192, topleftx: topleftx, toplefty: toplefty});
         }
 
-        if (this.gevents.esc || this.gevents.last_key == 'Space') {
+        if (this.gevents.esc) {
             this.gevents.last_key = null;
             this.gevents.esc = false;
             this.finished = true;
@@ -580,6 +600,65 @@ class Failure {
         this.gevents.level.app.stage.removeChild(this.bg);
     }
 };
+
+class Victory {
+
+    constructor(gevents, impl, str, x, y){
+        this.gevents = gevents;
+        this.impl = impl;
+        this.str = str;
+        if(!this.str || this.str == ""){
+            this.str = "You win!";
+        }
+        this.dialog_up = false;
+
+        this.bg = new PIXI.Container();
+        this.rect = new PIXI.Graphics();
+        this.rect.rect(0, 0, 2048, 1536);
+        this.rect.fill({color: 0x000000});
+        this.bg.addChild(this.rect);
+        this.img = gevents.level.static_assets.get("victory");
+        this.img.x = this.gevents.level.container.x + x - this.img.width/2;
+        this.img.y = this.gevents.level.container.y + y - this.img.height/2;
+        this.bg.addChild(this.img);
+        this.bg.zIndex = GLOBALS.ZINDEX.DIALOG - 1;
+    }
+
+    init(gevents){
+        SCENE.setbgmusic("victory");
+    }
+
+    add_start_scene() {
+    }
+
+    tick(delta) {
+
+        if (!this.dialog_up) {
+            this.dialog_up = true;
+            let topleftx = this.img.x + this.img.width/2 - 120;
+            let toplefty = this.img.y + this.img.height/2 - 60;
+
+            this.gevents.dialog_now(this.str, 'custom', null, true, {fontsize: 14, width: 512, height: 192, topleftx: topleftx, toplefty: toplefty});
+        }
+
+        if (this.gevents.esc) {
+            this.gevents.last_key = null;
+            this.gevents.esc = false;
+            this.finished = true;
+
+            this.gevents.level.reset();
+            
+            return false; // finished
+        }
+        return true;
+    }
+
+    remove_scene() {
+        console.log("Victory remove_scene");
+        this.gevents.level.app.stage.removeChild(this.bg);
+    }
+};
+
 
 class Penta extends LEVEL.Level {
     constructor(){

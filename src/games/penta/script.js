@@ -16,9 +16,24 @@ export const GAME_OVER_BOOK_BLURB = "You grab the black book and immediately fee
                       "You are doomed.\n\n " +
                       "Game over.";
 
+export const GAME_OVER_BLACKMASK_BLURB = "You grab the black mask and have an almost causal urge to put it on. " +
+                      "As you do, you sense the mask pressing to your skin, and then starting to burn. " +
+                      "You claw at your face to get it off, but it's far too late. " +
+                      "The last thing you see as you fall into the embrace of the curse is the glee on the " +
+                      "villager's face as she watches your torment .\n\n " +
+                      "Game over.";
+
 
 export const GAME_OVER_ATTACK_BLURB = "You've been attacked by the villager with such suddeness and violence, " +
                       "you stumble and fall in shock. In the periphery you see many of the other villagers rushing to join. " +
                       "You try and get up, but realize you've been knifed in the gut and are bleeding out. " +
                       "Your vision dims with your strength. And then darkness. \n\n " 
                       "Game over.";
+
+export const GAME_VICTORY_BLURB = "The man takes the black book and the bible. 'Ah' he says, "+
+                                  "yes, this will do. With this I can break the curse. " +
+                                  "He bows his head and begins to chant. " +
+                                  "The villagers look on, some with tears in their eyes, some with looks of relief. " +
+                                  "You have done what no one else has been able to do. " +
+                                  "You have saved the village. \n\n" +
+                                  "You are a hero. "; 
