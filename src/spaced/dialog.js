@@ -120,7 +120,7 @@ export class Dialog{
             // console.log("msg.length: "+this.msg.length);
             let startindex = this.endindex;
             while (this.endindex++ < this.msg.length) {
-                if (this.msgHeight() >= (this.height - (UIConfig.DIALOG_PADDING))) { 
+                if (this.msgHeight() >= (this.height - (UIConfig.DIALOG_PADDING*2))) { 
                     // console.log("nextpage: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                     this.endindex--;// roll back to lasst character
                     this.pagepause = true;
@@ -310,7 +310,7 @@ export class Dialog{
         
         if ((this.endindex - this.startindex) < this.msg.length) {
             this.endindex++;
-            if (this.msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT - (UIConfig.DIALOG_PADDING)) {
+            if (this.msgHeight() >= this.height - (UIConfig.DIALOG_PADDING*2)) {
                 // console.log("TICK: msgHeight() >= UIConfig.DIALOG_MAX_HEIGHT");
                 // console.log("TICK: msgHeight(): "+this.msgHeight());
                 // console.log("TICK: UIConfig.DIALOG_MAX_HEIGHT: "+UIConfig.DIALOG_MAX_HEIGHT);
