@@ -12,6 +12,7 @@
 import * as LEVEL  from "@spaced/level.js";
 import * as VILLAGER from "./villager.js";
 import * as SCRIPT from "./script.js";
+import * as ACTIONS from './npc_actions.js';
 
 // --
 // NPCs
@@ -61,6 +62,34 @@ class Jill extends VILLAGER.Villager {
     }
 }
 
+class Chicken extends VILLAGER.Villager {
+    constructor(gameevents){
+        super("Chicken", "", gameevents.level.spritesheet_map.get("chicken"), gameevents.level);
+
+        // delete all actions except WALK and THINK
+        this.Action = {
+            'WALK': new ACTIONS.WalkAction(),
+            'THINK': new ACTIONS.ThinkAction()
+        };
+        this.numActions = Object.keys(this.Action).length;
+
+        // loop through all animations and scale them down by 2
+        for(const key in this.sprites){
+            console.log(key);
+            this.sprites[key].scale.set(.5);
+        }
+
+        // slow down walking speed
+        this.movedelta = .4;
+    }
+
+    getChatResponse(message){
+        return "....";
+    }
+}
+
+
+
 export function register_villagers(gameevents){
      // Create a bunch of villagers 
     let nancy = new Nancy(gameevents);
@@ -100,16 +129,44 @@ export function register_villagers(gameevents){
     jill.addItem("key", "A small, old key.");
     gameevents.level.addBeing(jill);
     jill.arrive(1200, 800);
+
+    let chicken = new Chicken(gameevents);
+    chicken.addItem("Chicken", "A chicken.");
+    gameevents.level.addBeing(chicken);
+    chicken.arrive(600, 1400);
+
+    let chicken2 = new Chicken(gameevents);
+    chicken2.addItem("Chicken", "A chicken.");
+    gameevents.level.addBeing(chicken2);
+    chicken2.arrive(400, 1400);
+
+    let chicken3 = new Chicken(gameevents);
+    chicken3.addItem("Chicken", "A chicken.");
+    gameevents.level.addBeing(chicken3);
+    chicken3.arrive(500, 1400);
+
+    let chicken4 = new Chicken(gameevents);
+    chicken4.addItem("Chicken", "A chicken.");
+    gameevents.level.addBeing(chicken4);
+    chicken4.arrive(300, 1400);
+
+    let chicken5 = new Chicken(gameevents);
+    chicken5.addItem("Chicken", "A chicken.");
+    gameevents.level.addBeing(chicken5);
+    chicken5.arrive(100, 1400);
+    
 }
 
 export function spritesheets(){
     return [new LEVEL.Sprite("villager2", "./spritesheets/villager2.json"),
         new LEVEL.Sprite("villager3", "./spritesheets/villager3.json"),
+        new LEVEL.Sprite("villager-jane", "./spritesheets/villager-jane.json"),
         new LEVEL.Sprite("villager4", "./spritesheets/villager4.json"),
         new LEVEL.Sprite("villager5", "./spritesheets/villager5.json"),
         new LEVEL.Sprite("villager6", "./spritesheets/villager6.json"),
         new LEVEL.Sprite("villager7", "./spritesheets/villager7.json"),
         new LEVEL.Sprite("villager8", "./spritesheets/villager8.json"),
+        new LEVEL.Sprite("chicken", "./spritesheets/chicken.json"),
     ];
 }
 
@@ -121,9 +178,9 @@ export function reset_stranger(stranger) {
     stranger.addItem("Old Key", "A small, old key.");
     stranger.addItem("necklace", "A beautiful necklace.");
     
-    stranger.addItem("bible", "A tattered, old bible.");
-    stranger.addItem("blackbook", "An unadorned, black book.");
-    stranger.addItem("locket", "An unadorned, black book.");
+    // stranger.addItem("bible", "A tattered, old bible.");
+    // stranger.addItem("blackbook", "An unadorned, black book.");
+    // stranger.addItem("locket", "An unadorned, black book.");
 
     stranger.setFocus(true);
 

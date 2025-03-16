@@ -460,17 +460,25 @@ class EnterChatHandler {
             strangeritems: impl.gameevents.mainchar.getItemNames(),
             msg: input,
         };
-        if (impl.streaming) {
-            // force end of dialog if the user inputs something new. 
-            if(this.impl.gameevents.dqueue.length > 0){
-                this.impl.gameevents.dqueue[0].finished = true;
-            }
-            sysinput = impl.chatting_with_villager.add_options(sysinput);
-            console.log("EnterChatHandler: sysinput", sysinput);
 
-            PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.send_to_dialog.bind(this), this.log_response.bind(this, this.impl.chatting_with_villager.name))
-        } else {
-            BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
+        if (impl.chatting_with_villager.slug != "") {
+
+            if (impl.streaming) {
+                // force end of dialog if the user inputs something new. 
+                if (this.impl.gameevents.dqueue.length > 0) {
+                    this.impl.gameevents.dqueue[0].finished = true;
+                }
+                sysinput = impl.chatting_with_villager.add_options(sysinput);
+                console.log("EnterChatHandler: sysinput", sysinput);
+
+                PENTA_STREAM.invoke_prompt_input_stream(this.impl, impl.chatting_with_villager.slug, sysinput, this.send_to_dialog.bind(this), this.log_response.bind(this, this.impl.chatting_with_villager.name))
+            } else {
+                BT.bt(impl.chatting_with_villager.slug, sysinput, this.handle_bt_response.bind(this));
+            }
+        }else{
+            let response = impl.chatting_with_villager.getChatResponse(input);
+            this.send_to_dialog(response);
+            this.log_response(impl.chatting_with_villager.name, response);
         }
         
     }
