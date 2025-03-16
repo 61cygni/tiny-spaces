@@ -14,6 +14,8 @@ import * as VILLAGER from "./villager.js";
 import * as SCRIPT from "./script.js";
 import * as ACTIONS from './npc_actions.js';
 
+import { sound } from '@pixi/sound';
+
 // --
 // NPCs
 // Probably don't need to be classes, but in the future could extend the functions to change behavior. 
@@ -84,6 +86,7 @@ class Chicken extends VILLAGER.Villager {
     }
 
     getChatResponse(message){
+        sound.play('chicken');
         return "....";
     }
 }

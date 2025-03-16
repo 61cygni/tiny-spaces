@@ -54,6 +54,7 @@ export async function static_init() {
     // Sound for camineet
     sound.add('windandfire', './audio/windandfire.m4a');
     sound.add('gameover', './audio/gameover.mp3');
+    sound.add('chicken', './audio/chicken.mp3');
     sound.add('victory', './audio/won.mp3');
 
     sound.volumeAll = 0.05;
