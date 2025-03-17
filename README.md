@@ -26,10 +26,21 @@ Point your browser at the running server (e.g. http://localhost:5173/) and click
 
 The code for mage is in [src/games/mage/](src/games/mage/).
 
+## Penta
+
+<img src="img/penta.png" width="120">
+
+Penta is a demo game where the main character walks around a cursed town trying
+to figure out what is going on, and eventually remove the curse. It's largely an
+experiement in using LLMs as a key part of gameplay. 
+
+If you're interested in building on **Tiny Spaces** this is a good place to start.
+
+Docs for Penta can be found at [Penta](src/games/penta/README.md).
 
 ## SpaceD
 
-SpaceD is a super minimal game engine for building javascript based rpgs and interactive fiction. 
+SpaceD is a super minimal game engine for building AI enabled, javascript rpgs and interactive fiction entirely in the browser. 
 
 Documentation can be found in [spaced docs](src/spaced/README.md)
 
