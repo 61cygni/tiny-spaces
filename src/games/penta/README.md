@@ -9,7 +9,7 @@ The game runs entirely in browser and the only dependencies are Braintrust and P
 
 To run Penta, you'll need a [Braintrust](https://www.braintrust.dev/) account that has one or more LLMs configured (I generally test with Grok 2 and gtp-4o). Given that the steps are simple:
 
-- First you'll have to push to prompts to braintrust. The prompts are in [braintrust/pentacity.ts](braintrust/pentacity.ts). To do so issue the following command from the project root directory:
+- First you'll have to push to prompts to braintrust. The prompts are in [braintrust/pentacity.ts](braintrust/pentacity.ts). To do so issue the following command from the tiny spaces root directory:
 ```
 export BRAINTRUST_API_KEY="..."
 npx braintrust push braintrust/pentacity.ts  --if-exists replace
