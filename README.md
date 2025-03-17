@@ -22,7 +22,9 @@ npm run dev
 
 Point your browser at the running server (e.g. http://localhost:5173/) and click on the link called **Mage**. You should see a basic level, with music and no characters. 
 
-<img src="img/mage.png" ="180">
+
+<img src="img/mage.png" height="180">
+
 
 The code for mage is in [src/games/mage/](src/games/mage/).
 
@@ -53,6 +55,8 @@ Documentation can be found in [map editor](src/mapped/README.md)
 Documentation can be found in [sprite editor](src/sprited/README.md)
 
 ## Phantasy Star 1
+
+**(Warning: PS1 is under development and likely broken at any given time)**
 
 Documentation can be found in [Phantasy Star 1](src/games/ps1/README.md)
 
