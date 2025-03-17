@@ -21,8 +21,13 @@ import { Buffer } from "buffer";
 // @ts-ignore
 window.Buffer = Buffer;
 
-const BRAINTRUST_API_KEY = import.meta.env.VITE_BRAINTRUST_API_KEY;
+let BRAINTRUST_API_KEY = import.meta.env.VITE_BRAINTRUST_API_KEY;
 const url = 'https://api.braintrust.dev/function/invoke';
+
+// assumed deployed in which case read BT key directly
+if(!BRAINTRUST_API_KEY){ 
+    // BRAINTRUST_API_KEY = process.env.BRAINTRUST_API_KEY;
+}
 
 let projectname = null;
 let logdata = null;
@@ -38,6 +43,8 @@ export async function initBT(project){
     apiKey: BRAINTRUST_API_KEY 
     });
     logdata = await logger.export();
+
+//    console.log("Initializing BT: "+BRAINTRUST_API_KEY);
 }
 
 export function bt(slugin, input, callme) {

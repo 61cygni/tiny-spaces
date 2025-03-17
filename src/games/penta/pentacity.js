@@ -375,6 +375,7 @@ class EnterChatHandler {
         let v = this.gameevents.level.get_closest_being(this.gameevents.mainchar, 200);
         if(v){
             console.log("Talking to ", v.name);
+            v.clearConversationHistory();
             v.chatWithMainCharacter(this.gameevents.mainchar);
             impl.chatting_with_villager = v;
             impl.chatting_with_villager.container.zIndex = GLOBALS.ZINDEX.FOCUS;
@@ -547,7 +548,7 @@ PentaImpl.prototype.init = function(gameevents) {
     }
 
     let str = SCRIPT.ENTER_BLURB;
-    this.gameevents.dialog_now(str, 'character', null, true, { character: null, fontsize: 14, width: 521, height: 192 });
+    this.gameevents.dialog_now(str, 'character', null, true, { character: null, fontsize: 14, width: 521, height: 228 });
     
 } // init
 

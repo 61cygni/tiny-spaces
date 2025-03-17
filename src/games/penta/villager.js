@@ -73,6 +73,10 @@ export class Villager extends BEING.Being {
         return Array.from(this.items.keys());
     }
 
+    clearConversationHistory(){
+        this.conversation_history = [];
+    }
+
     // only called if slug is not set
     getChatResponse(message){
         return "I don't know what to say";

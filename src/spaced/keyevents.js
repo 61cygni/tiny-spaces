@@ -72,16 +72,16 @@ window.addEventListener(
             return;
         }
 
-        if (event.code == 'KeyM') {
-            sound.toggleMuteAll()
-        } 
-
         if(gameevents){
             if(gameevents.handle_event(event)){
                 // console.log("handled by gameevents");
                 return; // handled by gameevents
             }
         }
+
+        if (event.code == 'KeyM') {
+            sound.toggleMuteAll()
+        } 
 
         if(!gameevents.mainchar){
             console.log("No mainchar");
