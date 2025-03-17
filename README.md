@@ -22,13 +22,13 @@ npm run dev
 
 Point your browser at the running server (e.g. http://localhost:5173/) and click on the link called **Mage**. You should see a basic level, with music and no characters. 
 
-<img src="img/mage.png" width="180">
+<img src="img/mage.png" ="180">
 
 The code for mage is in [src/games/mage/](src/games/mage/).
 
 ## Penta
 
-<img src="img/penta.png" width="120"><img src="img/penta2.png" width="120"><img src="img/penta3.png" width="120"><img src="img/penta4.png" width="120">
+<img src="img/penta.png" height="120"><img src="img/penta2.png" height="120"><img src="img/penta3.png" height="120"><img src="img/penta4.png" height="120">
 
 Penta is a demo game where the main character walks around a cursed town trying
 to figure out what is going on, and eventually remove the curse. It's largely an
