@@ -1,10 +1,44 @@
 <html>
 <head>
+<style>
+body { 
+    background: #000; 
+    color: #0f0; 
+    font-family: 'Courier New', monospace; 
+    padding: 20px;
+    line-height: 1.6;
+}
+a { 
+    color: #ff0000; 
+    text-decoration: none;
+    position: relative;
+}
+a:hover { 
+    color: #ff3333;
+}
+a:before {
+    content: '#';
+    position: absolute;
+    left: -10px;
+    opacity: 0;
+    color: #00FF00;
+}
+a:hover:before {
+    opacity: 1;
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+</style>
+</head>
+<h1>Tiny Spaces</h1>
 <body>
-<a href="./sprited/index.html">sprite editer</a><br>
-<a href="./mapped/index.html">map editer</a><br>
-<a href="./games/ps1/index.html">Phantasy Star 1</a><br>
-<a href="./games/mage/index.html">Mage</a><br>
-<a href="./games/penta/index.html">Penta</a>
+Demo level: <a href="./games/mage/index.html">Mage</a><br>
+Demo rpg: <a href="./games/ps1/index.html">Phantasy Star 1</a><br>
+Demo AI game: <a href="./games/penta/index.html">Penta</a><br>
+Sprite editor: <a href="./sprited/index.html">sprited</a><br>
+Level editor: <a href="./mapped/index.html">mapped</a><br>
 </body>
 </html>

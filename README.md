@@ -2,11 +2,16 @@
 
 # tiny-spaces
 
-Tiny spaces is a minimal javascript game engine for building 2D rpgs and interactive fiction. It has a basic level editor, a sprite editor, a tiling engine, and a very very basic game engine. 
+Tiny spaces is a minimal javascript engine for building retro 2D games with AI
+as a core component of the game logic. It has minimal dependencies (pixi.js for
+graphics, and Braintrust for AI model integration) and is built to run fully in
+the browser.
 
-Tiny spaces was built to support a port of the original Phantasy Star 1 game for the Sega Master System and to integrate AI/LLMs into the gameplay.  
+The project contains spaced -- the game engine (basic tiling, character and leval mechanics), mapped -- a basic, in browser level editor, sprited -- a basic, in browser sprite editor, and a few demos including a minimal port of the start of Phantasy Star 1 for the Sega Master System using the original tile set.  
 
-It has been intentionally kept minimal to have a very low barrier to entry, and to be as general as possible. Therefore there is no auth support, and no back end state management. 
+Tiny spaces is intentionally minimal to have a very low barrier to entry, and to
+be as general as possible. Therefore there is no auth support, and no back end
+state management. 
 
 ## Quick Start:
 
@@ -15,7 +20,12 @@ npm install
 npm run dev
 ```
 
-Point your browser at the running server and you can click into the sprite editer, map editer, or Phantasy Star 1 as an example game built with tiny spaces.
+Point your browser at the running server (e.g. http://localhost:5173/) and click on the link called **Mage**. You should see a basic level, with music and no characters. 
+
+<img src="img/mage.png" width="180">
+
+The code for mage is in [src/games/mage/](src/games/mage/).
+
 
 ## SpaceD
 
