@@ -1,6 +1,6 @@
 
 // Hardwire presets
-export const DEFAULTTILESETPATH  = "../ps1/ps1-1.png";
+export const DEFAULTTILESETPATH  = "../mapped/tilesets/fantasy-interior.png";
 export const DEFAULTCOMPOSITEPNG = "";
 //export const DEFAULTCOMPOSITEPNG = "../ps1/overworld_palma.png"
 
@@ -10,7 +10,7 @@ export const DEFAULTLEVEL        = "";
 //export const DEFAULTSPRITESHEET  = "";
 export const DEFAULTSPRITESHEET  = "../ps1/palma-sprite.json" 
 
-export const SAVEMAPFILENAME     = "palma-out.js"; // 
+export const SAVEMAPFILENAME     = "map-out.js"; // 
 //export const SAVEMAPFILENAME     = "map.js"; // 
 
 
@@ -24,8 +24,8 @@ export const SAVEMAPFILENAME     = "palma-out.js"; //
 export const tilesetpadding = 0; 
 
 
-export const DEFAULTILEDIMX = 16; // px
-export const DEFAULTILEDIMY = 16; // px
+export const DEFAULTILEDIMX = 24; // px
+export const DEFAULTILEDIMY = 24; // px
 
 export const levelwidth  = 1984; // px
 export const levelheight = 1488; // px

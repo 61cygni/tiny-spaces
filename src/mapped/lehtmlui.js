@@ -22,6 +22,10 @@ export function initMainHTMLWindow() {
     document.getElementById("compositepane").style.maxWidth  = ""+CONFIG.htmlCompositePaneW+"px"; 
     document.getElementById("compositepane").style.maxHeight = ""+CONFIG.htmlCompositePaneH+"px";
 
+
+    document.getElementById("gettiledimx").value = CONFIG.DEFAULTILEDIMX;
+    document.getElementById("gettiledimy").value = CONFIG.DEFAULTILEDIMY; 
+
     // hide map tab
     let mappane = document.getElementById("map");
     mappane.style.display = "none";

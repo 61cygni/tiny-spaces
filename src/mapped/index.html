@@ -8,6 +8,13 @@
  </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+<script>
+    // Prevent back button
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
 <body>
     <script src="mapped.js" type="module"></script>
 
