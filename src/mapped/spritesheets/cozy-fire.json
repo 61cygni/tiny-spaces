@@ -1,0 +1,33 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 144, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 144, "h": 144 },
+	"sourceSize": {"w": 144, "h": 144 }
+	},
+"tile0_1": { 
+	"frame": {"x": 144, "y": 0, "w": 144, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 144, "h": 144 },
+	"sourceSize": {"w": 144, "h": 144 }
+	},
+"tile0_2": { 
+	"frame": {"x": 288, "y": 0, "w": 144, "h": 144 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 144, "h": 144 },
+	"sourceSize": {"w": 144, "h": 144 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2"]
+},
+"meta": {
+	"image": "cozy-fire.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
