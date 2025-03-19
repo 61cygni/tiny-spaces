@@ -551,12 +551,6 @@ function loadMapFromModuleFinish(mod) {
     if(CONFIG.DEFAULTCOMPOSITEPNG != ""){
         UI.loadCompositPNG(CONFIG.DEFAULTCOMPOSITEPNG);
     }
-    if(CONFIG.DEFAULTSPRITESHEET != ""){
-        // only load if there are no animated sprites in mod
-        if(!('animatedsprites' in mod) || mod.animatedsprites.length <= 0){
-            UI.loadSpriteSheet(CONFIG.DEFAULTSPRITESHEET);
-        }
-    }
 }
 
 function loadMapFromModule(mod) {

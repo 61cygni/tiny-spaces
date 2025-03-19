@@ -8,7 +8,7 @@ export const DEFAULTLEVEL        = "";
 //export const DEFAULTLEVEL        = "../ps1/palma.js"
 
 //export const DEFAULTSPRITESHEET  = "";
-export const DEFAULTSPRITESHEET  = "../ps1/palma-sprite.json" 
+export const DEFAULTSPRITESHEET  = "./spritesheets/decorations.png";
 
 export const SAVEMAPFILENAME     = "map-out.js"; // 
 //export const SAVEMAPFILENAME     = "map.js"; // 
