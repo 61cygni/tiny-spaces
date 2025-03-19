@@ -380,7 +380,6 @@ class TilesetContext {
     addTileSheet(name, sheet){
         console.log(" tileset.addTileSheet ", sheet);
 
-
         // FIXME ... development code
         g_ctx.spritesheet = sheet;
         g_ctx.spritesheetname = name;
@@ -1130,7 +1129,7 @@ function onLevelMouseover(e) {
         return;
     }
 
-    // FIXME test code
+    // If Animated Sprite, use it for the mouseshadow 
     if ( g_ctx.spritesheet != null){
         let ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
         let ctile2 =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
@@ -1182,13 +1181,13 @@ function onLevelMouseover(e) {
             }
 
         }
-        this.mouseshadow.x = x - 16;
-        this.mouseshadow.y = y - 16;
-        this.container.removeChild(this.mouseshadow);
-        g_ctx.composite.container.removeChild(g_ctx.composite.mouseshadow);
-        this.container.addChild(this.mouseshadow);
-        g_ctx.composite.container.addChild(g_ctx.composite.mouseshadow);
     }
+    this.mouseshadow.x = x - 16;
+    this.mouseshadow.y = y - 16;
+    this.container.removeChild(this.mouseshadow);
+    g_ctx.composite.container.removeChild(g_ctx.composite.mouseshadow);
+    this.container.addChild(this.mouseshadow);
+    g_ctx.composite.container.addChild(g_ctx.composite.mouseshadow);
 
     g_ctx.composite.app.stage.removeChild(g_ctx.composite.circle);
     g_ctx.composite.app.stage.addChild(g_ctx.composite.circle);

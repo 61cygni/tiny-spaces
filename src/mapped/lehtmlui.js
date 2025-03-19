@@ -68,7 +68,6 @@ export function initCompositePNGLoader() {
 
 export async function loadSpriteSheet(filename) {
     console.log("loadSpriteSheet ", filename);
-    console.trace();
     let sheet = await PIXI.Assets.load('./spritesheets/' + filename);
     // console.log(sheet);
     g_ctx.tileset.addTileSheet(filename, sheet);
