@@ -89,7 +89,11 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
         text += '{ x: '+atile.x+", y: "+ atile.y+ ", w: "+ atile.width+ ", h: "+ atile.height ; 
         text += ', layer: '+atile.layer;
         text += ', speed: '+atile.animationSpeed;
-        text += ', sheet: "./spritesheets/'+ atile.spritesheetname+ '", animation: "'+ atile.animationname+'" },\n';
+        let prefix = '';
+        if(!atile.spritesheetname.includes('spritesheets')){
+            prefix = './spritesheets/';
+        }
+        text += ', sheet: "'+ prefix + atile.spritesheetname+ '", animation: "'+ atile.animationname+'" },\n';
     }
     text += '];\n\n';
 
