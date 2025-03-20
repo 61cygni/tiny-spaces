@@ -62,4 +62,4 @@ Documentation can be found in [Phantasy Star 1](src/games/ps1/README.md)
 
 ## Screenshots
 
-<img src="img/camineet.png" width="180" alt="PS1"> <img src="img/palma.png" width="180" alt="PS1"> <img src="img/gentle.png" width="180" alt="PS1"> <img src="img/suelo.png" width="180" alt="PS1"> <img src="img/wingeye.png" width="180" alt="PS1"> <img src="img/edit.png" width="180" alt="PS1"><img src="img/mage.png" width="180" alt="PS1"> <img src="img/serene.png" width="180" alt="PS1"><img src="img/penta.png" width="180" alt="PS1">
+<img src="img/camineet.png" width="180" alt="PS1"> <img src="img/palma.png" width="180" alt="PS1"> <img src="img/gentle.png" width="180" alt="PS1"> <img src="img/suelo.png" width="180" alt="PS1"> <img src="img/wingeye.png" width="180" alt="PS1"> <img src="img/edit.png" width="180" alt="PS1"><img src="img/mage.png" width="180" alt="PS1"> <img src="img/serene.png" width="180" alt="PS1"><img src="img/penta.png" width="180" alt="PS1"><img src="img/cozy1.png" width="180"><img src="img/cozy2.png" width="180"><img src="img/cozy3.png" width="180">
