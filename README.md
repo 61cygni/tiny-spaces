@@ -28,6 +28,13 @@ Point your browser at the running server (e.g. http://localhost:5173/) and click
 
 The code for mage is in [src/games/mage/](src/games/mage/).
 
+## Cozy Cabin
+<img src="img/cozy1.png" height="120"><img src="img/cozy2.png" height="120"><img src="img/cozy3.png" height="120">
+
+Cozy cabin is a large, detailed level. You can visit a deployed version at [Cozy
+Cabin](https://cozycabinspace.netlify.app/).  The code for CozyCabin is in
+[src/games/cozy/](src/games/cozy/).
+
 ## Penta
 
 <img src="img/penta.png" height="120"><img src="img/penta2.png" height="120"><img src="img/penta3.png" height="120"><img src="img/penta4.png" height="120">
