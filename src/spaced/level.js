@@ -183,7 +183,7 @@ export class LevelContext {
         this.coordsdict = new Map()
 
         for(let l = 0; l < this.maplabels.length; l++){
-            // console.log(this.maplabels);
+            console.log(this.maplabels);
             let label = this.maplabels[l];
             for(let x = label.sx; x <= label.ex; x++ ){
                 for(let y = label.sy; y <= label.ey; y++){
