@@ -1,0 +1,33 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile0_1": { 
+	"frame": {"x": 48, "y": 0, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile0_2": { 
+	"frame": {"x": 96, "y": 0, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2"]
+},
+"meta": {
+	"image": "cozy-door.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}

@@ -1,0 +1,50 @@
+<html>
+<head>
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+
+.form-group {
+  position: relative;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.form-control:focus + label,
+.form-control:not(:placeholder-shown) + label {
+  top: -10px;
+  font-size: 12px;
+  color: #999;
+}
+
+label {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+ </style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <script src="cozy.js" type="module"></script>
+
+<div id="space" class="tabcontent">
+        <canvas id="spacecanvas" height="480px" width="640px" >
+        </canvas>
+</div>
+
+<div class="form-group">
+    <input type="text" id="myInput" class="form-control">
+    <label for="myInput">Label</label>
+  </div>
+
+</body>
+</html>

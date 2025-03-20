@@ -1,0 +1,47 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 67, "h": 67 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 67, "h": 67 },
+	"sourceSize": {"w": 67, "h": 67 }
+	},
+"tile0_1": { 
+	"frame": {"x": 67, "y": 0, "w": 67, "h": 67 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 67, "h": 67 },
+	"sourceSize": {"w": 67, "h": 67 }
+	},
+"tile0_2": { 
+	"frame": {"x": 134, "y": 0, "w": 67, "h": 67 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 67, "h": 67 },
+	"sourceSize": {"w": 67, "h": 67 }
+	},
+"tile0_3": { 
+	"frame": {"x": 201, "y": 0, "w": 67, "h": 67 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 67, "h": 67 },
+	"sourceSize": {"w": 67, "h": 67 }
+	},
+"tile0_4": { 
+	"frame": {"x": 268, "y": 0, "w": 67, "h": 67 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 67, "h": 67 },
+	"sourceSize": {"w": 67, "h": 67 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3","tile0_4"]
+},
+"meta": {
+	"image": "sleeping-dog.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
