@@ -270,6 +270,11 @@ export class Being {
         }
         let coordsx = Math.floor(x / this.level.tiledimx);
         let coordsy = Math.floor(y / this.level.tiledimy);
+        if(coordsx >= this.level.screenxtiles || coordsy >= this.level.screenytiles){
+            // ok printing an error as level bounds should stop character
+            console.log("Error, coords out of bounds ", coordsx, coordsy);
+            return true;
+        }
         let ret = this.level.objmap[0][coordsx][coordsy] != -1 || this.level.objmap[1][coordsx][coordsy] != -1;
         return ret;
     }
@@ -284,7 +289,8 @@ export class Being {
         if(this.focus){
             let tx = this.worldx + x;
             let ty = this.worldy + y;
-            if(tx < 0 || ty < 0 || tx >= this.level.levelxpixels || ty >= this.level.levelypixels){
+            if(tx < 0 || ty < 0 || tx > this.level.levelxpixels || ty > this.level.levelypixels){
+                console.log("Error, moving out of bounds ", tx, ty);
                 return;
             }
             this.worldx = this.worldx + x;

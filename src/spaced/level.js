@@ -105,8 +105,8 @@ export class LevelContext {
         this.container.zIndex = GLOBALS.ZINDEX.BACKGROUND;
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
-        this.screenxtiles = mod.bgtiles[0][0].length
-        this.screenytiles = mod.bgtiles[0].length
+        this.screenxtiles = mod.bgtiles[0].length
+        this.screenytiles = mod.bgtiles[0][0].length
         this.tilesetpxw = mod.tilesetpxw;
         this.tilesetpxh = mod.tilesetpxh;
         this.bgtiles = mod.bgtiles
@@ -118,6 +118,9 @@ export class LevelContext {
 
         this.levelxpixels = this.screenxtiles * this.tiledimx;
         this.levelypixels = this.screenytiles * this.tiledimy;
+
+        console.log("Screen tiles (x,y): ", this.screenxtiles, this.screenytiles);
+        console.log("Level pixels (x,y): ", this.levelxpixels, this.levelypixels);
 
         this.beings = [];
     }
@@ -442,7 +445,6 @@ function loadAssetsSync(levelcontext) {
         g_ctx.tilesettilew = numtilesandpadw + Math.floor((g_ctx.tilesetpxw - (numtilesandpadw * tileandpad)) / g_ctx.tiledimx);
         let numtilesandpadh = Math.floor(g_ctx.tilesetpxh / tileandpad);
         g_ctx.tilesettileh = numtilesandpadh + Math.floor((g_ctx.tilesetpxh - (numtilesandpadh * tileandpad)) / g_ctx.tiledimx);
-        console.log("Number of x tiles ", g_ctx.tilesettilew, " y tiles ", g_ctx.tilesettileh);
 
             return levelcontext;
            });
