@@ -145,28 +145,3 @@ export function initMainLoop(startlocation) {
     ticker.speed = .2;
     ticker.start();
 }
-
-// Placeholder for using HTML input field for text input
-// function get_input(target){
-//     console.log(target.value);
-//     target.value = "";
-// }
-// const input = document.getElementById('myInput');
-// function register_text_input() {
-// 
-//     input.addEventListener('focus', () => {
-//         KEY.set_text_input_focus(true);
-//         console.log("FOCUS!");
-//         input.parentNode.classList.add('focused');
-//     });
-// 
-//     input.addEventListener('blur', () => {
-//         console.log("NOT FOCUS!");
-//         KEY.set_text_input_focus(false);
-//         if (!input.value) {
-//             input.parentNode.classList.remove('focused');
-//         }
-//     });
-// 
-//     KEY.register_input_handler(get_input);
-// }

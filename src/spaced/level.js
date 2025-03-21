@@ -137,7 +137,6 @@ export class LevelContext {
 
     finalize_load(){
         this.loadFromMapFile();
-
         this.loadAnimatedSprites();
         this.createLabelDic();
     }
@@ -382,6 +381,7 @@ export class SplashContext {
 
 function loadMapFromModuleFinishSync(level) {
     level.finalize_load();
+    level.details.initonce();
     return level;
 }
 
@@ -472,6 +472,7 @@ function loadSplashSync(app, splashdetails) {
     let splashcontext = new SplashContext(app, splashdetails);
     let static_images = splashcontext.details.static_images();
     return loadStaticImagesSync(static_images, splashcontext).then((static_images) => {
+        splashcontext.details.initonce();
         splashcontext.finalize_load();
         return splashcontext;
     });
