@@ -21,6 +21,8 @@ export class Being {
         this.here = false; // on level or not.
         this.sheet = spritesheet;
         this.level = level;
+
+        this.blocking_layers = [0,1]; // layers to check for blocking objects
         this.init();
     }
 
@@ -78,7 +80,7 @@ export class Being {
 
 
     distance(being){
-        if(this.name === being.name){
+        if(this === being){
             console.log("Error, cant call distance on self");
             return -1;
         }
@@ -275,7 +277,10 @@ export class Being {
             console.log("Error, coords out of bounds ", coordsx, coordsy);
             return true;
         }
-        let ret = this.level.objmap[0][coordsx][coordsy] != -1 || this.level.objmap[1][coordsx][coordsy] != -1;
+        let ret = false;
+        for(let layer of this.blocking_layers){
+            ret = ret || this.level.objmap[layer][coordsx][coordsy] != -1;
+        }
         return ret;
     }
 

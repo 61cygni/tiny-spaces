@@ -7,6 +7,7 @@ export class Visitor extends BEING.Being {
     constructor(sheet, app) {
         super(sheet, app);
         this.name = "Visitor";
+        this.blocking_layers = [1]; // only block on second obj layer 
     }
 
     arrive(x, y){
