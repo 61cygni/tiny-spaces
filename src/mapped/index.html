@@ -191,6 +191,16 @@
         scrollbar-width: thick;
         scrollbar-color: #888 #f1f1f1;
     }
+
+    .element-with-scroll {
+        overflow-y: scroll; /* Always show vertical scrollbar */
+        overflow-x: scroll; /* Always show horizontal scrollbar */
+    }
+
+    /* Or for auto-showing scrollbars only when needed */
+    .element-with-auto-scroll {
+        overflow: auto;
+    }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
