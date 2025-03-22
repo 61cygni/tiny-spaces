@@ -485,7 +485,9 @@ window.onTab = (evt, tabName) => {
     if (tabName == "spritesheet"){
         fillSpriteContainer();
     }else {
-        g_ctx.composite.app.stage.addChild(g_ctx.composite.container);
+        if(g_ctx.composite){
+            g_ctx.composite.app.stage.addChild(g_ctx.composite.container);
+        }
     }
 }
 

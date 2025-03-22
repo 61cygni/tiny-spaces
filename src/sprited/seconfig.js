@@ -15,14 +15,14 @@ export let leveltileheight = Math.floor(levelheight / DEFAULTILEDIMX);
 
 // -- HTML
 
-export const htmlLayerPaneW = 400;
-export const htmlLayerPaneH = 300;
+export const htmlLayerPaneW = 800;
+export const htmlLayerPaneH = 600;
 
-export const htmlTilesetPaneW = 400;
-export const htmlTilesetPaneH = 300;
+export const htmlTilesetPaneW = 800;
+export const htmlTilesetPaneH = 600;
 
-export const htmlCompositePaneW = 400;
-export const htmlCompositePaneH = 300;
+export const htmlCompositePaneW = 800;
+export const htmlCompositePaneH = 600;
 
 // --  zIndex
 

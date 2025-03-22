@@ -1,11 +1,222 @@
 <html>
 <head>
 <style>
+    /* Base styles */
     table, th, td {
         border: 1px solid black;
         border-radius: 10px;
+        padding: 0;
+        margin: 0;
     }
- </style>
+    
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Tab styling */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 0;
+        margin-top: 50px;
+        border: none;
+        height: calc(100vh - 50px);
+    }
+
+    /* Edit container layout */
+    .edit-container {
+        display: flex;
+        width: 100%;
+        height: calc(100vh - 50px);
+    }
+
+    .layers-container {
+        width: 50%;
+        height: 100%;
+        overflow-y: scroll;
+        padding-right: 8px;
+    }
+
+    .right-container {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Layer styling */
+    .layer-pane {
+        position: relative;
+        height: 768px;
+        max-width: 1024px;
+        overflow: scroll;
+    }
+
+    .layer-pane::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 0;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+        z-index: 1000;
+    }
+
+    .layer-pane.show-tooltip::before {
+        opacity: 1;
+        visibility: visible;
+        animation: showHideTooltip 3s forwards;
+    }
+
+    @keyframes showHideTooltip {
+        0% { opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* Scrollbar styling */
+    .layers-container::-webkit-scrollbar {
+        width: 16px;
+    }
+
+    .layers-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 8px;
+    }
+
+    .layers-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 8px;
+        border: 3px solid #f1f1f1;
+    }
+
+    .layers-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .layers-container {
+        scrollbar-width: thick;
+        scrollbar-color: #888 #f1f1f1;
+    }
+
+    /* Config tab styling */
+    .config-table {
+        margin: 2rem auto;
+        border-collapse: separate;
+        border-spacing: 0;
+        max-width: 900px;
+        background: white;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .config-table td {
+        padding: 1.2rem;
+        border: none;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .config-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .config-section {
+        background-color: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 1.2rem;
+    }
+
+    .config-table input[type="text"] {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+    }
+
+    .config-table input[type="text"]:focus {
+        border-color: #4CAF50;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    }
+
+    .config-table input[type="file"] {
+        width: 100%;
+        padding: 0.4rem;
+        font-size: 14px;
+    }
+
+    .config-table button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-transform: capitalize;
+    }
+
+    .config-table button:hover {
+        background-color: #45a049;
+        transform: translateY(-1px);
+    }
+
+    .config-table label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .config-table .input-group {
+        margin-bottom: 0.5rem;
+    }
+</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
@@ -15,79 +226,140 @@
         <button class="tablinks" onclick="onTab(event, 'edit')">edit</button>
         <button class="tablinks" onclick="onTab(event, 'spritesheet')">spritesheet</button>
         <button class="tablinks" onclick="onTab(event, 'config')">config</button>
-      </div>
+    </div>
 
-<div id="edit" class="tabcontent">
-    <TABLE WIDTH="80%"><TR>
-        <TD ALIGN="center"> <!-- first layer of map tiles -->
-          <div ID="layer0pane" style="max-height: 240;max-width:640px;overflow: scroll;">
-          <canvas ID="level0" height="480" width="1600px" ></canvas> </div>   
-        </TD>
-        <TD ALIGN="center"> <!-- tile set-->
-            <div ID="tilesetpane" style="max-height: 300;max-width:800;overflow: scroll;">
-            <CANVAS ID="tileset" width="5632px" height="8672px" STYLE="border: 1px dotted white;"></CANVAS> </div>   
-         </TD>
-         </TR>
+    <div id="edit" class="tabcontent">
+        <div class="edit-container">
+            <div class="layers-container">
+                <div id="layer0pane" class="layer-pane" data-tooltip="Layer 0">
+                    <canvas id="level0" height="768" width="1024px"></canvas>
+                </div>
+                <div id="layer1pane" class="layer-pane" data-tooltip="Layer 1">
+                    <canvas id="level1" height="768" width="1024px"></canvas>
+                </div>
+                <div id="layer2pane" class="layer-pane" data-tooltip="Objects Layer">
+                    <canvas id="level3" height="768" width="1024px"></canvas>
+                </div>
+                <div id="layer3pane" class="layer-pane" data-tooltip="Layer 3">
+                    <canvas id="level4" height="768" width="1024px"></canvas>
+                </div>
+            </div>
+            
+            <div class="right-container">
+                <div id="tilesetpane" style="height: 600px;max-width:800px;overflow: scroll;">
+                    <canvas id="tileset" width="5632px" height="8672px" style="border: 1px dotted white;"></canvas>
+                </div>
+                <div id="compositepane" style="height: 768px;max-width:1024px;overflow: scroll;">
+                    <canvas id="composite" height="768" width="1024px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <tr>
-        <TD ALIGN="center"> <!-- second layer of map tiles -->
-        <div ID="layer1pane" style="max-height: 240;max-width:640px;overflow: scroll;">
-            <canvas ID="level1" height="480" width="1600px" ></canvas>
-        </div></TD>
-        <TD ALIGN="center"> <!-- aggregate map view -->
-        <div ID="compositepane" style="max-height: 240;max-width:640px;overflow: scroll;">
-            <canvas ID="composite" height="480" width="1600px" ></canvas>
-        </div></TD>
-        </tr>
+    <div id="spritesheet" class="tabcontent">
+        <canvas id="spritecanvas" height="1600px" width="1600px"></canvas>
+    </div>
 
-        <tr>
-        <TD ALIGN="center"> <!-- object layer of map -->
-        <div ID="layer2pane" style="max-height: 240;max-width:640px;overflow: scroll;">
-            <canvas ID="level3" height="480" width="1600px" ></canvas>
-        </div></TD>
-        <TD ALIGN="center"> <!-- object layer of map -->
-        <div ID="layer3pane" style="max-height: 480px;max-width:640px;overflow: scroll;">
-            <canvas ID="level4" height="1600px" width="1600px" ></canvas>
-        </div></TD>
-        </tr>
-    </TABLE>
-</div>
-
-<div id="spritesheet" class="tabcontent">
-        <canvas id="spritecanvas" height="1600px" width="1600px" ></canvas>
-</div>
-
-<div id="config" class="tabcontent">
-            <table>
+    <div id="config" class="tabcontent">
+        <table class="config-table">
+            <tr>
+                <td colspan="4" class="config-section">General Settings</td>
+            </tr>
             <tr>
                 <td>
-                    <button onclick = "resetLayers()" > Reset </button>
+                    <div class="input-group">
+                        <button onclick="resetLayers()">Reset Layers</button>
+                    </div>
                 </td>
-                <td>Load Sprite Image</td>
-                <td>Padding</td>
-                <td><button onclick = "saveSpriteContainerAsImage()" > save sprite</button></td>
+                <td>
+                    <div class="input-group">
+                        <label for="tilesetfile">Load Sprite Image</label>
+                        <input type="file" multiple id="tilesetfile">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <label for="gettilepadding">Padding</label>
+                        <input type="text" id="gettilepadding" value="0">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <label for="spritesuffix">Sprite Suffix</label>
+                        <input type="text" id="spritesuffix" value="sprited">
+                        <button onclick="saveSpriteContainerAsImage()">Save Sprite</button>
+                    </div>
+                </td>
             </tr>
             <tr>
-            <td></td>
-            <td> <input type="file" multiple id="tilesetfile"> </td>
-            <td> <input type="text" id="gettilepadding" value="0" > </td>
-            <td> <input type="text" id="spritesuffix" value="sprited" > </td>
+                <td colspan="4" class="config-section">Dimensions</td>
             </tr>
             <tr>
-                <td>Tile Width</td>
-                <td>Tile Height</td>
-                <td>Place Width</td>
-                <td>Place Height</td>
+                <td>
+                    <div class="input-group">
+                        <label for="gettiledimx">Tile Width</label>
+                        <input type="text" id="gettiledimx" value="16">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <label for="gettiledimy">Tile Height</label>
+                        <input type="text" id="gettiledimy" value="32">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <label for="getleveldimx">Place Width</label>
+                        <input type="text" id="getleveldimx" value="16">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <label for="getleveldimy">Place Height</label>
+                        <input type="text" id="getleveldimy" value="32">
+                    </div>
+                </td>
             </tr>
-            <tr>
-                <td> <input type="text" id="gettiledimx" value="16" > </td>
-                <td> <input type="text" id="gettiledimy" value="32" > </td>
-                <td> <input type="text" id="getleveldimx" value="16" > </td>
-                <td> <input type="text" id="getleveldimy" value="32" > </td>
-            </tr>
-            </table>
-</div>
+        </table>
+    </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const layerPanes = document.querySelectorAll('.layer-pane');
+            
+            layerPanes.forEach(pane => {
+                pane.addEventListener('mouseenter', function() {
+                    this.classList.add('show-tooltip');
+                });
+                
+                pane.addEventListener('mouseleave', function() {
+                    this.classList.remove('show-tooltip');
+                });
+                
+                pane.addEventListener('animationend', function() {
+                    this.classList.remove('show-tooltip');
+                });
+            });
+        });
 
+        function onTab(evt, tabName) {
+            var tabcontent = document.getElementsByClassName("tabcontent");
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            var tablinks = document.getElementsByClassName("tablinks");
+            for (var i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        window.onload = function() {
+            document.getElementsByClassName("tablinks")[0].click();
+        }
+    </script>
 </body>
 </html>
