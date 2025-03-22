@@ -16,6 +16,8 @@ export function initMainHTMLWindow() {
     document.getElementById("layer2pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
     document.getElementById("layer3pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
     document.getElementById("layer3pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
+    document.getElementById("layer4pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
+    document.getElementById("layer4pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
 
     document.getElementById("tilesetpane").style.maxWidth  = ""+CONFIG.htmlTilesetPaneW+"px"; 
     document.getElementById("tilesetpane").style.maxHeight = ""+CONFIG.htmlTilesetPaneH+"px";

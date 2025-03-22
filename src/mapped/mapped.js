@@ -58,7 +58,7 @@ import * as MAPFILE from './mapfile.js'
 import * as UI from './lehtmlui.js'
 
 g_ctx.debug_flag  = true;
-g_ctx.debug_flag2 = true; // really verbose output
+g_ctx.debug_flag2 = false; // really verbose output
 
 function tileset_index_from_coords(x, y) {
     let retme = x + (y*g_ctx.tilesettilew);
@@ -194,6 +194,8 @@ class LayerContext {
             tiles = mod.objmap[0];
         } else if (this.num == 3) {
             tiles = mod.objmap[1];
+        } else if (this.num == 4) {
+            tiles = mod.overlaymap[0];
         } else {
             console.log("loadFromMapFile: Error unknow layer number");
             return;
@@ -243,7 +245,6 @@ class LayerContext {
     // add tile of tileset "index" to Level at location x,y
     addTileLevelPx(x, y, index) {
 
-        console.log("atlp "+x);
         if (x > CONFIG.levelwidth || y > CONFIG.levelheight){
             console.log("tile placed outside of level boundary, ignoring",x,y)
             return -1;
@@ -517,7 +518,7 @@ function loadAnimatedSpritesFromModule(mod){
                 let asprarray = m.get(key);
                 for (let asprite of asprarray) {
                     // TODO FIXME, pass in animation name
-                    console.log("Loading animation", asprite.animation);
+                   //  console.log("Loading animation", asprite.animation);
                     g_ctx.animrow =  asprite.animation;
                     g_ctx.g_layers[asprite.layer].addTileLevelPx(asprite.x, asprite.y, -1);
                 }
@@ -542,6 +543,12 @@ function loadMapFromModuleFinish(mod) {
     g_ctx.g_layers[2] = new LayerContext(g_ctx.g_layer_apps[2], document.getElementById("layer2pane"), 2, mod);
     g_ctx.g_layer_apps[3].stage.removeChildren()
     g_ctx.g_layers[3] = new LayerContext(g_ctx.g_layer_apps[3], document.getElementById("layer3pane"), 3, mod);
+    if(mod.overlaymap != null){
+        console.log("Loading overlay map");
+        g_ctx.g_layer_apps[4].stage.removeChildren()
+        g_ctx.g_layers[4] = new LayerContext(g_ctx.g_layer_apps[4], document.getElementById("layer4pane"), 4, mod);
+    }
+
 
     loadAnimatedSpritesFromModule(mod);
     loadMapLabelsFromModule(mod);
@@ -1477,11 +1484,17 @@ function initPixiApps() {
     level_app3.init({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, canvas: document.getElementById('level4') });
     let layer3 = new LayerContext(level_app3, document.getElementById("layer3pane"), 3);
 
+    //  overlay layer of level
+    const level_app4 = new PIXI.Application();
+    level_app4.init({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, canvas: document.getElementById('level5') });
+    let layer4 = new LayerContext(level_app4, document.getElementById("layer4pane"), 4);
+
     g_ctx.g_layer_apps = [];
     g_ctx.g_layer_apps.push(level_app0 );
     g_ctx.g_layer_apps.push(level_app1);
     g_ctx.g_layer_apps.push(level_app2);
     g_ctx.g_layer_apps.push(level_app3);
+    g_ctx.g_layer_apps.push(level_app4);
 
 
     g_ctx.g_layers = [];
@@ -1489,6 +1502,7 @@ function initPixiApps() {
     g_ctx.g_layers.push(layer1);
     g_ctx.g_layers.push(layer2);
     g_ctx.g_layers.push(layer3);
+    g_ctx.g_layers.push(layer4);
 
     // g_ctx.composite view 
     g_ctx.composite_app = new PIXI.Application();

@@ -23,7 +23,7 @@ const bgtile_string_start = '' +
     'export const bgtiles = [\n' +
     '   [\n'
 
-function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animated_tiles){
+function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, overlay_tiles, animated_tiles){
     let text = generate_preamble(); 
     text += bgtile_string_start;
 
@@ -73,6 +73,22 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
         for(let column = 0; column < obj_tiles_2[row].length; column++) {
             text += obj_tiles_2[row][column];
             if (column != obj_tiles_2.length - 1){
+                text += ' , ';
+            }
+        }
+        text += '],\n';
+    }
+    text += '],];\n\n';
+
+    text += ''+
+    'export const overlaymap = [\n'+
+    '[\n';
+
+    for(let row = 0; row < overlay_tiles.length; row++) {
+        text += '[ ';
+        for(let column = 0; column < overlay_tiles[row].length; column++) {
+            text += overlay_tiles[row][column];
+            if (column != obj_tiles_1.length - 1){
                 text += ' , ';
             }
         }
@@ -133,6 +149,7 @@ export function generate_level_file() {
     let layer1 = g_ctx.g_layers[1];
     let layer2 = g_ctx.g_layers[2];
     let layer3 = g_ctx.g_layers[3];
+    let layer4 = g_ctx.g_layers[4];
 
     let animated_tiles = [];
 
@@ -271,6 +288,40 @@ export function generate_level_file() {
         }
     }
 
+    //  overlay level
+    var tile_array4 = Array.from(Array(CONFIG.leveltilewidth), () => new Array(CONFIG.leveltileheight));
+    for (let x = 0; x < CONFIG.leveltilewidth; x++) {
+        for (let y = 0; y < CONFIG.leveltileheight; y++) {
+            tile_array4[x][y] = -1;
+        }
+    }
+    for (var i = 0; i < layer4.container.children.length; i++) {
+        var child = layer4.container.children[i];
 
-    write_map_file(tile_array0, tile_array1, tile_array2, tile_array3, animated_tiles);
+        // check if it's an animated sprite
+        if(child.hasOwnProperty('animationSpeed')){
+            child.layer = 4;
+            animated_tiles.push(child);
+            continue;
+
+        }
+
+        if (!child.hasOwnProperty('index')) {
+            continue;
+        }
+        let x_coord = child.x / g_ctx.tiledimx;
+        let y_coord = child.y / g_ctx.tiledimy;
+        if (typeof tile_array4[x_coord] == 'undefined'){
+            console.log("**Error xcoord undefined ", x_coord);
+
+        }
+        else if (typeof tile_array4[x_coord][y_coord] == 'undefined'){
+            console.log("**Error xcoord/ycoord undefined ", x_coord, y_coord);
+        }else{
+            tile_array4[x_coord][y_coord] = child.index;
+        }
+    }
+
+
+    write_map_file(tile_array0, tile_array1, tile_array2, tile_array3, tile_array4, animated_tiles);
 }
