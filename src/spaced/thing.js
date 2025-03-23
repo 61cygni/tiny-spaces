@@ -25,11 +25,9 @@ export class Thing {
     }
 
     setSprite(name){
-        console.log(this.sprites);
         this.curanim = this.sprites[name];
         this.curanim.animationSpeed = 0.1066;
 
-        console.log("setting sprite", this.curanim);
         this.container.addChild(this.curanim);
     }
 
@@ -42,7 +40,6 @@ export class Thing {
         this.container.x = x;
         this.container.y = y;
 
-        console.log("arriving", this.container);
         this.level.container.addChild(this.container);
         this.here = true;
     }

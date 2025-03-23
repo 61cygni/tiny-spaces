@@ -128,15 +128,8 @@ class CozyCabin extends LEVEL.Level {
 
     initonce() {
         sound.add('cozy', './audio/cozy.m4a');
-        sound.add('light-fire', './audio/lighting-a-fire.mp3');
-        sound.add('listen-fire', './audio/camp-fire.mp3');
-        sound.add('grandfather-clock', './audio/grandfather-clock.mp3');
-        sound.add('soup-pot', './audio/souppot.mp3');
         sound.find('cozy').volume = 0.05;
-        sound.find('light-fire').volume = 0.2; // louder fire sound
-        sound.find('listen-fire').volume = 0.2;
-        sound.find('grandfather-clock').volume = 0.2;
-        sound.find('soup-pot').volume = 0.3;
+        COZYTHINGS.initSoundsOnce();
     }
 
     initonenter(ge){

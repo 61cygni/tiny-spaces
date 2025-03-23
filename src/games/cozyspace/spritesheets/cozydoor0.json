@@ -1,0 +1,85 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile1_0": { 
+	"frame": {"x": 0, "y": 96, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile1_1": { 
+	"frame": {"x": 48, "y": 96, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile1_2": { 
+	"frame": {"x": 96, "y": 96, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile1_3": { 
+	"frame": {"x": 144, "y": 96, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile2_0": { 
+	"frame": {"x": 0, "y": 192, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile2_1": { 
+	"frame": {"x": 48, "y": 192, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile2_2": { 
+	"frame": {"x": 96, "y": 192, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile2_3": { 
+	"frame": {"x": 144, "y": 192, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	},
+"tile3_0": { 
+	"frame": {"x": 0, "y": 288, "w": 48, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 48, "h": 96 },
+	"sourceSize": {"w": 48, "h": 96 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0"],
+"row1" : ["tile1_0","tile1_1","tile1_2","tile1_3"],
+"row2" : ["tile2_0","tile2_1","tile2_2","tile2_3"],
+"row3" : ["tile3_0"]
+},
+"meta": {
+	"image": "cozydoor.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
