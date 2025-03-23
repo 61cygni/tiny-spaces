@@ -296,7 +296,25 @@ class LayerContext {
             console.log('addTileLevelPx ',this.num,' ctile.x ', ctile.x, 'ctile.y ', ctile.y, "index ", index, "new_index", new_index);
         }
 
-        if (!g_ctx.dkey) {
+        if (g_ctx.dkey) {
+            // Animated sprites are variable sizes. So we loop through all sprites
+            // and check if we land on one. If we do, we delete it and bail.
+            for(let i in this.sprites){
+                let spr = this.sprites[i];
+                if(spr.hasOwnProperty('animationSpeed')){
+                    let brx = spr.x + spr.width;
+                    let bry = spr.y + spr.height;
+                    if(x >= spr.x && y >= spr.y && x <= brx && y <= bry){
+                        console.log("delete animated sprite", spr);
+                        this.container.removeChild(this.sprites[i]);
+                        delete this.sprites[i];
+                        g_ctx.composite.container.removeChild(this.composite_sprites[i]);
+                        delete this.composite_sprites[i];
+                        return; // bail
+                    }
+                }
+            }
+        } else {
             this.container.addChild(ctile);
             g_ctx.composite.container.addChild(ctile2);
         } 

@@ -110,6 +110,7 @@ export class LevelContext {
         this.tilesetpxw = mod.tilesetpxw;
         this.tilesetpxh = mod.tilesetpxh;
         this.bgtiles = mod.bgtiles
+        this.overlaymap = mod.overlaymap;
         this.objmap  = mod.objmap
         this.maplabels = mod.maplabels;
         this.animatedsprites = mod.animatedsprites;
@@ -260,6 +261,19 @@ export class LevelContext {
                 for (let y = 0; y < tiles[0].length; y++) {
                     if (tiles[x][y] != -1) {
                         this.addTileLevelCoords(x, y, this.tiledimx, tiles[x][y]);
+                    }
+                }
+            }
+        }
+        if (this.overlaymap != null) {
+            for (let i = 0; i < this.overlaymap.length; i++) {
+                let tiles = this.overlaymap[i];
+                // console.log("Blitting tiles for layer "+i);
+                for (let x = 0; x < tiles.length; x++) {
+                    for (let y = 0; y < tiles[0].length; y++) {
+                        if (tiles[x][y] != -1) {
+                            this.addTileLevelCoords(x, y, this.tiledimx, tiles[x][y]);
+                        }
                     }
                 }
             }
