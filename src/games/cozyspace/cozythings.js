@@ -3,8 +3,9 @@ import * as THING  from '@spaced/thing.js';
 import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
-    console.log('initSoundsOnce');
     sound.add('soup-pot', './audio/souppot.mp3');
+    sound.add('door-open', './audio/door-open.mp3');
+    sound.add('door-close', './audio/door-close.mp3');
     sound.add('grandfather-clock', './audio/grandfather-clock.mp3');
     sound.add('light-fire', './audio/lighting-a-fire.mp3');
     sound.add('listen-fire', './audio/camp-fire.mp3');
@@ -12,6 +13,48 @@ export function initSoundsOnce() {
     sound.find('soup-pot').volume = 0.3;
     sound.find('light-fire').volume = 0.2;
     sound.find('listen-fire').volume = 0.2;
+    sound.find('door-open').volume = 0.2;
+    sound.find('door-close').volume = 0.2;
+}
+
+export class CozyDoor extends THING.Thing {
+    constructor(gameevents){
+        super("anim-door", gameevents.level.spritesheet_map.get("anim-door"), gameevents.level);
+
+        this.registerSprite('closed', 'row0', false);
+        this.registerSprite('opening', 'row1', false);
+        this.registerSprite('closing', 'row2', false);
+        this.registerSprite('open', 'row3', false);
+        this.setSprite('closed');
+
+        this.sprites['opening'].onComplete = () => {
+            this.setSprite('open');
+        }
+
+        this.sprites['closing'].onComplete = () => {
+            this.setSprite('closed');
+        }
+    }
+
+    isOpen(){
+        return this.curanimname == 'open';
+    }
+
+    open(){
+        if(this.curanimname != 'open'){
+            this.setSprite('opening');
+            this.gotoAndPlay(0);
+            sound.play('door-open');
+        }
+    }
+
+    close(){
+        if(this.curanimname != 'closed'){
+            this.setSprite('closing');
+            this.gotoAndPlay(0);
+            sound.play('door-close');
+        }
+    }
 }
 
 export class GrandfatherClock extends THING.Thing {

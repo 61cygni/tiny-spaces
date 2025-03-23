@@ -12,7 +12,6 @@ const MAPFILE = import.meta.env.DEV
 
 let impl = null; // singleton for level implementation
 
-
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
 function static_images(){
     // all static images to load;
@@ -24,6 +23,7 @@ function static_images(){
 function spritesheets(){
     let spritesheets = [new LEVEL.Sprite('fireplace', './spritesheets/cozy-fireplace.json'),
                         new LEVEL.Sprite('soup-pot', './spritesheets/cozy-souppot.json'),
+                        new LEVEL.Sprite('anim-door', './spritesheets/cozydoor0.json'),
     ];
 
     return spritesheets;
@@ -44,6 +44,7 @@ class EnterInteractionHandler {
             return;
         }
 
+
         if (closest instanceof COZYTHINGS.Fireplace) {
             if (!closest.isLit()) {
                 closest.light();
@@ -57,6 +58,12 @@ class EnterInteractionHandler {
                 closest.listen();
             } else {
                 closest.light();
+            }
+        }else if (closest instanceof COZYTHINGS.CozyDoor) {
+            if (!closest.isOpen()) {
+                closest.open();
+            } else {
+                closest.close();
             }
         }
     }
@@ -102,6 +109,10 @@ class CozyCabinImpl {
                 let soupPot = new COZYTHINGS.SoupPot(this.gameevents);
                 soupPot.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(soupPot);
+            }else if(spr.sheet.includes('cozy-door.json')){
+                let door = new COZYTHINGS.CozyDoor(this.gameevents);
+                door.arrive(spr.x, spr.y);
+                this.gameevents.level.addThing(door);
             }
         }
 

@@ -15,18 +15,21 @@ export class Thing {
         this.here = false; 
         this.focus = false;
         this.curanim = null;
+        this.curanimname = null;
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.THING;
         this.sprites = {};
     }
 
-    registerSprite(name, row){
+    registerSprite(name, row, loop=true){
         this.sprites[name] = new PIXI.AnimatedSprite(this.sheet.animations[row]);
+        this.sprites[name].loop = loop;
     }
 
     setSprite(name){
         this.curanim = this.sprites[name];
         this.curanim.animationSpeed = 0.1066;
+        this.curanimname = name;
 
         this.container.addChild(this.curanim);
     }
@@ -88,9 +91,15 @@ export class Thing {
         if(this.sprites != null){
             if(this.curanim.playing){
                 console.log("Thing is already playing an animation");
-                returnl
+                return;
             }
             this.curanim.play();
+        }
+    }
+
+    gotoAndPlay(frame) {
+        if(this.curanim != null){
+            this.curanim.gotoAndPlay(frame);
         }
     }
 
