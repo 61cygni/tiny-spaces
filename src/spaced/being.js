@@ -21,7 +21,6 @@ export class Being {
         this.here = false; // on level or not.
         this.sheet = spritesheet;
         this.level = level;
-
         this.blocking_layers = [0,1]; // layers to check for blocking objects
         this.init();
     }
@@ -29,6 +28,7 @@ export class Being {
     init(){
         this.sprites = {};
         this.focus = false;
+        this.frozen = false;
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.BEING;
 
@@ -78,6 +78,14 @@ export class Being {
         this.focus = bool;
     }
 
+    freeze(){
+        this.frozen = true;
+    }
+
+    thaw(){
+        this.frozen = false;
+    }
+
 
     distance(being){
         if(this === being){
@@ -111,7 +119,15 @@ export class Being {
         this.level.container.y = ydelta;
     }
 
-    arrive(x, y) {
+    getCoords(){
+        if(this.focus){
+            return {x: this.worldx, y: this.worldy};
+        }else{
+            return {x: this.container.x, y: this.container.y};
+        }
+    }
+
+    arrive(x, y, dir = null) {
         if (this.focus) {
             this.container.x = this.screencenterx;
             this.container.y = this.screencentery;
@@ -121,12 +137,16 @@ export class Being {
         }else{
             this.container.x = x;
             this.container.y = y;
-            // this.curanim.x = x;
-            // this.curanim.y = y;
         }
 
+        if(dir){
+            this.direction = dir;
+        }
 
         if (this.sprites != null) {
+            if(this.curanim.parent){
+                this.container.removeChild(this.curanim);
+            }
             this.curanim = this.sprites[this.direction];
             this.curanim.animationSpeed = 0.1666;
             this.curanim.stop();
@@ -146,7 +166,10 @@ export class Being {
 
     // face a given direction
     face(dir){
-        this.container.removeChild(this.curanim);
+        if(this.curanim.parent){
+            this.container.removeChild(this.curanim);
+        }
+        this.direction = dir;
         this.curanim = this.sprites[dir];
         this.curanim.gotoAndStop(1);
         this.container.addChild(this.curanim);
@@ -206,6 +229,10 @@ export class Being {
     }
 
     goDir(dir) {
+        if(this.frozen){
+            return;
+        }
+
         if(this.direction != dir){
             this.direction = dir;
             if (this.sprites != null) {
@@ -315,6 +342,10 @@ export class Being {
     }
 
     tick(delta){
+        if (this.frozen){
+            return;
+        }
+
         if (this.moving && this.timeToMove(delta)) {
             if (this.direction == 'RIGHT') {
                 if (!this.isBlockedCurDir()) {

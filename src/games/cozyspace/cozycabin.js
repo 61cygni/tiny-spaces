@@ -65,6 +65,8 @@ class EnterInteractionHandler {
             } else {
                 closest.close();
             }
+        }else if (closest instanceof COZYTHINGS.WritingDesk) {
+            closest.onEnter();
         }
     }
 
@@ -114,6 +116,21 @@ class CozyCabinImpl {
                 door.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(door);
             }
+        } // end of loop through all animated sprites
+
+        // loop through all labels and add things to the level
+        for(let i in this.gameevents.level.maplabels){
+            let label = this.gameevents.level.maplabels[i];
+            if(label.label == 'writingdesk'){
+                let writingDesk = new COZYTHINGS.WritingDesk(this.gameevents);
+                let cx = label.sx + (label.ex - label.sx) / 2;
+                let cy = label.sy + (label.ey - label.sy) / 2;
+                cx = cx * this.gameevents.level.tiledimx;
+                cy = cy * this.gameevents.level.tiledimy;
+                console.log("DESK!!!",cx, cy);
+                writingDesk.arrive(cx, cy);
+                this.gameevents.level.addThing(writingDesk);
+            }
         }
 
     }
@@ -139,7 +156,7 @@ class CozyCabin extends LEVEL.Level {
 
     initonce() {
         sound.add('cozy', './audio/cozy.m4a');
-        sound.find('cozy').volume = 0.05;
+        sound.find('cozy').volume = 0.03;
         COZYTHINGS.initSoundsOnce();
     }
 

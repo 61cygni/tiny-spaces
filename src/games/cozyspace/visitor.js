@@ -10,8 +10,8 @@ export class Visitor extends BEING.Being {
         this.blocking_layers = [1]; // only block on second obj layer 
     }
 
-    arrive(x, y){
-        super.arrive(x, y);
+    arrive(x, y, dir = null){
+        super.arrive(x, y, dir);
     }
 }
 

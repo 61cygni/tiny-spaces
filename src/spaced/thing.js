@@ -5,11 +5,11 @@ import * as PIXI from 'pixi.js'
 
 export class Thing {
 
-    constructor(name, spritesheet, level) {
+    constructor(name, spritesheet, gameevents) {
         this.name = name;
         this.app = null;
         this.sheet = spritesheet;
-        this.level = level;
+        this.gameevents = gameevents;
         
         this.animationtime = -1;
         this.here = false; 
@@ -43,7 +43,7 @@ export class Thing {
         this.container.x = x;
         this.container.y = y;
 
-        this.level.container.addChild(this.container);
+        this.gameevents.level.container.addChild(this.container);
         this.here = true;
     }
 
@@ -71,7 +71,7 @@ export class Thing {
         this.here = false;
         if (this.sprites != null) {
             this.curanim.stop();
-            this.level.container.removeChild(this.container);
+            this.gameevents.level.container.removeChild(this.container);
         }
     }
 
@@ -114,9 +114,9 @@ export class Thing {
     }
 
     curBGTile(){
-        let coordsx = Math.floor((this.worldx + 11) / this.level.tiledimx);
-        let coordsy = Math.floor((this.worldy + 16) / this.level.tiledimy);
-        return this.level.bgtiles[0][coordsx][coordsy];
+        let coordsx = Math.floor((this.worldx + 11) / this.gameevents.level.tiledimx);
+        let coordsy = Math.floor((this.worldy + 16) / this.gameevents.level.tiledimy);
+        return this.gameevents.level.bgtiles[0][coordsx][coordsy];
     }
 
     tick(delta){
