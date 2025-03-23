@@ -1,6 +1,7 @@
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
-import * as THING  from '@spaced/thing.js';
+
+import * as COZYTHINGS  from './cozythings.js';
 
 import { sound } from '@pixi/sound';
 
@@ -10,73 +11,6 @@ const MAPFILE = import.meta.env.DEV
 
 
 let impl = null; // singleton for level implementation
-
-class GrandfatherClock extends THING.Thing {
-    constructor(gameevents){
-        super("grandfather-clock", null, gameevents.level);
-    }
-    
-    listen(){
-        sound.play('grandfather-clock');
-    }
-    
-}
-
-class SoupPot extends THING.Thing {
-    constructor(gameevents){
-        super("soup-pot", gameevents.level.spritesheet_map.get("soup-pot"), gameevents.level);
-
-        this.registerSprite('unlit', 'row0');
-        this.registerSprite('lit', 'row1');
-        this.setSprite('unlit');
-
-        this.lit = false;
-    }
-
-    isLit(){
-        return this.lit;
-    }
-    
-    listen(){
-        sound.play('soup-pot');
-    }
-
-    light(){
-        this.lit = true;
-        this.setSprite('lit');
-        sound.play('light-fire');
-        this.startAnim();      
-    }
-    
-}
-
-class Fireplace extends THING.Thing {
-
-    constructor(gameevents){
-        super("fireplace", gameevents.level.spritesheet_map.get("fireplace"), gameevents.level);
-
-        this.registerSprite('unlit', 'row0');
-        this.registerSprite('lit', 'row1');
-        this.setSprite('unlit');
-
-        this.lit = false;
-    }
-
-    isLit(){
-        return this.lit;
-    }
-
-    light(){
-        this.lit = true;
-        this.setSprite('lit');
-        sound.play('light-fire');
-        this.startAnim();      
-    }
-
-    listen(){
-        sound.play('listen-fire');
-    }
-}
 
 
 // Return static image object used by level.js to load images, size them, and create PIXI sprites from them 
@@ -110,15 +44,15 @@ class EnterInteractionHandler {
             return;
         }
 
-        if (closest instanceof Fireplace) {
+        if (closest instanceof COZYTHINGS.Fireplace) {
             if (!closest.isLit()) {
                 closest.light();
             } else {
                 closest.listen();
             }
-        }else if (closest instanceof GrandfatherClock) {
+        }else if (closest instanceof COZYTHINGS.GrandfatherClock) {
             closest.listen();
-        }else if (closest instanceof SoupPot) {
+        }else if (closest instanceof COZYTHINGS.SoupPot) {
             if (closest.isLit()) {
                 closest.listen();
             } else {
@@ -157,15 +91,15 @@ class CozyCabinImpl {
             let spr = this.gameevents.level.animatedsprites[i];
             // see if the name cozy-fire.json is in the sheet name
             if(spr.sheet.includes('cozy-fire.json')){
-                let fireplace = new Fireplace(this.gameevents);
+                let fireplace = new COZYTHINGS.Fireplace(this.gameevents);
                 fireplace.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(fireplace);
             }else if(spr.sheet.includes('cozy-clock0.json')){
-                let grandfatherClock = new GrandfatherClock(this.gameevents);
+                let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
                 grandfatherClock.setLocation(spr.x, spr.y);
                 this.gameevents.level.addThing(grandfatherClock);
             }else if(spr.sheet.includes('cozy-firepot.json')){
-                let soupPot = new SoupPot(this.gameevents);
+                let soupPot = new COZYTHINGS.SoupPot(this.gameevents);
                 soupPot.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(soupPot);
             }
