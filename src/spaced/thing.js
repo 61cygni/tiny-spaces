@@ -33,6 +33,11 @@ export class Thing {
         this.container.addChild(this.curanim);
     }
 
+    setLocation(x, y){
+        this.container.x = x;
+        this.container.y = y;
+    }
+
     arrive(x, y) {
         this.container.x = x;
         this.container.y = y;
@@ -51,8 +56,6 @@ export class Thing {
             console.log("Things should never be in focus");
             return -1;
         }
-
-        console.log("DISTANCE", tothing);
 
         let ret = -1;
         if(tothing.focus){
