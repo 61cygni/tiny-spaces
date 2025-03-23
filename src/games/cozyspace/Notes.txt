@@ -1,5 +1,10 @@
 Notes:
 
 TODO:
-- Have Britt create sparkle sprites to show which objects you can interact with
-- Doors
+- Create magic sparks for cozy items (Britt)
+- Fix large double door (Britt)
+- Add upper layer for door to level (Britt)
+- Fix zIndex for overlay layer (Martin)
+- Turn on / off fires, clocks (Martin)
+- Have nearby clocks / fires in ambient sound (Martin)
+- Finish blocking level (Britt, Martin)
