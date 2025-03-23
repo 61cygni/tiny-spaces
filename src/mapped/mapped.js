@@ -653,8 +653,10 @@ window.onTab = (evt, tabName) => {
         g_ctx.map_app.stage.addChild(g_ctx.composite.container);
         g_ctx.map_app.stage.addChild(newg);
     }else {
-        g_ctx.composite.app.stage.removeChildren();
-        g_ctx.composite.app.stage.addChild(g_ctx.composite.container);
+        if(g_ctx.composite){
+            g_ctx.composite.app.stage.removeChildren();
+            g_ctx.composite.app.stage.addChild(g_ctx.composite.container);
+        }
     }
 }
 
@@ -816,7 +818,7 @@ window.addEventListener(
             }
             let layer = undome.shift();
             for(let i = 0; i < undome.length; i++) {
-                if (g_ctx.debug_flag) {
+                if (g_ctx.debug_flag2) {
                     console.log("Undo removing ", undome[i])
                 }
                 layer.container.removeChild(layer.sprites[undome[i]]);

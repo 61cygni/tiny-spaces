@@ -27,6 +27,7 @@ export class Thing {
     setSprite(name){
         console.log(this.sprites);
         this.curanim = this.sprites[name];
+        this.curanim.animationSpeed = 0.1066;
 
         console.log("setting sprite", this.curanim);
         this.container.addChild(this.curanim);
@@ -50,6 +51,8 @@ export class Thing {
             console.log("Things should never be in focus");
             return -1;
         }
+
+        console.log("DISTANCE", tothing);
 
         let ret = -1;
         if(tothing.focus){

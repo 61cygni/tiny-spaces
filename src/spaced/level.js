@@ -124,6 +124,7 @@ export class LevelContext {
         console.log("Level pixels (x,y): ", this.levelxpixels, this.levelypixels);
 
         this.beings = [];
+        this.things = [];
     }
 
     addFireOnReset(func){
@@ -134,6 +135,12 @@ export class LevelContext {
         being.app = this.app;
         being.level = this;
         this.beings.push(being);
+    }
+
+    addThing(thing){
+        thing.app = this.app;
+        thing.level = this;
+        this.things.push(thing);
     }
 
     finalize_load(){
@@ -156,6 +163,11 @@ export class LevelContext {
             b.destroy();
         }
         this.beings = [];
+        for(let t of this.things){
+            t.leave();
+            t.destroy();
+        }
+        this.things = [];
         if (this.fire_on_reset) {
             this.fire_on_reset();
         }
@@ -176,6 +188,25 @@ export class LevelContext {
             if(d < mindist){
                 mindist = d;
                 closest = b;
+            }
+        }
+        return closest;
+    }
+
+    get_closest_thing(thing, distance){
+        let closest = null;
+        let mindist = distance;
+        for(let t of this.things){
+            if(t.name === thing.name){
+                continue;
+            }
+            let d = t.distance(thing);
+            if(d < 0){
+                continue;
+            }
+            if(d < mindist){
+                mindist = d;
+                closest = t;
             }
         }
         return closest;
