@@ -28,7 +28,6 @@ export class Thing {
 
     setSprite(name){
         this.curanim = this.sprites[name];
-        this.curanim.animationSpeed = 0.1066;
         this.curanimname = name;
 
         this.container.addChild(this.curanim);
@@ -87,19 +86,21 @@ export class Thing {
         }
     }
 
-    startAnim() {
+    startAnim(speed=0.1066) {
         if(this.sprites != null){
             if(this.curanim.playing){
                 console.log("Thing is already playing an animation");
                 return;
             }
+            this.curanim.animationSpeed = speed;
             this.curanim.play();
         }
     }
 
-    gotoAndPlay(frame) {
+    gotoAndPlay(frame, speed=0.1066) {
         if(this.curanim != null){
             this.curanim.gotoAndPlay(frame);
+            this.curanim.animationSpeed = speed;
         }
     }
 

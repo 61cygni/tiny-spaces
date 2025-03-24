@@ -10,13 +10,15 @@ export function initSoundsOnce() {
     sound.add('grandfather-clock', './audio/grandfather-clock.mp3');
     sound.add('light-fire', './audio/lighting-a-fire.mp3');
     sound.add('listen-fire', './audio/camp-fire.mp3');
+    sound.add('ambient-clock', './audio/clock-tick.mp3');
     sound.find('grandfather-clock').volume = 0.2;
     sound.find('soup-pot').volume = 0.3;
     sound.find('light-fire').volume = 0.2;
     sound.find('listen-fire').volume = 0.2;
     sound.find('door-open').volume = 0.2;
     sound.find('door-close').volume = 0.2;
-    sound.find('writing-desk').volume = 0.8;
+    sound.find('writing-desk').volume = 0.9;
+    sound.find('ambient-clock').volume = 0.1;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -61,14 +63,54 @@ export class CozyDoor extends THING.Thing {
 
 export class GrandfatherClock extends THING.Thing {
     constructor(gameevents){
-        super("grandfather-clock", null, gameevents);
+        super("grandfather-clock", gameevents.level.spritesheet_map.get("cozyclock"), gameevents);
+        this.registerSprite('stopped', 'row0', true);
+        this.registerSprite('runnning', 'row1', true);
+        this.setSprite('stopped');
+    }
+
+    isRunning(){
+        return this.curanimname == 'runnning';
+    }
+
+    run(){
+        if(this.curanimname != 'runnning'){
+            this.setSprite('runnning');
+            this.gotoAndPlay(0, .05);
+            sound.play('grandfather-clock');
+        }
+    }
+
+    stop(){
+        if(this.curanimname != 'stopped'){
+            this.setSprite('stopped');
+            this.gotoAndPlay(0);
+            sound.stop('grandfather-clock');
+        }
     }
     
     listen(){
         sound.play('grandfather-clock');
     }
-    
-}
+
+    onEnter(){
+        if(this.isRunning()){
+            this.stop();
+        }else{
+            this.run();
+        }
+    }
+
+    playAmbientLoop(){
+        if(this.isRunning()){
+            sound.play('ambient-clock', {loop: true});
+        }
+    }
+
+    stopAmbientLoop(){
+        sound.stop('ambient-clock');
+    }
+} // end of GrandfatherClock class
 
 export class WritingDesk extends THING.Thing {
     constructor(label, gameevents){
@@ -88,8 +130,8 @@ export class WritingDesk extends THING.Thing {
 
     }
 
-    addThing(thing){
-        this.things.push(thing);
+    addThingList(thinglist){
+        this.things.push(...thinglist);
     }
 
     isWriting(){
@@ -105,6 +147,8 @@ export class WritingDesk extends THING.Thing {
         sound.play('writing-desk', {loop: true});
         this.gameevents.mainchar.freeze();
 
+
+        console.log(this.things);
         for(let i in this.things){
             this.things[i].playAmbientLoop();
         }

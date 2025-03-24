@@ -24,6 +24,7 @@ function spritesheets(){
     let spritesheets = [new LEVEL.Sprite('fireplace', './spritesheets/cozy-fireplace.json'),
                         new LEVEL.Sprite('soup-pot', './spritesheets/cozy-souppot.json'),
                         new LEVEL.Sprite('anim-door', './spritesheets/cozydoor0.json'),
+                        new LEVEL.Sprite('cozyclock', './spritesheets/cozyclock0.json'),
     ];
 
     return spritesheets;
@@ -48,7 +49,7 @@ class EnterInteractionHandler {
         if (closest instanceof COZYTHINGS.Fireplace) {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.GrandfatherClock) {
-            closest.listen();
+            closest.onEnter();
         }else if (closest instanceof COZYTHINGS.SoupPot) {
             if (closest.isLit()) {
                 closest.listen();
@@ -89,9 +90,9 @@ class CozyCabinImpl {
         this.gameevents.register_key_handler("Enter", new EnterInteractionHandler(this));
 
 
-        SCENE.setbgmusic('cozy');
+        // SCENE.setbgmusic('cozy');
 
-        let writingfireplace = null
+        let writinglist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -104,16 +105,24 @@ class CozyCabinImpl {
 
                 // This is a big hack since we don't have labels on sprites right now. Can do automatically later.
                 if(spr.x == 1776){
-                    writingfireplace = fireplace;
+                    writinglist.push(fireplace);
                 }
             }else if(spr.sheet.includes('cozy-clock0.json')){
                 let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
-                grandfatherClock.setLocation(spr.x, spr.y);
+                grandfatherClock.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(grandfatherClock);
+
+                if(spr.x == 1560){
+                    writinglist.push(grandfatherClock);
+                }
             }else if(spr.sheet.includes('cozy-firepot.json')){
                 let soupPot = new COZYTHINGS.SoupPot(this.gameevents);
                 soupPot.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(soupPot);
+
+                if(spr.x == 1776){
+                    writinglist.push(soupPot);
+                }
             }else if(spr.sheet.includes('cozy-door.json')){
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);
                 door.arrive(spr.x, spr.y);
@@ -126,7 +135,7 @@ class CozyCabinImpl {
             let label = this.gameevents.level.maplabels[i];
             if(label.label == 'writingdesk'){
                 let writingDesk = new COZYTHINGS.WritingDesk(label,this.gameevents);
-                writingDesk.addThing(writingfireplace);
+                writingDesk.addThingList(writinglist);
                 this.gameevents.level.addThing(writingDesk);
             }
         }
