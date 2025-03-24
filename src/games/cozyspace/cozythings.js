@@ -4,6 +4,7 @@ import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
     sound.add('soup-pot', './audio/souppot.mp3');
+    sound.add('person-eating', './audio/person-eating.mp3');
     sound.add('writing-desk', './audio/writing-desk.mp3');
     sound.add('door-open', './audio/door-open.mp3');
     sound.add('door-close', './audio/door-close.mp3');
@@ -17,6 +18,7 @@ export function initSoundsOnce() {
     sound.find('listen-fire').volume = 0.2;
     sound.find('door-open').volume = 0.2;
     sound.find('door-close').volume = 0.2;
+    sound.find('person-eating').volume = 0.4;
     sound.find('writing-desk').volume = 0.9;
     sound.find('ambient-clock').volume = 0.1;
 }
@@ -174,12 +176,69 @@ export class WritingDesk extends THING.Thing {
         }
     }
 
-    onLeave(){
-        this.writing = false;
-        sound.stop('writing-desk');
+}
+
+export class KitchenStool extends THING.Thing {
+    constructor(label, gameevents){
+        super("kitchen-stool", null, gameevents);
+        this.sitting = false;
+
+        let cx = label.sx + (label.ex - label.sx) / 2;
+        let cy = label.sy + (label.ey - label.sy) / 2;
+        cx = cx * this.gameevents.level.tiledimx;
+        cy = cy * this.gameevents.level.tiledimy;
+
+        this.setLocation(cx, cy);
+        this.charcoords = {x: 0, y: 0};
+        this.chardirect = null;
+        this.things = [];
+    }
+
+    addThingList(thinglist){
+        this.things.push(...thinglist);
+    }
+
+    isSitting(){
+        return this.sitting;
     }
     
-}
+    sit(){
+        this.sitting = true;
+
+        this.charcoords = this.gameevents.mainchar.getCoords();
+        this.gameevents.mainchar.leave();
+        this.gameevents.mainchar.arrive(315,917, "LEFT");
+        sound.play('person-eating', {loop: true});
+        this.gameevents.mainchar.freeze();
+
+
+        for(let i in this.things){
+            this.things[i].playAmbientLoop();
+        }
+    }
+
+    getUp(){
+        this.sitting = false;
+        sound.stop('person-eating');
+        this.gameevents.mainchar.leave();
+        this.gameevents.mainchar.arrive(this.charcoords.x, this.charcoords.y);
+        this.gameevents.mainchar.thaw();
+
+        for(let i in this.things){
+            this.things[i].stopAmbientLoop();
+        }
+    }
+
+    onEnter(){
+        if(!this.sitting){
+            this.sit();
+        }else{
+            this.getUp();
+        }
+    }
+
+} // end of KitchenStool class
+
 
 export class SoupPot extends THING.Thing {
     constructor(gameevents){
@@ -205,6 +264,16 @@ export class SoupPot extends THING.Thing {
         this.setSprite('lit');
         sound.play('light-fire');
         this.startAnim();      
+    }
+
+    playAmbientLoop(){
+        if(this.lit){
+            sound.play('soup-pot', {loop: true});
+        }
+    }
+
+    stopAmbientLoop(){
+        sound.stop('soup-pot');
     }
     
 }

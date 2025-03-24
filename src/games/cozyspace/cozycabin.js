@@ -64,6 +64,11 @@ class EnterInteractionHandler {
             }
         }else if (closest instanceof COZYTHINGS.WritingDesk) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.KitchenStool) {
+            closest.onEnter();
+        }else{
+            console.log("No interaction handler found for closest thing");
+            console.log(closest);
         }
     }
 
@@ -93,6 +98,7 @@ class CozyCabinImpl {
         // SCENE.setbgmusic('cozy');
 
         let writinglist = [];
+        let kitchenstoollist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -120,8 +126,8 @@ class CozyCabinImpl {
                 soupPot.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(soupPot);
 
-                if(spr.x == 1776){
-                    writinglist.push(soupPot);
+                if(spr.x == 192){
+                    kitchenstoollist.push(soupPot);
                 }
             }else if(spr.sheet.includes('cozy-door.json')){
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);
@@ -137,7 +143,12 @@ class CozyCabinImpl {
                 let writingDesk = new COZYTHINGS.WritingDesk(label,this.gameevents);
                 writingDesk.addThingList(writinglist);
                 this.gameevents.level.addThing(writingDesk);
+            }else if(label.label == "kitchenstool"){
+                let kitchenstool = new COZYTHINGS.KitchenStool(label,this.gameevents);
+                kitchenstool.addThingList(kitchenstoollist);
+                this.gameevents.level.addThing(kitchenstool);
             }
+
         }
 
     }
