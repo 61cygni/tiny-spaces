@@ -19,11 +19,18 @@ export class Thing {
         this.container = new PIXI.Container();
         this.container.zIndex = GLOBALS.ZINDEX.THING;
         this.sprites = {};
+
+        this.width = 0;
+        this.height = 0;
+        this.centerx = -1;
+        this.centery = -1;
     }
 
     registerSprite(name, row, loop=true){
         this.sprites[name] = new PIXI.AnimatedSprite(this.sheet.animations[row]);
         this.sprites[name].loop = loop;
+        this.width = this.sprites[name].width;
+        this.height = this.sprites[name].height;
     }
 
     setSprite(name){
@@ -34,13 +41,29 @@ export class Thing {
     }
 
     setLocation(x, y){
+        if(!this.sheet){
+            console.log("Error: cannot set location for thing with no sheet");
+            return;
+        }
         this.container.x = x;
         this.container.y = y;
+        this.setCenter(x + this.width / 2, y + this.height / 2);
+    }
+
+    setCenter(x, y){
+        this.centerx = x;
+        this.centery = y;
     }
 
     arrive(x, y) {
+        if(!this.sheet){
+            console.log("Error: cannot arrive for thing with no sheet");
+            return;
+        }
+
         this.container.x = x;
         this.container.y = y;
+        this.setCenter(x + this.width / 2, y + this.height / 2);
 
         this.gameevents.level.container.addChild(this.container);
         this.here = true;
@@ -58,10 +81,13 @@ export class Thing {
 
         let ret = -1;
         if(tothing.focus){
+            let tothingcenterx = tothing.worldx + tothing.sprites['DOWN'].width / 2;
+            let tothingcentery = tothing.worldy + tothing.sprites['DOWN'].height / 2;
+
             // distance to main character
-            ret = Math.sqrt(Math.pow(tothing.worldx - this.container.x, 2) + Math.pow(tothing.worldy - this.container.y, 2));
+            ret = Math.sqrt(Math.pow(tothingcenterx - this.centerx, 2) + Math.pow(tothingcentery - this.centery, 2));
         }else{
-            ret = Math.sqrt(Math.pow(tothing.container.x - this.container.x, 2) + Math.pow(tothing.container.y - this.container.y, 2));
+            ret = Math.sqrt(Math.pow(tothing.centerx - this.centerx, 2) + Math.pow(tothing.centery - this.centery, 2));
         }
         return ret;
     }

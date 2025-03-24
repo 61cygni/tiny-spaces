@@ -128,7 +128,7 @@ export class StayAwhileThing extends THING.Thing {
         cx = cx * this.gameevents.level.tiledimx;
         cy = cy * this.gameevents.level.tiledimy;
 
-        this.setLocation(cx, cy);
+        this.setCenter(cx, cy);
         this.savedcharcoords = { x: 0, y: 0 };
         this.savedchardirect = null;
         this.things = [];
@@ -225,7 +225,22 @@ export class SoupPot extends THING.Thing {
         this.lit = true;
         this.setSprite('lit');
         sound.play('light-fire');
-        this.startAnim();      
+        this.gotoAndPlay(0);
+    }
+
+    extinguish(){
+        this.lit = false;
+        this.setSprite('unlit');
+        this.gotoAndPlay(0);
+        sound.stop('light-fire');
+    }
+
+    onEnter(){
+        if(this.lit){
+            this.extinguish();
+        }else{
+            this.light();
+        }
     }
 
     playAmbientLoop(){

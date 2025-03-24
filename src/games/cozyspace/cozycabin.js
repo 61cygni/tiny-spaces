@@ -1,5 +1,6 @@
 import * as LEVEL  from '@spaced/level.js';
 import * as SCENE  from '@spaced/scene.js';
+import * as GAMEEVENTS  from '@spaced/gameevents.js';
 
 import * as COZYTHINGS  from './cozythings.js';
 
@@ -39,7 +40,7 @@ class EnterInteractionHandler {
     }
 
     init(){
-        let closest = this.gameevents.level.get_closest_thing(this.impl.gameevents.mainchar, 300);
+        let closest = this.gameevents.level.get_closest_thing(this.impl.gameevents.mainchar, 100);
         if (!closest) {
             console.log("No closest thing");
             return;
@@ -51,11 +52,7 @@ class EnterInteractionHandler {
         }else if (closest instanceof COZYTHINGS.GrandfatherClock) {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.SoupPot) {
-            if (closest.isLit()) {
-                closest.listen();
-            } else {
-                closest.light();
-            }
+            closest.onEnter();
         }else if (closest instanceof COZYTHINGS.CozyDoor) {
             if (!closest.isOpen()) {
                 closest.open();
@@ -85,6 +82,26 @@ class EnterInteractionHandler {
     
 }
 
+class MuteHandler extends GAMEEVENTS.RawHandler {
+    constructor(impl){
+        super(impl.gameevents);
+        this.impl = impl;
+    }
+
+    init() {
+        if (sound.find('cozy').isPlaying) {
+            sound.find('cozy').pause();
+        } else {
+            sound.find('cozy').play();
+        }
+    }
+
+    finalize(){
+        this.impl.gameevents.register_key_handler("KeyM", new MuteHandler(this.impl));
+    }
+}
+
+
 
 class CozyCabinImpl {
     constructor(gameevents){
@@ -95,9 +112,10 @@ class CozyCabinImpl {
 
         // whenever player presses enter, find if there is something close to interact with 
         this.gameevents.register_key_handler("Enter", new EnterInteractionHandler(this));
+        this.gameevents.register_key_handler("KeyM", new MuteHandler(this));
 
 
-        // SCENE.setbgmusic('cozy');
+        SCENE.setbgmusic('cozy');
 
         let writinglist = [];
         let kitchenstoollist = [];
@@ -131,7 +149,6 @@ class CozyCabinImpl {
 
                 if(spr.x == 192){
                     kitchenstoollist.push(soupPot);
-                    cuttingstoollist.push(soupPot);
                 }
             }else if(spr.sheet.includes('cozy-door.json')){
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);

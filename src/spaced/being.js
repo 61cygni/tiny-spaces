@@ -44,7 +44,7 @@ export class Being {
                 this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
             }
 
-            this.movedelta = .1; // FIXME don't use magic number
+            this.movedelta = .075; // FIXME don't use magic number
             this.pausecountdown = this.movedelta;
 
             this.moving = 0;
