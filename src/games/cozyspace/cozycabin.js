@@ -66,6 +66,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.KitchenStool) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.CuttingStool) {
+            closest.onEnter();
         }else{
             console.log("No interaction handler found for closest thing");
             console.log(closest);
@@ -99,6 +101,7 @@ class CozyCabinImpl {
 
         let writinglist = [];
         let kitchenstoollist = [];
+        let cuttingstoollist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -128,6 +131,7 @@ class CozyCabinImpl {
 
                 if(spr.x == 192){
                     kitchenstoollist.push(soupPot);
+                    cuttingstoollist.push(soupPot);
                 }
             }else if(spr.sheet.includes('cozy-door.json')){
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);
@@ -147,6 +151,10 @@ class CozyCabinImpl {
                 let kitchenstool = new COZYTHINGS.KitchenStool(label,this.gameevents);
                 kitchenstool.addThingList(kitchenstoollist);
                 this.gameevents.level.addThing(kitchenstool);
+            }else if(label.label == "cuttingstool"){
+                let cuttingstool = new COZYTHINGS.CuttingStool(label,this.gameevents);
+                cuttingstool.addThingList(cuttingstoollist);
+                this.gameevents.level.addThing(cuttingstool);
             }
 
         }

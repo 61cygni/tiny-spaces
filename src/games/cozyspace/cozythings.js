@@ -12,6 +12,7 @@ export function initSoundsOnce() {
     sound.add('light-fire', './audio/lighting-a-fire.mp3');
     sound.add('listen-fire', './audio/camp-fire.mp3');
     sound.add('ambient-clock', './audio/clock-tick.mp3');
+    sound.add('cuttingstool', './audio/cuttingstool.mp3');
     sound.find('grandfather-clock').volume = 0.2;
     sound.find('soup-pot').volume = 0.3;
     sound.find('light-fire').volume = 0.2;
@@ -21,6 +22,7 @@ export function initSoundsOnce() {
     sound.find('kitchenstool').volume = 0.4;
     sound.find('writingdesk').volume = 0.9;
     sound.find('ambient-clock').volume = 0.1;
+    sound.find('cuttingstool').volume = 0.4;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -191,6 +193,12 @@ export class WritingDesk extends StayAwhileThing {
 export class KitchenStool extends StayAwhileThing {
     constructor(label, gameevents){
         super(label, gameevents, {x: 315, y: 917}, "LEFT");
+    }
+}
+
+export class CuttingStool extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 250, y: 1060}, "UP");
     }
 }
 
