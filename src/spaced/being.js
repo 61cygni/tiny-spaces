@@ -228,6 +228,10 @@ export class Being {
         return false;
     }
 
+    getDirection(){
+        return this.direction;
+    }
+
     goDir(dir) {
         if(this.frozen){
             return;

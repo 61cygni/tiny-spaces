@@ -4,8 +4,8 @@ import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
     sound.add('soup-pot', './audio/souppot.mp3');
-    sound.add('person-eating', './audio/person-eating.mp3');
-    sound.add('writing-desk', './audio/writing-desk.mp3');
+    sound.add('kitchenstool', './audio/person-eating.mp3');
+    sound.add('writingdesk', './audio/writing-desk.mp3');
     sound.add('door-open', './audio/door-open.mp3');
     sound.add('door-close', './audio/door-close.mp3');
     sound.add('grandfather-clock', './audio/grandfather-clock.mp3');
@@ -18,8 +18,8 @@ export function initSoundsOnce() {
     sound.find('listen-fire').volume = 0.2;
     sound.find('door-open').volume = 0.2;
     sound.find('door-close').volume = 0.2;
-    sound.find('person-eating').volume = 0.4;
-    sound.find('writing-desk').volume = 0.9;
+    sound.find('kitchenstool').volume = 0.4;
+    sound.find('writingdesk').volume = 0.9;
     sound.find('ambient-clock').volume = 0.1;
 }
 
@@ -114,131 +114,85 @@ export class GrandfatherClock extends THING.Thing {
     }
 } // end of GrandfatherClock class
 
-export class WritingDesk extends THING.Thing {
-    constructor(label, gameevents){
-        super("writing-desk", null, gameevents);
-        this.writing = false;
+// Super class for locations in the map where the character can do something,
+// and listen to the other ambient sounds in the room.
+export class StayAwhileThing extends THING.Thing {
+    constructor(label, gameevent, charcoords, chardir) {
+        super(label.label, null, gameevent);
 
+        this.active = false;
         let cx = label.sx + (label.ex - label.sx) / 2;
         let cy = label.sy + (label.ey - label.sy) / 2;
         cx = cx * this.gameevents.level.tiledimx;
         cy = cy * this.gameevents.level.tiledimy;
 
         this.setLocation(cx, cy);
-        this.charcoords = {x: 0, y: 0};
-        this.chardirect = null;
+        this.savedcharcoords = { x: 0, y: 0 };
+        this.savedchardirect = null;
         this.things = [];
 
-
+        this.charcoords = charcoords;
+        this.chardirect = chardir;
     }
 
-    addThingList(thinglist){
+    addThingList(thinglist) {
         this.things.push(...thinglist);
     }
 
-    isWriting(){
-        return this.writing;
+    isActive() {
+        return this.active;
     }
-    
-    write(){
-        this.writing = true;
 
-        this.charcoords = this.gameevents.mainchar.getCoords();
+    doThing() {
+        this.active = true;
+
+        this.savedcharcoords = this.gameevents.mainchar.getCoords();
+        this.savedchardirect = this.gameevents.mainchar.getDirection();
         this.gameevents.mainchar.leave();
-        this.gameevents.mainchar.arrive(1496,980, "DOWN");
-        sound.play('writing-desk', {loop: true});
+        this.gameevents.mainchar.arrive(this.charcoords.x, this.charcoords.y, this.chardirect);
         this.gameevents.mainchar.freeze();
 
+        console.log("Playing sound for " + this.name);
+        sound.play(this.name, {loop: true});
 
-        console.log(this.things);
-        for(let i in this.things){
+        for (let i in this.things) {
             this.things[i].playAmbientLoop();
         }
     }
 
-    stopWriting(){
-        this.writing = false;
-        sound.stop('writing-desk');
+    stopThing() {
+        this.active = false;
         this.gameevents.mainchar.leave();
-        this.gameevents.mainchar.arrive(this.charcoords.x, this.charcoords.y);
+        this.gameevents.mainchar.arrive(this.savedcharcoords.x, this.savedcharcoords.y, this.savedchardirect);
         this.gameevents.mainchar.thaw();
+        
+        sound.stop(this.name);
 
-        for(let i in this.things){
+        for (let i in this.things) {
             this.things[i].stopAmbientLoop();
         }
     }
 
-    onEnter(){
-        if(!this.writing){
-            this.write();
-        }else{
-            this.stopWriting();
+    onEnter() {
+        if (!this.active) {
+            this.doThing();
+        } else {
+            this.stopThing();
         }
     }
+} // StayAwhileThing
 
+export class WritingDesk extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 1496, y: 980}, "DOWN");
+    }
 }
 
-export class KitchenStool extends THING.Thing {
+export class KitchenStool extends StayAwhileThing {
     constructor(label, gameevents){
-        super("kitchen-stool", null, gameevents);
-        this.sitting = false;
-
-        let cx = label.sx + (label.ex - label.sx) / 2;
-        let cy = label.sy + (label.ey - label.sy) / 2;
-        cx = cx * this.gameevents.level.tiledimx;
-        cy = cy * this.gameevents.level.tiledimy;
-
-        this.setLocation(cx, cy);
-        this.charcoords = {x: 0, y: 0};
-        this.chardirect = null;
-        this.things = [];
+        super(label, gameevents, {x: 315, y: 917}, "LEFT");
     }
-
-    addThingList(thinglist){
-        this.things.push(...thinglist);
-    }
-
-    isSitting(){
-        return this.sitting;
-    }
-    
-    sit(){
-        this.sitting = true;
-
-        this.charcoords = this.gameevents.mainchar.getCoords();
-        this.gameevents.mainchar.leave();
-        this.gameevents.mainchar.arrive(315,917, "LEFT");
-        sound.play('person-eating', {loop: true});
-        this.gameevents.mainchar.freeze();
-
-
-        for(let i in this.things){
-            this.things[i].playAmbientLoop();
-        }
-    }
-
-    getUp(){
-        this.sitting = false;
-        sound.stop('person-eating');
-        this.gameevents.mainchar.leave();
-        this.gameevents.mainchar.arrive(this.charcoords.x, this.charcoords.y);
-        this.gameevents.mainchar.thaw();
-
-        for(let i in this.things){
-            this.things[i].stopAmbientLoop();
-        }
-    }
-
-    onEnter(){
-        if(!this.sitting){
-            this.sit();
-        }else{
-            this.getUp();
-        }
-    }
-
-} // end of KitchenStool class
-
+}
 
 export class SoupPot extends THING.Thing {
     constructor(gameevents){
