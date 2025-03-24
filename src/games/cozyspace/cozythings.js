@@ -13,7 +13,7 @@ export function initSoundsOnce() {
     sound.find('grandfather-clock').volume = 0.2;
     sound.find('soup-pot').volume = 0.3;
     sound.find('light-fire').volume = 0.2;
-    sound.find('listen-fire').volume = 0.3;
+    sound.find('listen-fire').volume = 0.2;
     sound.find('door-open').volume = 0.2;
     sound.find('door-close').volume = 0.2;
     sound.find('writing-desk').volume = 0.8;
@@ -71,12 +71,25 @@ export class GrandfatherClock extends THING.Thing {
 }
 
 export class WritingDesk extends THING.Thing {
-    constructor(gameevents){
+    constructor(label, gameevents){
         super("writing-desk", null, gameevents);
         this.writing = false;
 
+        let cx = label.sx + (label.ex - label.sx) / 2;
+        let cy = label.sy + (label.ey - label.sy) / 2;
+        cx = cx * this.gameevents.level.tiledimx;
+        cy = cy * this.gameevents.level.tiledimy;
+
+        this.setLocation(cx, cy);
         this.charcoords = {x: 0, y: 0};
         this.chardirect = null;
+        this.things = [];
+
+
+    }
+
+    addThing(thing){
+        this.things.push(thing);
     }
 
     isWriting(){
@@ -91,6 +104,10 @@ export class WritingDesk extends THING.Thing {
         this.gameevents.mainchar.arrive(1496,980, "DOWN");
         sound.play('writing-desk', {loop: true});
         this.gameevents.mainchar.freeze();
+
+        for(let i in this.things){
+            this.things[i].playAmbientLoop();
+        }
     }
 
     stopWriting(){
@@ -99,6 +116,10 @@ export class WritingDesk extends THING.Thing {
         this.gameevents.mainchar.leave();
         this.gameevents.mainchar.arrive(this.charcoords.x, this.charcoords.y);
         this.gameevents.mainchar.thaw();
+
+        for(let i in this.things){
+            this.things[i].stopAmbientLoop();
+        }
     }
 
     onEnter(){
@@ -167,7 +188,30 @@ export class Fireplace extends THING.Thing {
         this.startAnim();      
     }
 
+    extinguish(){
+        this.lit = false;
+        this.setSprite('unlit');
+    }
+
     listen(){
         sound.play('listen-fire');
+    }
+
+    playAmbientLoop(){
+        if(this.lit){
+            sound.play('listen-fire', {loop: true});
+        }
+    }
+
+    stopAmbientLoop(){
+        sound.stop('listen-fire');
+    }
+
+    onEnter(){
+        if(this.lit){
+            this.extinguish();
+        }else{
+            this.light();
+        }
     }
 }

@@ -46,11 +46,7 @@ class EnterInteractionHandler {
 
 
         if (closest instanceof COZYTHINGS.Fireplace) {
-            if (!closest.isLit()) {
-                closest.light();
-            } else {
-                closest.listen();
-            }
+            closest.onEnter();
         }else if (closest instanceof COZYTHINGS.GrandfatherClock) {
             closest.listen();
         }else if (closest instanceof COZYTHINGS.SoupPot) {
@@ -95,6 +91,8 @@ class CozyCabinImpl {
 
         SCENE.setbgmusic('cozy');
 
+        let writingfireplace = null
+
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
             let spr = this.gameevents.level.animatedsprites[i];
@@ -103,6 +101,11 @@ class CozyCabinImpl {
                 let fireplace = new COZYTHINGS.Fireplace(this.gameevents);
                 fireplace.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(fireplace);
+
+                // This is a big hack since we don't have labels on sprites right now. Can do automatically later.
+                if(spr.x == 1776){
+                    writingfireplace = fireplace;
+                }
             }else if(spr.sheet.includes('cozy-clock0.json')){
                 let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
                 grandfatherClock.setLocation(spr.x, spr.y);
@@ -122,13 +125,8 @@ class CozyCabinImpl {
         for(let i in this.gameevents.level.maplabels){
             let label = this.gameevents.level.maplabels[i];
             if(label.label == 'writingdesk'){
-                let writingDesk = new COZYTHINGS.WritingDesk(this.gameevents);
-                let cx = label.sx + (label.ex - label.sx) / 2;
-                let cy = label.sy + (label.ey - label.sy) / 2;
-                cx = cx * this.gameevents.level.tiledimx;
-                cy = cy * this.gameevents.level.tiledimy;
-                console.log("DESK!!!",cx, cy);
-                writingDesk.arrive(cx, cy);
+                let writingDesk = new COZYTHINGS.WritingDesk(label,this.gameevents);
+                writingDesk.addThing(writingfireplace);
                 this.gameevents.level.addThing(writingDesk);
             }
         }
