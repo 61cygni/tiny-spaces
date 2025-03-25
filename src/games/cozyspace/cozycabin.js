@@ -149,6 +149,7 @@ class CozyCabinImpl {
 
                 if(spr.x == 192){
                     kitchenstoollist.push(soupPot);
+                    cuttingstoollist.push(soupPot);
                 }
             }else if(spr.sheet.includes('cozy-door.json')){
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);
