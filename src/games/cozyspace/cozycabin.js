@@ -71,6 +71,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.Phonograph) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.EntranceChair) {
+            closest.onEnter();
         }else{
             console.log("No interaction handler found for closest thing");
             console.log(closest);
@@ -128,6 +130,7 @@ class CozyCabinImpl {
         let cuttingstoollist = [];
         let sleepingdogchairlist = [];
         let windchairlist = [];
+        let entrancechairlist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -145,6 +148,9 @@ class CozyCabinImpl {
                 else if(spr.y == 360){
                     sleepingdogchairlist.push(fireplace);
                 }
+                if(spr.x == 144){
+                    entrancechairlist.push(fireplace);
+                }
             }else if(spr.sheet.includes('cozy-clock0.json')){
                 let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
                 grandfatherClock.arrive(spr.x, spr.y);
@@ -152,6 +158,9 @@ class CozyCabinImpl {
 
                 if(spr.x == 1560){
                     writinglist.push(grandfatherClock);
+                }
+                if(spr.x == 120){
+                    entrancechairlist.push(grandfatherClock);
                 }
             }else if(spr.sheet.includes('cozy-firepot.json')){
                 let soupPot = new COZYTHINGS.SoupPot(this.gameevents);
@@ -196,6 +205,10 @@ class CozyCabinImpl {
                 let windchair = new COZYTHINGS.WindChair(label,this.gameevents);
                 windchair.addThingList(windchairlist);
                 this.gameevents.level.addThing(windchair);
+            }else if(label.label == "entrancechair"){
+                let entrancechair = new COZYTHINGS.EntranceChair(label,this.gameevents);
+                entrancechair.addThingList(entrancechairlist);
+                this.gameevents.level.addThing(entrancechair);
             }
         }
 

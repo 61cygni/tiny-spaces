@@ -1,0 +1,40 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 64, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 64 },
+	"sourceSize": {"w": 64, "h": 64 }
+	},
+"tile0_1": { 
+	"frame": {"x": 64, "y": 0, "w": 64, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 64 },
+	"sourceSize": {"w": 64, "h": 64 }
+	},
+"tile0_2": { 
+	"frame": {"x": 128, "y": 0, "w": 64, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 64 },
+	"sourceSize": {"w": 64, "h": 64 }
+	},
+"tile0_3": { 
+	"frame": {"x": 192, "y": 0, "w": 64, "h": 64 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 64, "h": 64 },
+	"sourceSize": {"w": 64, "h": 64 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0","tile0_1","tile0_2","tile0_3"]
+},
+"meta": {
+	"image": "sleeping-cat.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
