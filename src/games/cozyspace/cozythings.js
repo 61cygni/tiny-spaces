@@ -3,6 +3,7 @@ import * as THING  from '@spaced/thing.js';
 import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
+    sound.add('sleepingdogchair', './audio/dog-snoring.mp3');
     sound.add('soup-pot', './audio/souppot.mp3');
     sound.add('kitchenstool', './audio/person-eating.mp3');
     sound.add('writingdesk', './audio/writing-desk.mp3');
@@ -23,6 +24,7 @@ export function initSoundsOnce() {
     sound.find('writingdesk').volume = 0.9;
     sound.find('ambient-clock').volume = 0.1;
     sound.find('cuttingstool').volume = 0.4;
+    sound.find('sleepingdogchair').volume = 0.3;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -128,6 +130,7 @@ export class StayAwhileThing extends THING.Thing {
         cx = cx * this.gameevents.level.tiledimx;
         cy = cy * this.gameevents.level.tiledimy;
 
+        console.log("Setting center for " + this.name + " to " + cx + ", " + cy);
         this.setCenter(cx, cy);
         this.savedcharcoords = { x: 0, y: 0 };
         this.savedchardirect = null;
@@ -199,6 +202,12 @@ export class KitchenStool extends StayAwhileThing {
 export class CuttingStool extends StayAwhileThing {
     constructor(label, gameevents){
         super(label, gameevents, {x: 250, y: 1060}, "UP");
+    }
+}
+
+export class SleepingDogChair extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 1646, y: 522}, "LEFT");
     }
 }
 

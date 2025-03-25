@@ -65,6 +65,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.CuttingStool) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.SleepingDogChair) {
+            closest.onEnter();
         }else{
             console.log("No interaction handler found for closest thing");
             console.log(closest);
@@ -120,6 +122,7 @@ class CozyCabinImpl {
         let writinglist = [];
         let kitchenstoollist = [];
         let cuttingstoollist = [];
+        let sleepingdogchairlist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -133,6 +136,9 @@ class CozyCabinImpl {
                 // This is a big hack since we don't have labels on sprites right now. Can do automatically later.
                 if(spr.x == 1776){
                     writinglist.push(fireplace);
+                }
+                else if(spr.y == 360){
+                    sleepingdogchairlist.push(fireplace);
                 }
             }else if(spr.sheet.includes('cozy-clock0.json')){
                 let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
@@ -173,6 +179,10 @@ class CozyCabinImpl {
                 let cuttingstool = new COZYTHINGS.CuttingStool(label,this.gameevents);
                 cuttingstool.addThingList(cuttingstoollist);
                 this.gameevents.level.addThing(cuttingstool);
+            }else if(label.label == "sleepingdogchair"){
+                let sleepingdogchair = new COZYTHINGS.SleepingDogChair(label,this.gameevents);
+                sleepingdogchair.addThingList(sleepingdogchairlist);
+                this.gameevents.level.addThing(sleepingdogchair);
             }
 
         }
