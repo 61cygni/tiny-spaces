@@ -5,6 +5,7 @@ import { sound } from '@pixi/sound';
 export function initSoundsOnce() {
     sound.add('sleepingdogchair', './audio/dog-snoring.mp3');
     sound.add('catchair', './audio/cat-purring.mp3');
+    sound.add('bookchair', './audio/book.mp3');
     sound.add('windchair', './audio/rain.mp3');
     sound.add('vinyl', './audio/vinyl.mp3');
     sound.add('phonograph', './audio/1920jazz.mp3');
@@ -35,6 +36,7 @@ export function initSoundsOnce() {
     sound.find('windchair').volume = 0.5;
     sound.find('entrancechair').volume = 0.4;
     sound.find('catchair').volume = 0.4;
+    sound.find('bookchair').volume = 0.4;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -286,6 +288,12 @@ export class PhonographChair extends StayAwhileThing {
         super(label, gameevents, {x: 1552, y: 1276}, "RIGHT");
     }
 }   
+
+export class BookChair extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 1006, y: 610}, "LEFT");
+    }
+}
 
 export class Phonograph extends THING.Thing {
     constructor(gameevents){
