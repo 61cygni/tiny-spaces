@@ -4,6 +4,7 @@ import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
     sound.add('sleepingdogchair', './audio/dog-snoring.mp3');
+    sound.add('catchair', './audio/cat-purring.mp3');
     sound.add('windchair', './audio/rain.mp3');
     sound.add('vinyl', './audio/vinyl.mp3');
     sound.add('phonograph', './audio/1920jazz.mp3');
@@ -33,6 +34,7 @@ export function initSoundsOnce() {
     sound.find('vinyl').volume = 0.7;
     sound.find('windchair').volume = 0.5;
     sound.find('entrancechair').volume = 0.4;
+    sound.find('catchair').volume = 0.4;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -58,19 +60,57 @@ export class CozyDoor extends THING.Thing {
         return this.curanimname == 'open';
     }
 
+    arrive(x, y) {
+        super.arrive(x, y);
+        // remove any blocks
+        let sx = Math.floor(this.container.x / this.gameevents.level.tiledimx);
+        let sy = Math.floor(this.container.y / this.gameevents.level.tiledimy);
+        for (let x = sx; x < sx + 2; x++) {
+            for (let y = sy; y < sy + 3; y++) {
+                this.gameevents.level.objmap[1][x][y] = 693;
+            }
+        }
+
+    }
+
     open(){
         if(this.curanimname != 'open'){
             this.setSprite('opening');
             this.gotoAndPlay(0);
             sound.play('door-open');
+
+            // remove any blocks
+            let sx = Math.floor(this.container.x / this.gameevents.level.tiledimx);
+            let sy = Math.floor(this.container.y / this.gameevents.level.tiledimy);
+            for(let x = sx; x < sx + 2; x++){
+                for(let y = sy; y < sy + 3; y++){
+                    this.gameevents.level.objmap[1][x][y] = -1;
+                }
+            }
+
         }
     }
 
     close(){
         if(this.curanimname != 'closed'){
+            let charcoords = this.gameevents.mainchar.getCoords();
+            if(charcoords.x >= this.container.x && charcoords.x <= this.container.x + 2 * this.gameevents.level.tiledimx &&
+               charcoords.y >= this.container.y && charcoords.y <= this.container.y + 3 * this.gameevents.level.tiledimy){
+                console.log("Character is in the way of the door");
+                return;
+            }
+
             this.setSprite('closing');
             this.gotoAndPlay(0);
             sound.play('door-close');
+            // add blocks again 
+            let sx = Math.floor(this.container.x / this.gameevents.level.tiledimx);
+            let sy = Math.floor(this.container.y / this.gameevents.level.tiledimy);
+            for(let x = sx; x < sx + 2; x++){
+                for(let y = sy; y < sy + 3; y++){
+                    this.gameevents.level.objmap[1][x][y] = 693;
+                }
+            }
         }
     }
 }
@@ -228,6 +268,12 @@ export class WindChair extends StayAwhileThing {
 export class EntranceChair extends StayAwhileThing {
     constructor(label, gameevents){
         super(label, gameevents, {x: 312, y: 360}, "LEFT");
+    }
+}
+
+export class CatChair extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 1000, y: 1306}, "RIGHT");
     }
 }
 
