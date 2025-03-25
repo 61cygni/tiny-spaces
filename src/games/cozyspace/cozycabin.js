@@ -67,6 +67,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.SleepingDogChair) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.WindChair) {
+            closest.onEnter();
         }else if (closest instanceof COZYTHINGS.Phonograph) {
             closest.onEnter();
         }else{
@@ -125,6 +127,7 @@ class CozyCabinImpl {
         let kitchenstoollist = [];
         let cuttingstoollist = [];
         let sleepingdogchairlist = [];
+        let windchairlist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -189,8 +192,11 @@ class CozyCabinImpl {
                 let sleepingdogchair = new COZYTHINGS.SleepingDogChair(label,this.gameevents);
                 sleepingdogchair.addThingList(sleepingdogchairlist);
                 this.gameevents.level.addThing(sleepingdogchair);
+            }else if(label.label == "windchair"){
+                let windchair = new COZYTHINGS.WindChair(label,this.gameevents);
+                windchair.addThingList(windchairlist);
+                this.gameevents.level.addThing(windchair);
             }
-
         }
 
     }

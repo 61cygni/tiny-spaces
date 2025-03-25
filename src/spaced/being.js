@@ -148,7 +148,7 @@ export class Being {
             }
             this.curanim = this.sprites[this.direction];
             this.curanim.animationSpeed = 0.1666;
-            this.curanim.stop();
+            this.curanim.gotoAndStop(1);
             this.container.addChild(this.curanim);
             if(this.focus){
                 this.app.stage.addChildAt(this.container);
@@ -171,7 +171,7 @@ export class Being {
         }
         this.direction = dir;
         this.curanim = this.sprites[dir];
-        this.curanim.gotoAndStop(1);
+        this.curanim.gotoAndStop(0);
         this.container.addChild(this.curanim);
     }
 
