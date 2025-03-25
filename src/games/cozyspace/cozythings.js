@@ -20,6 +20,7 @@ export function initSoundsOnce() {
     sound.add('ambient-clock', './audio/clock-tick.mp3');
     sound.add('cuttingstool', './audio/cuttingstool.mp3');
     sound.add('entrancechair', './audio/drinking.mp3');
+    sound.add('childbed', './audio/lullaby.mp3');
     sound.find('grandfather-clock').volume = 0.2;
     sound.find('soup-pot').volume = 0.3;
     sound.find('light-fire').volume = 0.2;
@@ -34,9 +35,10 @@ export function initSoundsOnce() {
     sound.find('phonograph').volume = 0.02;
     sound.find('vinyl').volume = 0.7;
     sound.find('windchair').volume = 0.5;
-    sound.find('entrancechair').volume = 0.4;
+    sound.find('entrancechair').volume = 0.5;
     sound.find('catchair').volume = 0.4;
     sound.find('bookchair').volume = 0.4;
+    sound.find('childbed').volume = 0.4;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -292,6 +294,24 @@ export class PhonographChair extends StayAwhileThing {
 export class BookChair extends StayAwhileThing {
     constructor(label, gameevents){
         super(label, gameevents, {x: 1006, y: 610}, "LEFT");
+    }
+}
+
+export class ChildBed extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 114, y: 1442}, "RIGHT");
+    }
+
+    doThing() {
+        super.doThing();
+        sound.stop('cozy');
+        this.gameevents.mainchar.curanim.angle = 270;
+    }
+
+    stopThing() {
+        this.gameevents.mainchar.curanim.angle = 0;
+        super.stopThing();
+        sound.play('cozy');
     }
 }
 
