@@ -28,6 +28,7 @@ export function initApp(width, height, canvasname){
     app = new PIXI.Application();
     app.init({ width: width, height: height, canvas: document.getElementById(canvasname) });
     SCREEN.initScreen(width, height, canvasname, app);
+    app.stage.sortableChildren = true;
 }
 
 // OK these are annoyingly magic. But the current convention is to use

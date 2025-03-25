@@ -103,6 +103,9 @@ export class LevelContext {
         this.container = new PIXI.Container();
         this.container.sortableChildren = true;
         this.container.zIndex = GLOBALS.ZINDEX.BACKGROUND;
+        this.overlaycontainer = new PIXI.Container();
+        this.overlaycontainer.sortableChildren = true;
+        this.overlaycontainer.zIndex = GLOBALS.ZINDEX.OVERLAY;
         this.tiledimx = mod.tiledimx
         this.tiledimy = mod.tiledimy
         this.screenxtiles = mod.bgtiles[0].length
@@ -151,10 +154,13 @@ export class LevelContext {
 
     arrive(){
         this.app.stage.addChild(this.container)
+        this.app.stage.addChild(this.overlaycontainer);
+        this.app.stage.sortChildren();
     }
 
     leave(){
         this.app.stage.removeChild(this.container)
+        this.app.stage.removeChild(this.overlaycontainer)
     }
 
     reset(){
@@ -302,7 +308,7 @@ export class LevelContext {
                 for (let x = 0; x < tiles.length; x++) {
                     for (let y = 0; y < tiles[0].length; y++) {
                         if (tiles[x][y] != -1) {
-                            this.addTileLevelCoords(x, y, this.tiledimx, tiles[x][y]);
+                            this.addTileLevelCoords(x, y, this.tiledimx, tiles[x][y], GLOBALS.ZINDEX.OVERLAY);
                         }
                     }
                 }
@@ -310,8 +316,8 @@ export class LevelContext {
         }
     }
 
-    addTileLevelCoords(x, y, dim, index) {
-        return this.addTileLevelPx(x * dim, y * dim, index);
+    addTileLevelCoords(x, y, dim, index, zindex = GLOBALS.ZINDEX.BACKGROUND) {
+        return this.addTileLevelPx(x * dim, y * dim, index, zindex);
     }
 
     tileset_coords_from_index(index) {
@@ -353,7 +359,7 @@ export class LevelContext {
     }
 
     // add tile of tileset "index" to Level at location x,y
-    addTileLevelPx(x, y, index) {
+    addTileLevelPx(x, y, index, zindex = GLOBALS.ZINDEX.BACKGROUND) {
 
         let xPx = x;
         let yPx = y;
@@ -369,6 +375,7 @@ export class LevelContext {
             //TODO
             let pxloc = this.tileset_px_from_index(index);
             ctile = this.sprite_from_px(pxloc[0], pxloc[1]);
+            ctile.zIndex = zindex;
             ctile.index = index;
         }
 
@@ -379,12 +386,25 @@ export class LevelContext {
          ctile.x  = Math.floor(xPx / dx) * dx; 
          ctile.y  = Math.floor(yPx / dy) * dy;
 
-         this.container.addChild(ctile);
+         if(zindex == GLOBALS.ZINDEX.OVERLAY){  
+            this.overlaycontainer.addChild(ctile);
+         }else{
+            this.container.addChild(ctile);
+         }
+    }
+
+    setXY(x, y){
+        this.container.x = x;
+        this.container.y = y;
+        this.overlaycontainer.x = x;
+        this.overlaycontainer.y = y;
     }
 
     destroy(){
         this.container.removeChildren();
         this.container.destroy();
+        this.overlaycontainer.removeChildren();
+        this.overlaycontainer.destroy();
     }
 
 } // class LevelContext

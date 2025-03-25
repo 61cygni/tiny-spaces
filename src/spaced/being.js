@@ -44,7 +44,7 @@ export class Being {
                 this.sprites['RIGHT'] = new PIXI.AnimatedSprite(this.sheet.animations.row2);
             }
 
-            this.movedelta = .075; // FIXME don't use magic number
+            this.movedelta = .05; // FIXME don't use magic number
             this.pausecountdown = this.movedelta;
 
             this.moving = 0;
@@ -115,8 +115,7 @@ export class Being {
         // update map with given world and screen coordinates
         let xdelta = this.screencenterx - this.worldx;
         let ydelta = this.screencentery - this.worldy;
-        this.level.container.x = xdelta;
-        this.level.container.y = ydelta;
+        this.level.setXY(xdelta, ydelta);
     }
 
     getCoords(){
@@ -153,6 +152,7 @@ export class Being {
             this.container.addChild(this.curanim);
             if(this.focus){
                 this.app.stage.addChildAt(this.container);
+                this.app.stage.sortChildren();
             }else{
                 this.level.container.addChildAt(this.container, GLOBALS.ZINDEX.BEING);
             }
@@ -250,10 +250,16 @@ export class Being {
 
             this.curanim.animationSpeed = 0.1666;
             if (this.sprites != null) {
-                this.curanim.zIndex = GLOBALS.ZINDEX.BEING;
                 this.container.addChild(this.curanim);
+                this.curanim.zIndex = GLOBALS.ZINDEX.BEING;
                 if(this.focus){
+                    // FIXME!!! 
+                    // I have no idea what this is needed, but the being is not being sorted correctly
+                    // even after calling sortChildren. So I have to remove and add the overlay this.container.
                     this.app.stage.addChild(this.container);
+                    this.app.stage.removeChild(this.level.overlaycontainer);
+                    this.app.stage.addChild(this.level.overlaycontainer);
+                    this.app.stage.sortChildren();
                 }else{
                     this.level.container.addChildAt(this.container, GLOBALS.ZINDEX.BEING);
                 }
