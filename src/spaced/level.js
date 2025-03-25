@@ -370,6 +370,7 @@ export class LevelContext {
             ctile  =  new PIXI.AnimatedSprite(g_ctx.spritesheet.animations[g_ctx.animrow]);
             ctile.animationSpeed = .05;
             ctile.autoUpdate = true;
+            ctile.zIndex = GLOBALS.ZINDEX.SPRITE;
             ctile.play();
         } else {
             //TODO
