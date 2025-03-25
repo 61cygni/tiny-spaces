@@ -4,6 +4,8 @@ import { sound } from '@pixi/sound';
 
 export function initSoundsOnce() {
     sound.add('sleepingdogchair', './audio/dog-snoring.mp3');
+    sound.add('vinyl', './audio/vinyl.mp3');
+    sound.add('phonograph', './audio/1920jazz.mp3');
     sound.add('soup-pot', './audio/souppot.mp3');
     sound.add('kitchenstool', './audio/person-eating.mp3');
     sound.add('writingdesk', './audio/writing-desk.mp3');
@@ -25,6 +27,8 @@ export function initSoundsOnce() {
     sound.find('ambient-clock').volume = 0.1;
     sound.find('cuttingstool').volume = 0.4;
     sound.find('sleepingdogchair').volume = 0.3;
+    sound.find('phonograph').volume = 0.01;
+    sound.find('vinyl').volume = 0.7;
 }
 
 export class CozyDoor extends THING.Thing {
@@ -208,6 +212,35 @@ export class CuttingStool extends StayAwhileThing {
 export class SleepingDogChair extends StayAwhileThing {
     constructor(label, gameevents){
         super(label, gameevents, {x: 1646, y: 522}, "LEFT");
+    }
+}
+
+export class Phonograph extends THING.Thing {
+    constructor(gameevents){
+        super("phonograph", null, gameevents);
+        this.playing = false;
+    }
+
+    play(){
+        this.playing = true;
+        sound.stop('cozy');
+        sound.play('vinyl');
+        sound.play('phonograph', {loop: true});
+    }
+
+    stop(){
+        this.playing = false;
+        sound.stop('vinyl');
+        sound.stop('phonograph');
+        sound.play('cozy');
+    }
+
+    onEnter(){
+        if(this.playing){
+            this.stop();
+        }else{
+            this.play();
+        }
     }
 }
 

@@ -67,6 +67,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.SleepingDogChair) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.Phonograph) {
+            closest.onEnter();
         }else{
             console.log("No interaction handler found for closest thing");
             console.log(closest);
@@ -161,6 +163,10 @@ class CozyCabinImpl {
                 let door = new COZYTHINGS.CozyDoor(this.gameevents);
                 door.arrive(spr.x, spr.y);
                 this.gameevents.level.addThing(door);
+            }else if(spr.sheet.includes('phono0.json')){
+                let phonograph = new COZYTHINGS.Phonograph(this.gameevents);
+                phonograph.setCenter(spr.x+48, spr.y+48);
+                this.gameevents.level.addThing(phonograph);
             }
         } // end of loop through all animated sprites
 
