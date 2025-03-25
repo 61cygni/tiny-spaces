@@ -1,12 +1,14 @@
 Notes:
 
 TODO:
-- Fix large double door (Britt)
-- Add upper layer for door to level (Britt)
-- Fix zIndex for overlay layer (Martin)
-- Turn on / off fires, clocks (Martin)
-- Have nearby clocks / fires in ambient sound (Martin)
+- fix sparkles (Britt)
+- fix overlay for doors (Britt)
 - Finish blocking level (Britt, Martin)
 
 DONE:
 - Create magic sparks for cozy items (Britt)
+- Fix large double door (Britt)
+- Fix zIndex for overlay layer (Martin)
+- Turn on / off fires, clocks (Martin)
+- Have nearby clocks / fires in ambient sound (Martin)
+- Add upper layer for door to level (Britt)
