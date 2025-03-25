@@ -1,0 +1,19 @@
+{"frames": {
+
+"tile0_0": { 
+	"frame": {"x": 0, "y": 0, "w": 96, "h": 96 },
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0, "y":0, "w": 96, "h": 96 },
+	"sourceSize": {"w": 96, "h": 96 }
+	}
+},
+"animations": {
+"row0" : ["tile0_0"]
+},
+"meta": {
+	"image": "phono.png",
+	"format": "RGBA8888",
+	"scale": "1"
+}
+}
