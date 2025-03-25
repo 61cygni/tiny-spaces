@@ -30,7 +30,7 @@ export function initSoundsOnce() {
     sound.find('ambient-clock').volume = 0.1;
     sound.find('cuttingstool').volume = 0.4;
     sound.find('sleepingdogchair').volume = 0.3;
-    sound.find('phonograph').volume = 0.01;
+    sound.find('phonograph').volume = 0.02;
     sound.find('vinyl').volume = 0.7;
     sound.find('windchair').volume = 0.5;
     sound.find('entrancechair').volume = 0.4;
@@ -206,7 +206,9 @@ export class StayAwhileThing extends THING.Thing {
         this.gameevents.mainchar.freeze();
 
         console.log("Playing sound for " + this.name);
-        sound.play(this.name, {loop: true});
+        if(sound.find(this.name)){
+            sound.play(this.name, {loop: true});
+        }
 
         for (let i in this.things) {
             this.things[i].playAmbientLoop();
@@ -219,7 +221,9 @@ export class StayAwhileThing extends THING.Thing {
         this.gameevents.mainchar.arrive(this.savedcharcoords.x, this.savedcharcoords.y, this.savedchardirect);
         this.gameevents.mainchar.thaw();
         
-        sound.stop(this.name);
+        if(sound.find(this.name)){
+            sound.stop(this.name);
+        }
 
         for (let i in this.things) {
             this.things[i].stopAmbientLoop();
@@ -276,6 +280,12 @@ export class CatChair extends StayAwhileThing {
         super(label, gameevents, {x: 1000, y: 1306}, "RIGHT");
     }
 }
+
+export class PhonographChair extends StayAwhileThing {
+    constructor(label, gameevents){
+        super(label, gameevents, {x: 1552, y: 1276}, "RIGHT");
+    }
+}   
 
 export class Phonograph extends THING.Thing {
     constructor(gameevents){

@@ -75,6 +75,8 @@ class EnterInteractionHandler {
             closest.onEnter();
         }else if (closest instanceof COZYTHINGS.CatChair) {
             closest.onEnter();
+        }else if (closest instanceof COZYTHINGS.PhonographChair) {
+            closest.onEnter();
         }else{
             console.log("No interaction handler found for closest thing");
             console.log(closest);
@@ -134,6 +136,7 @@ class CozyCabinImpl {
         let windchairlist = [];
         let entrancechairlist = [];
         let catchairlist = [];
+        let phonographchairlist = [];
 
         // loop through all animated sprites and set them to lit
         for(let i in this.gameevents.level.animatedsprites){
@@ -156,6 +159,9 @@ class CozyCabinImpl {
                 }
                 if(spr.x == 1176){
                     catchairlist.push(fireplace);
+                }
+                if(spr.x == 1728 && spr.y == 1152){
+                    phonographchairlist.push(fireplace);
                 }
             }else if(spr.sheet.includes('cozy-clock0.json')){
                 let grandfatherClock = new COZYTHINGS.GrandfatherClock(this.gameevents);
@@ -219,6 +225,10 @@ class CozyCabinImpl {
                 let entrancechair = new COZYTHINGS.EntranceChair(label,this.gameevents);
                 entrancechair.addThingList(entrancechairlist);
                 this.gameevents.level.addThing(entrancechair);
+            }else if(label.label == "phonographchair"){
+                let phonographchair = new COZYTHINGS.PhonographChair(label,this.gameevents);
+                phonographchair.addThingList(phonographchairlist);
+                this.gameevents.level.addThing(phonographchair);
             }
         }
 
